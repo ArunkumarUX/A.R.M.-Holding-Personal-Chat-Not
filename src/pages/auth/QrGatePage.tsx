@@ -6,7 +6,6 @@ import { AdgmLogo } from '../../components/brand/AdgmLogo';
 import { createAuthSession, getSessionStatus } from '../../auth/authApi';
 import { CHAT_PATH, HOME_PATH, WELCOME_PATH } from '../../config/auth';
 import {
-  clearStoredAuth,
   hasVerifiedToken,
   isFullyAuthenticated,
   needsWelcome,
@@ -21,7 +20,6 @@ export function QrGatePage() {
   const [error, setError] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
   const [booting, setBooting] = useState(true);
-  const [freshLogin, setFreshLogin] = useState(false);
   const sessionStarted = useRef(false);
 
   const verifyUrl = useMemo(() => {
@@ -48,17 +46,17 @@ export function QrGatePage() {
   }, []);
 
   useEffect(() => {
-    if (hasVerifiedToken() && !freshLogin) {
+    if (hasVerifiedToken()) {
       setBooting(false);
       return;
     }
     if (sessionStarted.current) return;
     sessionStarted.current = true;
     void startSession();
-  }, [startSession, freshLogin]);
+  }, [startSession]);
 
   useEffect(() => {
-    if (!sessionId || verified || (hasVerifiedToken() && !freshLogin)) return;
+    if (!sessionId || verified || hasVerifiedToken()) return;
 
     let cancelled = false;
     const poll = async () => {
@@ -83,26 +81,9 @@ export function QrGatePage() {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [sessionId, verified, freshLogin]);
+  }, [sessionId, verified]);
 
-  const signOutAndScan = useCallback(() => {
-    clearStoredAuth();
-    setVerified(false);
-    setFreshLogin(true);
-    sessionStarted.current = false;
-    void startSession();
-  }, [startSession]);
-
-  if (booting && !hasVerifiedToken() && freshLogin) {
-    return (
-      <div className="auth-gate">
-        <Loader2 className="auth-gate__spinner" aria-hidden />
-        <p className="auth-gate__hint">Preparing secure access…</p>
-      </div>
-    );
-  }
-
-  if (hasVerifiedToken() && !verified && !freshLogin) {
+  if (hasVerifiedToken() && !verified) {
     if (needsWelcome()) {
       return <Navigate to={WELCOME_PATH} replace />;
     }
