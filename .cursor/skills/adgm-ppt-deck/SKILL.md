@@ -17,7 +17,7 @@ This repo integrates [ppt-master](https://github.com/hugohe3/ppt-master) **local
 
 ## Source material
 
-- Export markdown from the app **Deck builder** page, or
+- Use app **Create PPT** (`/create-ppt`) → full wizard → **Export Markdown**, or
 - Place files in: `tools/ppt-master-adgm/projects/adgm-command-centre/sources/`
 
 ## Pipeline

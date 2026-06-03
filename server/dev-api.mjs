@@ -8,6 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { getAnthropicConfig, streamChat } from './chatCore.mjs';
+import { handlePresentationRequest } from './presentationBuilder.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -172,6 +173,19 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'POST' && url.pathname === '/api/chat') {
     await handleChat(req, res);
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/presentation') {
+    let body = '';
+    for await (const chunk of req) body += chunk;
+    try {
+      const payload = JSON.parse(body);
+      const result = await handlePresentationRequest(payload);
+      sendJson(res, 200, result);
+    } catch (err) {
+      sendJson(res, 500, { error: err?.message || 'Presentation failed' });
+    }
     return;
   }
 

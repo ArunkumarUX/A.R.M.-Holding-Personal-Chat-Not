@@ -35,11 +35,11 @@ const NAV = [
       ...(PPT_MASTER_ENABLED
         ? [
             {
-              id: 'deck-builder',
-              path: '/deck-builder',
+              id: 'create-ppt',
+              path: '/create-ppt',
               icon: 'presentation',
-              label: 'Deck builder',
-              labelAr: 'منشئ العروض',
+              label: 'Create PPT',
+              labelAr: 'إنشاء عرض',
             },
           ]
         : []),
@@ -56,7 +56,7 @@ function pathToView(pathname: string) {
   if (pathname.startsWith('/regulatory')) return 'regulatory';
   if (pathname.startsWith('/knowledge')) return 'knowledge';
   if (pathname.startsWith('/briefings')) return 'briefings';
-  if (pathname.startsWith('/deck-builder')) return 'deck-builder';
+  if (pathname.startsWith('/create-ppt') || pathname.startsWith('/deck-builder')) return 'create-ppt';
   if (pathname.startsWith('/architecture')) return 'architecture';
   if (pathname.startsWith('/settings')) return 'settings';
   return 'dashboard';

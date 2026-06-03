@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import { createChatHttpResponse, getAnthropicConfig } from '../../server/chatCore.mjs';
+import { createPresentationHttpResponse } from '../../server/presentationBuilder.mjs';
 
 const SESSION_TTL_MS = 15 * 60 * 1000;
 const ACCESS_PIN = process.env.ADGM_ACCESS_PIN || '9898';
@@ -53,6 +54,10 @@ export default async (request) => {
 
   if (request.method === 'POST' && path === '/api/chat') {
     return createChatHttpResponse(request);
+  }
+
+  if (request.method === 'POST' && path === '/api/presentation') {
+    return createPresentationHttpResponse(request);
   }
 
   if (request.method === 'GET' && path === '/api/dev/public-origin') {

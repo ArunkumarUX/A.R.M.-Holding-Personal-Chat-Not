@@ -1,1 +1,1 @@
-export { PptMasterPage } from './command-centre/PptMasterPage';
+export { PresentationBuilderPage as PptMasterPage } from './command-centre/PresentationBuilderPage';

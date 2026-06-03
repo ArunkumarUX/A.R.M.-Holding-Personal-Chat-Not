@@ -17,7 +17,15 @@ Add to `.env.local`:
 VITE_ENABLE_PPT_MASTER=true
 ```
 
-Restart `npm run dev`, then open **Deck builder** in the sidebar (System group).
+Restart `npm run dev`, then open **Create PPT** in the sidebar (System group).
+
+## In-app wizard (AI Presentation Builder)
+
+1. **Input** — prompt, notes, link, paste/upload text, slide count, tone  
+2. **Clarify** — up to 3 AI questions (optional)  
+3. **Outline** — edit slide titles, approve  
+4. **Preview** — slide-by-slide view, regenerate, speaker notes  
+5. **Export** — Markdown (for PPT Master), JSON, print PDF preview, Cursor PPTX prompt  
 
 ## Workflow
 

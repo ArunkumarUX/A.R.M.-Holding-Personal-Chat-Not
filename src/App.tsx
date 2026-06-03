@@ -74,7 +74,10 @@ function AppRoutes() {
           <Route path="/prompts" element={<PromptsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           {PPT_MASTER_ENABLED ? (
-            <Route path="/deck-builder" element={<PptMasterPage />} />
+            <>
+              <Route path="/create-ppt" element={<PptMasterPage />} />
+              <Route path="/deck-builder" element={<Navigate to="/create-ppt" replace />} />
+            </>
           ) : null}
           <Route path="/focus/:focusId" element={<FocusAreaDetailPage />} />
         </Route>
