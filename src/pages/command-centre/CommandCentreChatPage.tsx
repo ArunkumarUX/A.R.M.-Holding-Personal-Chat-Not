@@ -298,8 +298,8 @@ export function CommandCentreChatPage() {
   const empty = msgs.length === 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div ref={scrollRef} className="content" style={{ padding: '8px 0', flex: 1, overflow: 'auto' }}>
+    <div className="cc-chat-page" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div ref={scrollRef} className="content content--chat" style={{ padding: '8px 0', flex: 1, overflow: 'auto' }}>
         <div className="cc-chat-inner" style={{ maxWidth: 860, margin: '0 auto', padding: '14px 24px 24px' }}>
           {empty ? (
             <div className="rise" style={{ paddingTop: 24 }}>

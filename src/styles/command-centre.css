@@ -665,6 +665,11 @@ h1,h2,h3,h4,h5 {
   scroll-behavior: smooth;
   background: var(--apple-grey);
 }
+/* Chat — white canvas (not Apple grey) */
+.command-centre-app .content.content--chat,
+.command-centre-app .cc-chat-page {
+  background: #ffffff;
+}
 .content-pad {
   max-width: 1320px;
   margin: 0 auto;
@@ -821,10 +826,85 @@ h1,h2,h3,h4,h5 {
   font-size: 14px;
 }
 .chat-ai-msg__content {
-  font-size: 14.5;
+  font-size: 14.5px;
   color: var(--ink-2);
   line-height: 1.55;
 }
+.chat-md-h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 14px 0 8px;
+  color: var(--ink);
+}
+.chat-md-h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 12px 0 6px;
+  color: var(--adgm-navy);
+}
+.chat-md-p { margin: 0 0 10px; line-height: 1.55; }
+.chat-md-list {
+  margin: 6px 0 12px;
+  padding-inline-start: 20px;
+  display: grid;
+  gap: 5px;
+}
+.chat-md-list__item { line-height: 1.5; }
+.chat-md-strong-line { font-weight: 600; font-size: 14px; margin: 10px 0 6px; }
+.chat-md-caption { font-size: 12px; margin: 12px 0 4px; }
+.chat-verdict {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-inline-start: 4px solid var(--adgm-blue-500);
+  background: color-mix(in oklab, var(--adgm-cyan-50) 80%, #fff);
+  border-radius: 0 12px 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.chat-md-table-wrap {
+  margin: 10px 0 14px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.chat-md-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.chat-md-table th {
+  text-align: start;
+  padding: 10px 12px;
+  background: var(--adgm-cyan-50);
+  color: var(--adgm-navy);
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+.chat-md-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.chat-md-table tr:last-child td { border-bottom: none; }
+.chat-viz-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  background: var(--adgm-cyan-50);
+  border-radius: 10px;
+  border: 1px solid var(--adgm-cyan-border);
+}
+.chat-viz-bar__chars {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--adgm-blue-500);
+}
+.chat-viz-bar__score { font-size: 13px; font-weight: 700; color: var(--ink); }
 .chat-ai-meta {
   margin-top: 12px;
   padding-top: 12px;

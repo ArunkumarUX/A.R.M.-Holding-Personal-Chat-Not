@@ -15,7 +15,13 @@ export function buildChatContext(state: ExecutiveState) {
       queriesThisWeek: state.metrics.queriesThisWeek,
       documentsInKb: state.metrics.documentsInKb,
       avgConfidence: state.metrics.avgConfidence,
+      departmentsOnTrack: state.metrics.departmentsOnTrack,
+      openActions: state.metrics.openActions,
     },
+    departmentHeadlines: state.departments.slice(0, 6).map((d) => {
+      const k = d.kpis[0];
+      return `${d.name}: ${k ? `${k.label} ${k.value}` : '—'} (${d.rag})`;
+    }),
     meetings: state.meetings.map((m) => ({
       title: m.title,
       time: m.time,

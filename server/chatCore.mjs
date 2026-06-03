@@ -2,6 +2,8 @@
  * Shared Claude chat streaming — used by dev-api and Netlify Functions.
  */
 
+import { ANSWER_FORMAT_RULES } from './answerFormatRules.mjs';
+
 export function getAnthropicConfig() {
   return {
     apiKey: process.env.ANTHROPIC_API_KEY || '',
@@ -35,19 +37,20 @@ export function buildSystemPrompt(ctx, language) {
   const isBriefing = Boolean(ctx?.briefingFormat);
   const formatLabel = ctx?.briefingFormat || 'executive briefing';
 
+  const deptLine = ctx?.departmentHeadlines?.length
+    ? ctx.departmentHeadlines.join('\n')
+    : '';
+
   return `You are the Personal AI Agent for ${ctx?.executiveName || 'Rajiv Sehgal'}, Chief Strategy Officer at Abu Dhabi Global Market (ADGM).
 
-You coordinate five specialist perspectives: Policy, Strategy, Chief of Staff, Relationship, and Communications. Synthesise one executive-grade answer grounded in the institutional context below.
+You coordinate five specialist perspectives: Policy, Strategy, Chief of Staff, Relationship, and Communications. Synthesise ONE concise answer grounded in the institutional context below.
 
-${isBriefing ? `You are generating a **${formatLabel}** briefing document (not a casual chat). Use the calendar, action register, and knowledge base below. Structure for scanning in under 2 minutes. Do not end with generic "how can I help" prompts.` : ''}
+${isBriefing ? `You are generating a **${formatLabel}** briefing (not casual chat). Scan in under 2 minutes. No generic closings.` : ''}
 
-Rules:
-- ${ar ? 'Respond in Modern Standard Arabic unless the user writes in English.' : 'Respond in clear executive English unless the user writes in Arabic.'}
-- Use markdown: headings, bullets, tables when helpful.
-- Be specific to ADGM, Abu Dhabi, and D33 where relevant.
-- Draw on the documents, meetings, and actions provided — do not give generic filler.
-- If you lack live data, say what you are inferring; do not invent confidential figures.
-${isBriefing ? '- Output only the briefing body.' : '- End with 2–3 short follow-up prompts the executive might ask next.'}
+${ANSWER_FORMAT_RULES}
+
+Language: ${ar ? 'Modern Standard Arabic unless the user writes in English.' : 'Clear English for a non-expert reader unless the user writes in Arabic.'}
+${isBriefing ? 'Output only the briefing body.' : 'End with a **Follow-up** section: exactly 2 bullet questions.'}
 
 Calendar (Microsoft Graph demo):
 ${meetings || '(no meetings listed)'}
@@ -60,7 +63,16 @@ ${marketBlock}
 Knowledge base documents (cite by name when used):
 ${docs || '(none listed)'}
 
-Live demo metrics: queries this week ${ctx?.metrics?.queriesThisWeek ?? '—'}, documents in KB ${ctx?.metrics?.documentsInKb ?? '—'}.`;
+Live demo metrics:
+- Queries this week: ${ctx?.metrics?.queriesThisWeek ?? '—'}
+- Documents in KB: ${ctx?.metrics?.documentsInKb ?? '—'}
+- Departments green: ${ctx?.metrics?.departmentsOnTrack ?? '—'} / 9
+- Open actions: ${ctx?.metrics?.openActions ?? '—'}
+- D33 alignment (demo): 82/100
+- Licence growth YoY (demo): +12%
+
+Department headlines (demo ERP):
+${deptLine || '(see documents and meetings)'}`;
 }
 
 /**

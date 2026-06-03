@@ -11,14 +11,24 @@ import { CANNED } from '../data/commandCentreData';
 
 const USE_CLAUDE = import.meta.env.VITE_USE_CLAUDE_API !== 'false';
 
-const STAKEHOLDER_CANNED = `**Stakeholder profile — Deputy MD, Singapore MAS** (Relationship AI)
+const STAKEHOLDER_CANNED = `## Stakeholder — Singapore MAS
 
-• **Relationship**: warm · 6 touchpoints over 18 months · last at ADFW 2025.
-• **Focus areas**: cross-border digital-asset recognition, sustainable-finance taxonomy.
-• **Open follow-ups**: 2 — working-group date, custodian pilot scope.
-• **Network**: connected to 3 ADGM partnership leads.
+> **In plain terms:** Warm relationship; lock in a Q3 working session and close open follow-ups.
 
-**Suggested next step**: propose a Q3 working session before quarter-end.`;
+| CRM fact | Detail | Signal |
+|----------|--------|--------|
+| Relationship | Warm · 6 touchpoints / 18 mo | 🟢 |
+| Last meeting | ADFW 2025 | 🟢 |
+| ADGM network | 3 partnership leads | 🟢 |
+
+| Follow-up | Status | Signal |
+|-----------|--------|--------|
+| Working-group date | Open | 🟡 |
+| Custodian pilot scope | Open | 🟡 |
+
+🔴 **Do this:** Propose Q3 working session before quarter-end.
+
+*Agents: Relationship · Chief of Staff*`;
 
 export type GenerateBriefingOptions = {
   formatId: string;

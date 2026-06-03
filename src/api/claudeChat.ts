@@ -5,6 +5,7 @@ export type ChatStreamContext = {
   organisation?: string;
   documents?: { id: string; name: string; summary?: string }[];
   metrics?: Record<string, number>;
+  departmentHeadlines?: string[];
   language?: 'en' | 'ar';
   briefingFormat?: string;
   meetings?: {

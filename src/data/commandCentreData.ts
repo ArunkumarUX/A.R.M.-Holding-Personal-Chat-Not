@@ -352,70 +352,101 @@ export const SUGGESTIONS = [
 
 export const CANNED = {
   "Compare ADGM's digital assets framework against Singapore MAS.":
-`**ADGM vs Singapore (MAS) — Digital Assets Framework**
+`## ADGM vs MAS — digital assets
 
-**Where ADGM leads**
-• Direct application of English common law gives contractual certainty for tokenisation and custody arrangements.
-• FSRA was among the first globally to license exchanges, custodians and token issuers (2018), with guidance refreshed June 2025.
+> **In plain terms:** ADGM suits big institutions; Singapore is slightly ahead on retail crypto and stablecoin rules.
 
-**Where MAS leads**
-• Broader retail-access experimentation and a larger live fintech sandbox cohort.
-• Deeper stablecoin issuance framework already in market.
+| What it means | Number | Signal |
+|---------------|--------|--------|
+| ADGM framework (demo) | 88/100 | 🟢 |
+| MAS framework (demo) | 90/100 | 🟡 |
+| Legal edge | English common law | 🟢 |
 
-**Benchmark (Strategy AI · 12-dimension model)**
-• Digital-assets framework — ADGM 88 / MAS 90
-• Regulatory agility — ADGM 86 / MAS 88
+████████░░ **88/100**
 
-**Recommended action**: accelerate FSRA digital-fund guidance to close the 2-point gap on framework breadth; ADGM's legal-certainty advantage is durable and worth foregrounding with institutional issuers.`,
+| Topic | ADGM | Singapore |
+|-------|------|-----------|
+| Best for | Banks & funds | More retail tests |
+| Stablecoins | Aligning | Consultation ends Friday |
+
+🔴 **Do this:** Brief FSRA on MAS outcome before **12 Jun**.
+
+*Agents: Policy · Strategy · Demo store*`,
 
   "What strategic decisions did ADGM make in 2024 and how do they track against D33?":
-`**2024 strategic decisions — D33 alignment** (Knowledge Graph temporal reasoning)
+`## 2024 decisions vs D33
 
-1. **Al Reem Island expansion** → 10× jurisdiction growth. D33 fit: 90. On track; licence transitions completed Dec 2024.
-2. **Path to Forward rebrand** → positioning as East–West bridge. D33 fit: 84.
-3. **ADFW scale-up** (35,000+ attendees, 2025) → talent & capital magnet. D33 fit: 88.
-4. **AUM surge framework** (+226% H1 2024) → asset-management depth. D33 fit: 91.
+> **In plain terms:** Most initiatives are on track; talent retention needs attention.
 
-**Overall D33 alignment score: 88** — trending up. The asset-management and AI-infrastructure threads are the strongest contributors; digital-assets policy is the one milestone at risk of a 4-week slip.`,
+████████░░ **82/100**
+
+| Initiative | Status | Signal |
+|------------|--------|--------|
+| Digital assets framework | On track · Q2 2026 | 🟢 |
+| Italy engagement | Complete · May 2026 | 🟢 |
+| Fund reforms | Licences +12% YoY | 🟢 |
+| Talent pipeline | Attrition elevated | 🔴 |
+
+*Agents: Strategy · Chief of Staff · D33_Strategic_Alignment_2024-26.xlsx*`,
 
   "Brief me on my 3pm meeting tomorrow.":
-`**Pre-meeting brief — Singapore MAS delegation, 15:00 tomorrow** (Chief of Staff + Relationship AI)
+`## Pre-meeting — Singapore MAS delegation
 
-**Who** — 3 attendees led by Deputy MD (Markets). Last engagement: ADFW 2025 panel. Warm relationship; 2 open follow-ups from CRM.
+> **In plain terms:** Tomorrow 15:00 — warm relationship; agree a working group before Q3.
 
-**Their agenda** — cross-border digital-asset recognition; sustainable-finance taxonomy alignment.
+| Fact | Detail | Signal |
+|------|--------|--------|
+| When | Tomorrow 15:00 UAE | 🟢 |
+| Prep | Ready | 🟢 |
+| Relationship | Warm · ADFW 2025 | 🟢 |
 
-**Your talking points**
-• ADGM's common-law certainty for tokenised instruments.
-• Proposal: mutual fast-track recognition pilot for licensed custodians.
-• Reference H1 AUM +226% as ecosystem momentum.
+**Their focus:** digital-asset recognition · green finance rules
 
-**Watch-outs** — they may probe retail-access posture; hold the institutional-first line.
+**Your 3 bullets**
+- Common-law certainty for tokenised funds
+- Fast-track custodian pilot
+- Ecosystem growth (+12% licences YoY)
 
-**Suggested ask** — agree a working-group date before Q3.`,
+🔴 **Do this:** Confirm Q3 working-group date.
+
+*Agents: Chief of Staff · Relationship · Strategy*`,
 
   "Top investment opportunities Abu Dhabi should prioritise from current capital flows?":
-`**Top opportunities — scored against D33** (Strategy AI · live market synthesis)
+`## Top opportunities for Abu Dhabi
 
-1. **AI infrastructure & sovereign compute** — D33 fit 92. Record VC inflows; strong Falcon Economy fit.
-2. **Private credit** — D33 fit 86. GCC allocations rotating from public to private debt.
-3. **Tokenised real-world assets** — D33 fit 84. DIFC moving here; window to lead on institutional-grade custody.
-4. **Sustainable & transition finance** — D33 fit 83. Aligns with diversification mandate.
+> **In plain terms:** Climate tech and tokenised funds score highest on D33 right now.
 
-**Recommendation**: prioritise (1) and (3) — they compound ADGM's regulatory-certainty advantage and are where competitor moves are most active this week.`,
+| Sector | D33 score | Signal |
+|--------|-----------|--------|
+| AI / sovereign compute | 92/100 | 🟢 |
+| Tokenised RWAs | 84/100 | 🟢 |
+| Private credit | 86/100 | 🟢 |
+| Climate tech | 88/100 | 🟢 |
+
+█████████░ **92/100**
+
+🔴 **Do this:** Lead with climate GPs + institutional tokenised fund pathway.
+
+*Agents: Strategy · Demo market feeds*`,
 
   "Draft a note to HH's office on ADGM's Q2 performance in Arabic.":
-`**Ministerial note — Q2 performance** (Communications AI · bilingual)
+`## Ministerial note — Q2
 
-**العربية**
-معالي الوزير،
-يسرّني أن أرفع إلى مكتبكم موجزاً عن أداء سوق أبوظبي العالمي للربع الثاني. واصل المركز زخمه القوي، مع نمو الأصول المُدارة وارتفاع تسجيل الشركات. تقدّمت مبادراتنا الاستراتيجية بما يتوافق مع رؤية أبوظبي الاقتصادية، مع تركيز خاص على التقنية المالية والتمويل المستدام والأصول الرقمية.
-وتفضلوا بقبول وافر الاحترام،
+> **In plain terms:** Report a strong quarter; keep it short and formal in both languages.
 
-**English**
-Your Excellency,
-I am pleased to share a summary of ADGM's Q2 performance. The centre sustained strong momentum, with growth in assets under management and company registrations. Our strategic initiatives advanced in alignment with Abu Dhabi's economic vision, with particular focus on fintech, sustainable finance and digital assets.
-With highest regards,`,
+| Metric | Value | Signal |
+|--------|-------|--------|
+| D33 alignment | 82/100 | 🟢 |
+| Licence growth | +12% YoY | 🟢 |
+| Risk | DIFC fintech pace | 🟡 |
+
+### العربية (short)
+معالي الوزير، أداء قوي للربع الثاني مع نمو التراخيص ومحاذاة D33.
+
+### English (short)
+Your Excellency, ADGM delivered strong Q2 results: licence growth, robust FSRA pipeline, D33 score 82/100.
+
+*Agents: Communications · Ministerial_Note_Q2_AR_EN.docx*`,
 };
 
 

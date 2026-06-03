@@ -2,7 +2,6 @@
  * Unified executive data — single source of truth for all flows.
  * Persisted to localStorage; responses cite live store values.
  */
-import { EXECUTIVE_USER } from '../config/user';
 import type {
   AgentType,
   Conversation,
@@ -15,6 +14,14 @@ import type {
 import { PERFORMANCE_DEPARTMENTS } from './v5SpecData';
 import { ALL_FOCUS_PROMPTS, resolveFocusAreaForQuery } from './focusAreas';
 import { buildFocusAreaResponse } from './focusResponses';
+import {
+  actionNow,
+  agentTag,
+  metricTable,
+  plainTerms,
+  scoreBar,
+  signalEmoji,
+} from '../utils/executiveAnswerVisuals';
 
 const STORAGE_KEY = 'adgm-executive-state-v3';
 
@@ -394,19 +401,31 @@ export function buildIntelligentResponse(query: string, state: ExecutiveState): 
         'Show competitor benchmark — DIFC vs ADGM vs MAS',
         'Add to board digital assets section',
       ],
-      content: `## ADGM vs Singapore MAS — Digital assets (live knowledge base)
+      content: `## ADGM vs MAS — digital assets
 
-**From your store:** FSRA framework doc ingested 29 May · MAS CP summary ingested today.
+${plainTerms('ADGM is better for large banks and funds; Singapore is ahead on retail crypto rules and stablecoins this week.')}
+${metricTable(
+  ['What it means', 'Number', 'Signal'],
+  [
+    ['ADGM rules strength (demo benchmark)', '88/100', `${signalEmoji('good')} Strong`],
+    ['MAS rules strength (demo benchmark)', '90/100', `${signalEmoji('watch')} Slightly ahead`],
+    ['Sales vs target', revenue, signalEmoji('watch')],
+    ['GCC markets today', state.marketSnapshot.gccEquities, signalEmoji('good')],
+  ],
+)}
+**D33 / framework**
+${scoreBar(88)}
 
-| Dimension | ADGM (FSRA) | MAS |
-|-----------|-------------|-----|
-| Model | Full VASP / MTF taxonomy | Activity-based DPT + stablecoin |
-| Retail | Permitted with safeguards | More restrictive retail DPT |
-| Stablecoins | Alignment in progress | Consultation closes **Friday** |
-
-**Strategic read for ${EXECUTIVE_USER.firstName}:** ADGM leads on institutional tokenised funds; monitor MAS outcomes for FSRA response by **12 Jun** (action register item a3).
-
-**Live performance context:** Sales at **${revenue}** — one digital-assets prospect waiting on FSRA timeline.`,
+${metricTable(
+  ['Topic', 'ADGM (simple)', 'Singapore (simple)'],
+  [
+    ['Who it suits', 'Institutions & funds', 'More retail testing'],
+    ['Retail crypto', 'Allowed with safeguards', 'Tighter limits'],
+    ['Stablecoins', 'Rules being aligned', 'Consultation ends Friday'],
+  ],
+)}
+${actionNow('Complete MAS comparison note by 12 Jun (your action register).')}
+${agentTag(['Policy AI', 'Strategy AI'])}`,
     };
   }
 
@@ -420,18 +439,29 @@ export function buildIntelligentResponse(query: string, state: ExecutiveState): 
         'Which milestones are at risk?',
         'Prepare board narrative on D33 score',
       ],
-      content: `## 2024 strategic decisions → D33 tracking
+      content: `## 2024 decisions vs D33
 
-**Knowledge Graph score: 82 / 100** (source: D33_Strategic_Alignment_2024-26.xlsx)
+${plainTerms('Most 2024 bets are on track; talent retention is the one area that needs attention.')}
+**Overall D33 alignment (demo store)**
+${scoreBar(82)}
 
-| Initiative | Status |
-|------------|--------|
-| Digital assets framework | On track — Q2 2026 milestone |
-| Italy financial engagement | **Complete** (May 2026) |
-| ACCESSADGM fund reforms | On track — licence growth +12% YoY |
-| Talent pipeline | **At risk** — HR attrition **${attrition}** |
-
-**Departments on track:** ${state.metrics.departmentsOnTrack} of 9 green.`,
+${metricTable(
+  ['Initiative', 'Status', 'Signal'],
+  [
+    ['Digital assets framework', 'On track · Q2 2026', signalEmoji('good')],
+    ['Italy financial engagement', 'Done · May 2026', signalEmoji('good')],
+    ['Fund reforms (ACCESSADGM)', 'On track · licences +12% YoY', signalEmoji('good')],
+    ['Talent pipeline', `At risk · attrition ${attrition}`, signalEmoji('risk')],
+  ],
+)}
+${metricTable(
+  ['Org health', 'Number', 'Signal'],
+  [
+    ['Departments on track', `${state.metrics.departmentsOnTrack} / 9`, signalEmoji('good')],
+    ['Open actions', String(state.metrics.openActions), signalEmoji('watch')],
+  ],
+)}
+${agentTag(['Strategy AI', 'Chief of Staff AI'])}`,
     };
   }
 
@@ -447,18 +477,34 @@ export function buildIntelligentResponse(query: string, state: ExecutiveState): 
         'Log follow-up in action register',
         'Open full CRM record',
       ],
-      content: `## Stakeholder profile — ${mtg.title}
+      content: `## Stakeholder — ${mtg.title}
 
-**Relationship:** warm · 6 touchpoints over 18 months · last engagement ADFW 2025
-
-**Focus areas:** cross-border digital-asset recognition · sustainable-finance taxonomy alignment
-
-**Open follow-ups (${open.length}):**
-${open.slice(0, 3).map((a) => `• ${a.title} (due ${a.due})`).join('\n')}
-
-**ADGM network:** 3 partnership leads connected
-
-**Suggested next step:** confirm working-group date before Q3 · align custodian pilot scope with FSRA timeline`,
+${plainTerms('Warm relationship with Singapore regulators; two follow-ups still open before you meet.')}
+${metricTable(
+  ['CRM fact', 'Detail', 'Signal'],
+  [
+    ['Relationship', 'Warm · 6 meetings in 18 months', signalEmoji('good')],
+    ['Last touchpoint', 'ADFW 2025', signalEmoji('good')],
+    ['ADGM network', '3 partnership leads linked', signalEmoji('good')],
+  ],
+)}
+${metricTable(
+  ['They care about', 'Why it matters', ''],
+  [
+    ['Cross-border digital assets', 'Passporting tokenised funds', '—'],
+    ['Green finance rules', 'Align taxonomies', '—'],
+  ],
+)}
+${metricTable(
+  ['Open follow-up', 'Due', 'Signal'],
+  open.slice(0, 3).map((a) => [
+    a.title,
+    a.due,
+    a.status === 'overdue' ? signalEmoji('risk') : signalEmoji('watch'),
+  ]),
+)}
+${actionNow('Agree a Q3 working-group date and confirm custodian pilot scope with FSRA.')}
+${agentTag(['Relationship AI', 'Chief of Staff AI'])}`,
     };
   }
 
@@ -473,25 +519,37 @@ ${open.slice(0, 3).map((a) => `• ${a.title} (due ${a.due})`).join('\n')}
         'Show open commitments with MAS',
         'Add to action register',
       ],
-      content: `## Pre-meeting brief — ${mtg.title}
+      content: `## Pre-meeting — ${mtg.title}
 
-**When:** Tomorrow 15:00 UAE · **Where:** ${mtg.location}  
-**Status:** ${mtg.prepStatus === 'ready' ? '✓ Brief ready (<30s generation)' : 'Pending'}
+${plainTerms('You are ready for tomorrow’s MAS meeting; one policy note is still due on 12 Jun.')}
+${metricTable(
+  ['Meeting fact', 'Detail', 'Signal'],
+  [
+    ['When', 'Tomorrow 15:00 UAE', signalEmoji('good')],
+    ['Where', mtg.location, '—'],
+    ['Prep', mtg.prepStatus === 'ready' ? 'Ready' : 'In progress', mtg.prepStatus === 'ready' ? signalEmoji('good') : signalEmoji('watch')],
+    ['Who', mtg.attendees, '—'],
+  ],
+)}
+${metricTable(
+  ['Commitment', 'Due', 'Signal'],
+  [
+    ['MAS workshop on tokenised products', 'Committed 22 Mar', signalEmoji('good')],
+    ['MAS policy comparison note', '12 Jun', signalEmoji('watch')],
+  ],
+)}
+**Market & ops (demo)**
+${scoreBar(82)}
+| Metric | Value | Signal |
+|--------|-------|--------|
+| Competitor headline | ${state.marketSnapshot.competitorNote} | ${signalEmoji('watch')} |
+| HR attrition | ${attrition} | ${signalEmoji('watch')} |
+| Ops SLA | ${sla} | ${signalEmoji('good')} |
 
-### Attendees
-${mtg.attendees}
-
-### CRM & commitments
-- Technical workshop on cross-border tokenised products — MAS committed 22 Mar
-- Your note: MAS policy comparison post-consultation — **due 12 Jun**
-
-### Live context
-- Competitor: ${state.marketSnapshot.competitorNote}
-- HR attrition **${attrition}** · Ops SLA **${sla}**
-
-### Suggested questions
-1. Institutional tokenised fund passporting with UAE?
-2. Stablecoin consultation timeline affecting regional hubs?`,
+**Ask them**
+- Fund passporting with UAE?
+- Stablecoin consultation timeline?
+${agentTag(['Chief of Staff', 'Relationship', 'Strategy', 'Comms'])}`,
     };
   }
 
@@ -507,22 +565,31 @@ ${mtg.attendees}
         'Draft talking points on capital flows',
         'Flag action register items',
       ],
-      content: `## Pre-meeting brief — ${mtg.title}
+      content: `## Pre-meeting — ${mtg.title}
 
-**15:00 UAE today** · ${mtg.attendees}
-
-### Watch
-${overdue ? `⚠ **Overdue:** ${overdue.title} (due ${overdue.due})` : 'No overdue items'}
-
-### Strategic context
-- ~USD 300bn AUM sovereign partner · fund domiciliation pipeline
-- Digital assets framework — address policy timeline sensitively
-
-### Talking points
-- Licence growth +12% YoY · FSRA authorisation pipeline
-- ACCESSADGM fund structuring reforms
-
-**Sales:** ${revenue} · **Open actions:** ${state.metrics.openActions}`,
+${plainTerms('Important sovereign partner meeting today — share the overdue policy update before new asks.')}
+${metricTable(
+  ['Meeting', 'Detail', 'Signal'],
+  [
+    ['Time', '15:00 UAE today', signalEmoji('good')],
+    ['With', mtg.attendees, '—'],
+    ['Partner size', '~USD 300bn AUM (demo)', signalEmoji('good')],
+  ],
+)}
+${overdue ? actionNow(`Send overdue item: ${overdue.title} (was due ${overdue.due}).`) : `${signalEmoji('good')} No overdue actions.`}
+${metricTable(
+  ['Talking point', 'Why', ''],
+  [
+    ['Licences +12% YoY', 'Shows momentum', '—'],
+    ['ACCESSADGM reforms', 'Fund pipeline', '—'],
+    ['Digital assets policy', 'Sensitive timeline', '—'],
+  ],
+)}
+| Metric | Value | Signal |
+|--------|-------|--------|
+| Sales vs target | ${revenue} | ${signalEmoji('watch')} |
+| Open actions | ${state.metrics.openActions} | ${signalEmoji('watch')} |
+${agentTag(['Chief of Staff', 'Relationship', 'Strategy'])}`,
     };
   }
 
@@ -536,16 +603,28 @@ ${overdue ? `⚠ **Overdue:** ${overdue.title} (due ${overdue.due})` : 'No overd
         'Ministerial narrative draft (Arabic)',
         'Compare vs DIFC positioning',
       ],
-      content: `## Investment priorities — Abu Dhabi (live feeds)
+      content: `## Abu Dhabi — top opportunities
 
-**Top sectors vs D33 (from intelligence store):**
-1. **Climate tech** — Score **88** · ${state.marketSnapshot.topSector}
-2. **Tokenised funds / digital assets** — Score **86**
-3. **Cross-border payments** — Score **84**
+${plainTerms('Climate tech and tokenised funds are the best bets right now; both fit D33 and ADGM’s strengths.')}
+${metricTable(
+  ['Sector', 'D33 score (demo)', 'Signal'],
+  [
+    ['Climate tech', '88/100', signalEmoji('good')],
+    ['Tokenised funds / digital assets', '86/100', signalEmoji('good')],
+    ['Cross-border payments', '84/100', signalEmoji('good')],
+  ],
+)}
+**Top pick**
+${scoreBar(88)}
+${state.marketSnapshot.topSector}
 
-**Market snapshot:** GCC ${state.marketSnapshot.gccEquities} · ADGM digital assets ${state.marketSnapshot.digitalAssetsWoW} WoW
+| Market signal | Value |
+|---------------|-------|
+| GCC equities | ${state.marketSnapshot.gccEquities} |
+| ADGM digital assets (WoW) | ${state.marketSnapshot.digitalAssetsWoW} |
 
-**Recommended:** Package ADGM value prop for climate GPs · Accelerate tokenised fund pathway with FSRA.`,
+${actionNow('Prioritise climate GP outreach and fast-track tokenised fund guidance with FSRA.')}
+${agentTag(['Strategy AI', 'Policy AI'])}`,
     };
   }
 
@@ -559,20 +638,30 @@ ${overdue ? `⚠ **Overdue:** ${overdue.title} (due ${overdue.due})` : 'No overd
         'Adjust paragraph 2 per FSRA terminology',
         'Schedule board review',
       ],
-      content: `## Ministerial note — HH office · Q2 performance
+      content: `## Ministerial note — Q2 (draft)
 
-**Source document:** Ministerial_Note_Q2_AR_EN.docx (ready in library)
+${plainTerms('Strong quarter to report; mention licence growth and flag talent retention briefly.')}
+${metricTable(
+  ['Metric', 'Value', 'Signal'],
+  [
+    ['D33 alignment', '82/100', signalEmoji('good')],
+    ['Licence growth', '+12% YoY', signalEmoji('good')],
+    ['Departments green', `${state.metrics.departmentsOnTrack}/9`, signalEmoji('good')],
+    ['HR attrition', attrition, signalEmoji('watch')],
+    ['Sales vs target', revenue, signalEmoji('watch')],
+  ],
+)}
+**D33 alignment**
+${scoreBar(82)}
 
-### English (excerpt)
-Your Excellency, ADGM reports strong Q2 momentum: licence growth +12% YoY, FSRA pipeline robust, D33 alignment **82/100**. Risks: fintech competition vs DIFC; HR attrition **${attrition}**.
+### English (short)
+Your Excellency, ADGM had a strong Q2: more licences, a healthy FSRA pipeline, and D33 score 82/100. Watch-items: competition from DIFC fintech and staff attrition.
 
-### العربية (مقتطف)
-معالي الشيخ، يُفيد مركز أبوظبي العالمي بأداء قوي في الربع الثاني...
+### العربية (مختصر)
+معالي الشيخ، أداء قوي للربع الثاني مع نمو التراخيص ومحاذاة D33. يجب متابعة المنافسة التقنية والاحتفاظ بالمواهب.
 
-### Live metrics cited
-- Revenue tracking: **${revenue}**
-- Departments green: **${state.metrics.departmentsOnTrack} / 9**
-- Open actions: **${state.metrics.openActions}**`,
+*Full draft: Ministerial_Note_Q2_AR_EN.docx*
+${agentTag(['Communications AI', 'Strategy AI'])}`,
     };
   }
 
@@ -582,15 +671,24 @@ Your Excellency, ADGM reports strong Q2 momentum: licence growth +12% YoY, FSRA 
       confidence: 0.9,
       sourceDocIds: ['d1'],
       followUps: ['Open HR department detail', 'Show leadership actions', 'Compare Sales pipeline'],
-      content: `## Performance snapshot (live ERP/HR demo data)
+      content: `## Performance snapshot
 
-**HR (${hr.rag.toUpperCase()}):** Attrition **${attrition}** · ${hr.leadershipActions[0]}
+${plainTerms('Most teams are performing; HR attrition is the main metric that needs leadership attention.')}
+${metricTable(
+  ['Department', 'Key metric', 'Signal'],
+  [
+    ['HR', `Attrition ${attrition}`, hr.rag === 'green' ? signalEmoji('good') : hr.rag === 'red' ? signalEmoji('risk') : signalEmoji('watch')],
+    ['Sales', revenue, sales.rag === 'green' ? signalEmoji('good') : sales.rag === 'red' ? signalEmoji('risk') : signalEmoji('watch')],
+    ['Operations', `SLA ${sla}`, ops.rag === 'green' ? signalEmoji('good') : ops.rag === 'red' ? signalEmoji('risk') : signalEmoji('watch')],
+  ],
+)}
+| Org view | Value | Signal |
+|----------|-------|--------|
+| Departments green | ${state.metrics.departmentsOnTrack}/9 | ${signalEmoji('good')} |
+| Open actions | ${state.metrics.openActions} | ${signalEmoji('watch')} |
 
-**Sales (${sales.rag.toUpperCase()}):** ${revenue} · ${sales.leadershipActions[0]}
-
-**Operations (${ops.rag.toUpperCase()}):** SLA **${sla}** · ${ops.leadershipActions[0]}
-
-→ Full dashboard: **/performance** — 9 departments, updated ${new Date(state.lastSync).toLocaleString('en-AE')}`,
+**Next:** Open **/performance** for all 9 departments.
+${agentTag(['Chief of Staff AI', 'Strategy AI'])}`,
     };
   }
 
@@ -604,18 +702,28 @@ Your Excellency, ADGM reports strong Q2 momentum: licence growth +12% YoY, FSRA 
     confidence: 0.87,
     sourceDocIds: ['d1'],
     followUps: ALL_FOCUS_PROMPTS.slice(0, 3),
-    content: `**Personal AI for ${EXECUTIVE_USER.fullName}**
+    content: `## Personal AI — quick guide
 
-I support the six core focus areas of the Chief Strategy Office:
+${plainTerms('Ask in plain language; you get short answers with tables and scores, grounded in your demo data.')}
+${metricTable(
+  ['You can ask about', 'Example', ''],
+  [
+    ['Markets & competitors', 'Daily briefing or DIFC vs ADGM', '—'],
+    ['Meetings', 'Brief me on my 3pm meeting', '—'],
+    ['Rules & policy', 'Compare ADGM vs MAS digital assets', '—'],
+    ['People & partners', 'Stakeholder profile for MAS', '—'],
+    ['Letters & Arabic', 'Draft HH office Q2 note', '—'],
+  ],
+)}
+| Demo store | Value |
+|------------|-------|
+| Documents indexed | ${state.metrics.documentsInKb} |
+| Queries this week | ${state.metrics.queriesThisWeek} |
+| Departments green | ${state.metrics.departmentsOnTrack}/9 |
 
-1. **Strategic intelligence** — daily briefings, competitors, geopolitical alerts  
-2. **Meetings** — pre/post-meeting briefs, board packs, actions  
-3. **Regulatory & policy** — global regulation, drafting, benchmarking  
-4. **Correspondence** — speeches, Arabic/English, inbound summary  
-5. **Stakeholders** — CRM, commitments, partnerships  
-6. **Knowledge** — institutional search across ${state.metrics.documentsInKb}+ documents  
-
-What would you like to work on?`,
+**Follow-up**
+- Give me today’s executive briefing
+- Brief my next meeting`,
   };
 }
 

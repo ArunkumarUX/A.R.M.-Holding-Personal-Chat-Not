@@ -97,7 +97,7 @@ ${OPEN_ACTIONS(state)}
 **Knowledge base (cite document names when used):**
 ${DOC_LIST(state)}
 
-Structure: Who · Their likely agenda · Talking points · Watch-outs · Suggested ask. Decision-ready markdown only.`;
+Structure: Who · Their likely agenda · Talking points · Watch-outs · Suggested ask. Use > plain-terms blockquote, metric tables, and █ score bars. Max 150 words.`;
     },
   },
 

@@ -5,6 +5,14 @@ import { getDepartment } from './executiveStore';
 import type { FocusAreaId } from './focusAreas';
 import { FOCUS_AREA_MAP } from './focusAreas';
 import type { IntelligentResponse } from './executiveStore';
+import {
+  actionNow,
+  agentTag,
+  metricTable,
+  plainTerms,
+  scoreBar,
+  signalEmoji,
+} from '../utils/executiveAnswerVisuals';
 
 function baseFollowUps(area: FocusAreaId): string[] {
   return FOCUS_AREA_MAP[area].prompts.slice(1, 4);
@@ -31,15 +39,18 @@ export function buildFocusAreaResponse(
           confidence: 0.9,
           sourceDocIds: ['d4', 'd5'],
           followUps: baseFollowUps(areaId),
-          content: `## Competitor intelligence — DIFC vs ADGM (fintech)
+          content: `## DIFC vs ADGM — fintech
 
-| Signal | DIFC | ADGM |
-|--------|------|------|
-| **This week** | ${m.competitorNote} | Licence growth +12% YoY; FSRA pipeline strong |
-| **Positioning** | Sandbox-led retail fintech push | Institutional tokenised funds + VASP taxonomy |
-| **CSO read** | Proactive authorisation messaging recommended | Accelerate GP value prop with Abu Dhabi |
-
-*Strategy AI · refreshed today*`,
+${plainTerms('DIFC is pushing retail fintech sandboxes; ADGM should stress institutional funds and clear rules.')}
+${metricTable(
+  ['Signal', 'DIFC', 'ADGM'],
+  [
+    ['This week', m.competitorNote, 'Licences +12% YoY'],
+    ['Position', 'Retail sandbox', 'Institutional tokenised funds'],
+  ],
+)}
+${actionNow('Refresh competitor messaging for FSRA and authorisations this week.')}
+${agentTag(['Strategy AI'])}`,
         };
       }
       if (q.includes('geopolitical')) {
@@ -48,20 +59,19 @@ export function buildFocusAreaResponse(
           confidence: 0.91,
           sourceDocIds: ['d4'],
           followUps: baseFollowUps(areaId),
-          content: `## Geopolitical risk brief — Abu Dhabi financial sector
+          content: `## Geopolitical brief
 
-### Elevated watch
-- Cross-border sanctions screening updates — correspondent banking exposure
-- USD rate path — regional liquidity and sovereign allocation shifts
-
-### Stable / supportive
-- Middle East corridor stability supports capital inflows
-- GCC equities **${m.gccEquities}** overnight
-
-### ADGM action
-- Policy AI monitoring FSRA communications · No board escalation required today
-
-*Real-time alert channel · configure in Settings*`,
+${plainTerms('No board crisis today — watch US rates and sanctions screening for banks.')}
+${metricTable(
+  ['Topic', 'Status', 'Signal'],
+  [
+    ['Middle East corridor', 'Stable inflows', signalEmoji('good')],
+    ['GCC equities', m.gccEquities, signalEmoji('good')],
+    ['Sanctions screening', 'Rule updates', signalEmoji('watch')],
+    ['USD rates', 'Liquidity shift risk', signalEmoji('watch')],
+  ],
+)}
+${agentTag(['Strategy AI', 'Policy AI'])}`,
         };
       }
       return {
@@ -69,30 +79,28 @@ export function buildFocusAreaResponse(
         confidence: 0.92,
         sourceDocIds: ['d4', 'd5', 'd2'],
         followUps: baseFollowUps(areaId),
-        content: `## Daily executive briefing — Strategic Intelligence
+        content: `## Daily briefing — ${new Date().toLocaleDateString('en-AE', { weekday: 'short', day: 'numeric', month: 'short' })}
 
-**Prepared for:** ${EXECUTIVE_USER.title} · ${new Date().toLocaleDateString('en-AE', { weekday: 'long', day: 'numeric', month: 'long' })}
-
-### Global markets
-- GCC equities **${m.gccEquities}** · ADGM digital asset volumes **${m.digitalAssetsWoW}** WoW
-- Sovereign and VC flows favour climate tech and payments infrastructure
-
-### Competitor intelligence
-| Centre | Signal |
-|--------|--------|
-| **DIFC** | ${m.competitorNote} |
-| **Singapore (MAS)** | Stablecoin consultation closes Friday — policy response due 12 Jun |
-| **Hong Kong / Luxembourg** | No material change overnight |
-
-### Geopolitical watch
-- Middle East corridor stability supports capital inflows; monitor USD rate path for regional liquidity
-- **Alert:** Cross-border sanctions screening updates may affect correspondent banking — Policy AI monitoring
-
-### ADGM-specific
-- Licence growth narrative +12% YoY · FSRA authorisation pipeline strong
-- Top opportunity sector: **${m.topSector}**
-
-*Sources: Bloomberg/Refinitiv feeds, regulatory digest, ADGM knowledge base*`,
+${plainTerms('Markets are steady; watch DIFC fintech and MAS stablecoin rules this week.')}
+${metricTable(
+  ['Market', 'Move', 'Signal'],
+  [
+    ['GCC equities', m.gccEquities, signalEmoji('good')],
+    ['ADGM digital assets', m.digitalAssetsWoW + ' WoW', signalEmoji('good')],
+    ['Top sector', m.topSector.split('(')[0].trim(), signalEmoji('good')],
+  ],
+)}
+${metricTable(
+  ['Competitor', 'Headline', 'Signal'],
+  [
+    ['DIFC', m.competitorNote, signalEmoji('watch')],
+    ['MAS', 'Stablecoin consultation · Fri', signalEmoji('watch')],
+    ['HK / Luxembourg', 'No change', signalEmoji('good')],
+  ],
+)}
+**D33 alignment (demo)**
+${scoreBar(82)}
+${agentTag(['Strategy AI', 'Policy AI'])}`,
       };
     }
 
