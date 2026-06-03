@@ -7,6 +7,7 @@ import os from 'node:os';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { getAnthropicConfig, streamChat } from './chatCore.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -59,8 +60,6 @@ function getLanOrigin() {
   if (ip) return `http://${ip}:${VITE_PORT}`;
   return null;
 }
-const API_KEY = process.env.ANTHROPIC_API_KEY;
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514';
 const ACCESS_PIN = process.env.ADGM_ACCESS_PIN || '9898';
 const SESSION_TTL_MS = 15 * 60 * 1000;
 
@@ -103,61 +102,9 @@ function sendJson(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-function buildSystemPrompt(ctx, language) {
-  const ar = language === 'ar';
-  const docs = (ctx?.documents || [])
-    .slice(0, 12)
-    .map((d) => `- ${d.name}: ${d.summary || 'No summary'}`)
-    .join('\n');
-
-  const meetings = (ctx?.meetings || [])
-    .map(
-      (m) =>
-        `- ${m.title} · ${m.time} · ${m.attendees} · ${m.location} (prep: ${m.prepStatus})`,
-    )
-    .join('\n');
-
-  const actions = (ctx?.openActions || [])
-    .map((a) => `- [${a.status}] ${a.title} (due ${a.due}, ${a.owner})`)
-    .join('\n');
-
-  const market = ctx?.marketSnapshot;
-  const marketBlock = market
-    ? `Market snapshot: GCC ${market.gccEquities} · digital assets ${market.digitalAssetsWoW} · ${market.competitorNote} · top sector ${market.topSector}`
-    : '';
-
-  const isBriefing = Boolean(ctx?.briefingFormat);
-  const formatLabel = ctx?.briefingFormat || 'executive briefing';
-
-  return `You are the Personal AI Agent for ${ctx?.executiveName || 'Rajiv Sehgal'}, Chief Strategy Officer at Abu Dhabi Global Market (ADGM).
-
-You coordinate five specialist perspectives: Policy, Strategy, Chief of Staff, Relationship, and Communications. Synthesise one executive-grade answer.
-
-${isBriefing ? `You are generating a **${formatLabel}** briefing document (not a casual chat). Use the calendar, action register, and knowledge base below. Structure for scanning in under 2 minutes. Do not end with generic "how can I help" prompts.` : ''}
-
-Rules:
-- ${ar ? 'Respond in Modern Standard Arabic unless the user writes in English.' : 'Respond in clear executive English unless the user writes in Arabic.'}
-- Use markdown: headings, bullets, tables when helpful.
-- Be specific to ADGM, Abu Dhabi, and D33 where relevant.
-- If you lack live data, say what you are inferring; do not invent confidential figures.
-${isBriefing ? '- Output only the briefing body.' : '- End with 2–3 short follow-up prompts the executive might ask next.'}
-
-Calendar (Microsoft Graph demo):
-${meetings || '(no meetings listed)'}
-
-Open action register:
-${actions || '(none)'}
-
-${marketBlock}
-
-Knowledge base documents (cite by name when used):
-${docs || '(none listed)'}
-
-Live demo metrics: queries this week ${ctx?.metrics?.queriesThisWeek ?? '—'}, documents in KB ${ctx?.metrics?.documentsInKb ?? '—'}.`;
-}
-
 async function handleChat(req, res) {
-  if (!API_KEY) {
+  const { apiKey } = getAnthropicConfig();
+  if (!apiKey) {
     sendJson(res, 503, { error: 'ANTHROPIC_API_KEY not set. Add it to .env.local' });
     return;
   }
@@ -172,44 +119,6 @@ async function handleChat(req, res) {
     return;
   }
 
-  const { message, language = 'en', history = [], context = {} } = payload;
-  if (!message?.trim()) {
-    sendJson(res, 400, { error: 'message is required' });
-    return;
-  }
-
-  const messages = [
-    ...history
-      .filter((m) => m?.role && m?.content)
-      .map((m) => ({
-        role: m.role === 'assistant' || m.role === 'ai' ? 'assistant' : 'user',
-        content: String(m.content),
-      })),
-    { role: 'user', content: message.trim() },
-  ];
-
-  const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 4096,
-      stream: true,
-      system: buildSystemPrompt(context, language),
-      messages,
-    }),
-  });
-
-  if (!anthropicRes.ok) {
-    const errText = await anthropicRes.text();
-    sendJson(res, anthropicRes.status, { error: errText || anthropicRes.statusText });
-    return;
-  }
-
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -217,41 +126,12 @@ async function handleChat(req, res) {
     'Access-Control-Allow-Origin': '*',
   });
 
-  const reader = anthropicRes.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = '';
-
   const writeEvent = (obj) => {
     res.write(`data: ${JSON.stringify(obj)}\n\n`);
   };
 
   try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        const raw = line.slice(6).trim();
-        if (raw === '[DONE]') continue;
-        let evt;
-        try {
-          evt = JSON.parse(raw);
-        } catch {
-          continue;
-        }
-        if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
-          writeEvent({ type: 'token', text: evt.delta.text });
-        }
-        if (evt.type === 'message_stop') {
-          writeEvent({ type: 'done', model: MODEL });
-        }
-      }
-    }
-    writeEvent({ type: 'done', model: MODEL });
+    await streamChat(payload, writeEvent);
   } catch (err) {
     writeEvent({ type: 'error', message: err?.message || 'Stream failed' });
   } finally {
@@ -273,7 +153,8 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || '/', `http://localhost:${PORT}`);
 
   if (req.method === 'GET' && url.pathname === '/api/health') {
-    sendJson(res, 200, { ok: true, claude: Boolean(API_KEY), model: MODEL });
+    const { apiKey, model } = getAnthropicConfig();
+    sendJson(res, 200, { ok: true, claude: Boolean(apiKey), model });
     return;
   }
 
@@ -363,5 +244,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`[api] http://localhost:${PORT}  claude=${API_KEY ? 'on' : 'off (set ANTHROPIC_API_KEY in .env.local)'}`);
+  const { apiKey } = getAnthropicConfig();
+  console.log(`[api] http://localhost:${PORT}  claude=${apiKey ? 'on' : 'off (set ANTHROPIC_API_KEY in .env.local)'}`);
 });

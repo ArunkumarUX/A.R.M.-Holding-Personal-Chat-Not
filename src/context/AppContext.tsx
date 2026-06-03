@@ -20,6 +20,10 @@ import {
 import { FOCUS_AREA_MAP, resolveFocusAreaForQuery } from '../data/focusAreas';
 import { EXECUTIVE_USER } from '../config/user';
 import { guessKbCategory } from '../command-centre/kbCorpus';
+import { buildChatContext, buildChatHistoryFromMessages } from '../api/buildChatContext';
+import { checkClaudeAvailable, streamClaudeChat } from '../api/claudeChat';
+
+const USE_CLAUDE = import.meta.env.VITE_USE_CLAUDE_API !== 'false';
 import type {
   AgentType,
   ChatMessage,
@@ -55,6 +59,17 @@ interface AppContextValue {
   createConversation: (title?: string, category?: string) => string;
   selectConversation: (id: string) => void;
   sendMessage: (content: string) => void;
+  recordChatTurn: (
+    userContent: string,
+    assistant: {
+      content: string;
+      agents?: AgentType[];
+      confidence?: number;
+      sources?: Source[];
+      followUps?: string[];
+    },
+    conversationId?: string | null,
+  ) => void;
   stopStreaming: () => void;
   regenerateLast: () => void;
   setInputDraft: (text: string) => void;
@@ -196,8 +211,102 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setMobileDrawerOpen(false);
   }, []);
 
+  const appendAssistantFromIntel = useCallback(
+    (convId: string, content: string, state: ExecutiveState) => {
+      const intel = buildIntelligentResponse(content, state);
+      const sources = getSourcesForQuery(state, intel.sourceDocIds);
+      setActiveSources(sources);
+      const msg: ChatMessage = {
+        id: `m-${++msgCounter}`,
+        role: 'assistant',
+        content: intel.content,
+        timestamp: new Date().toISOString(),
+        agents: intel.agents,
+        confidence: intel.confidence,
+        sources,
+        followUps: intel.followUps,
+      };
+      persistExecutive((current) => ({
+        ...current,
+        conversations: current.conversations.map((c) =>
+          c.id === convId
+            ? {
+                ...c,
+                messages: [...c.messages, msg],
+                preview: intel.content.slice(0, 80),
+                updatedAt: new Date().toISOString(),
+              }
+            : c,
+        ),
+      }));
+    },
+    [persistExecutive],
+  );
+
+  const recordChatTurn = useCallback(
+    (
+      userContent: string,
+      assistant: {
+        content: string;
+        agents?: AgentType[];
+        confidence?: number;
+        sources?: Source[];
+        followUps?: string[];
+      },
+      conversationId?: string | null,
+    ) => {
+      const trimmed = userContent.trim();
+      if (!trimmed || !assistant.content.trim()) return;
+      let convId = conversationId ?? activeConversationId;
+      const focusId = resolveFocusAreaForQuery(trimmed);
+      const focusCategory = focusId ? FOCUS_AREA_MAP[focusId].shortTitle : undefined;
+      if (!convId) {
+        convId = createConversation(trimmed.slice(0, 48), focusCategory ?? 'General');
+      }
+      const userMsg: ChatMessage = {
+        id: `m-${++msgCounter}`,
+        role: 'user',
+        content: trimmed,
+        timestamp: new Date().toISOString(),
+      };
+      const aiMsg: ChatMessage = {
+        id: `m-${++msgCounter}`,
+        role: 'assistant',
+        content: assistant.content.trim(),
+        timestamp: new Date().toISOString(),
+        agents: assistant.agents,
+        confidence: assistant.confidence,
+        sources: assistant.sources,
+        followUps: assistant.followUps,
+      };
+      if (assistant.sources?.length) setActiveSources(assistant.sources);
+      persistExecutive((s) => {
+        const bumped = bumpQueryMetrics(s);
+        return {
+          ...bumped,
+          conversations: bumped.conversations.map((c) =>
+            c.id === convId
+              ? {
+                  ...c,
+                  title: c.messages.length === 0 ? trimmed.slice(0, 48) : c.title,
+                  category:
+                    focusCategory && (c.category === 'General' || c.messages.length === 0)
+                      ? focusCategory
+                      : c.category,
+                  preview: assistant.content.slice(0, 80),
+                  updatedAt: new Date().toISOString(),
+                  messages: [...c.messages, userMsg, aiMsg],
+                }
+              : c,
+          ),
+        };
+      });
+    },
+    [activeConversationId, createConversation, persistExecutive],
+  );
+
   const sendMessage = useCallback(
-    (content: string) => {
+    async (content: string) => {
       if (!content.trim() || isStreaming) return;
       let convId = activeConversationId;
       const focusId = resolveFocusAreaForQuery(content);
@@ -237,42 +346,122 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIsStreaming(true);
       streamingRef.cancelled = false;
 
-      setTimeout(() => {
-        if (streamingRef.cancelled) {
-          setIsStreaming(false);
-          return;
-        }
-        persistExecutive((current) => {
-          const intel = buildIntelligentResponse(content, current);
-          const sources = getSourcesForQuery(current, intel.sourceDocIds);
-          setActiveSources(sources);
-          const msg: ChatMessage = {
-            id: `m-${++msgCounter}`,
-            role: 'assistant',
-            content: intel.content,
-            timestamp: new Date().toISOString(),
-            agents: intel.agents,
-            confidence: intel.confidence,
-            sources,
-            followUps: intel.followUps,
-          };
-          return {
-            ...current,
-            conversations: current.conversations.map((c) =>
+      const conv = conversations.find((c) => c.id === convId);
+      const history = buildChatHistoryFromMessages(conv?.messages ?? []);
+      const lang = settings.language === 'ar' ? 'ar' : 'en';
+
+      if (USE_CLAUDE) {
+        try {
+          const live = await checkClaudeAvailable();
+          if (live && !streamingRef.cancelled) {
+            let streamed = '';
+            const placeholderId = `m-${++msgCounter}`;
+            persistExecutive((s) => ({
+              ...s,
+              conversations: s.conversations.map((c) =>
+                c.id === convId
+                  ? {
+                      ...c,
+                      messages: [
+                        ...c.messages,
+                        {
+                          id: placeholderId,
+                          role: 'assistant',
+                          content: '',
+                          timestamp: new Date().toISOString(),
+                        },
+                      ],
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : c,
+              ),
+            }));
+
+            await streamClaudeChat({
+              message: content.trim(),
+              language: lang,
+              history,
+              context: buildChatContext(executiveState),
+              onToken: (chunk) => {
+                if (streamingRef.cancelled) return;
+                streamed += chunk;
+                persistExecutive((s) => ({
+                  ...s,
+                  conversations: s.conversations.map((c) =>
+                    c.id === convId
+                      ? {
+                          ...c,
+                          messages: c.messages.map((m) =>
+                            m.id === placeholderId ? { ...m, content: streamed } : m,
+                          ),
+                          preview: streamed.slice(0, 80),
+                        }
+                      : c,
+                  ),
+                }));
+              },
+            });
+
+            if (!streamingRef.cancelled && streamed.trim()) {
+              const intel = buildIntelligentResponse(content, executiveState);
+              const sources = getSourcesForQuery(executiveState, intel.sourceDocIds);
+              setActiveSources(sources);
+              persistExecutive((s) => ({
+                ...s,
+                conversations: s.conversations.map((c) =>
+                  c.id === convId
+                    ? {
+                        ...c,
+                        messages: c.messages.map((m) =>
+                          m.id === placeholderId
+                            ? {
+                                ...m,
+                                content: streamed,
+                                agents: intel.agents,
+                                confidence: intel.confidence,
+                                sources,
+                                followUps: intel.followUps,
+                              }
+                            : m,
+                        ),
+                      }
+                    : c,
+                ),
+              }));
+              setIsStreaming(false);
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn('[chat] Claude failed, using demo response', err);
+          persistExecutive((s) => ({
+            ...s,
+            conversations: s.conversations.map((c) =>
               c.id === convId
-                ? {
-                    ...c,
-                    messages: [...c.messages, msg],
-                    updatedAt: new Date().toISOString(),
-                  }
+                ? { ...c, messages: c.messages.filter((m) => m.role !== 'assistant' || m.content) }
                 : c,
             ),
-          };
-        });
+          }));
+        }
+      }
+
+      if (streamingRef.cancelled) {
         setIsStreaming(false);
-      }, 1600);
+        return;
+      }
+      appendAssistantFromIntel(convId, content, executiveState);
+      setIsStreaming(false);
     },
-    [activeConversationId, createConversation, isStreaming, persistExecutive],
+    [
+      activeConversationId,
+      appendAssistantFromIntel,
+      conversations,
+      createConversation,
+      executiveState,
+      isStreaming,
+      persistExecutive,
+      settings.language,
+    ],
   );
 
   const stopStreaming = useCallback(() => {
@@ -615,6 +804,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     createConversation,
     selectConversation,
     sendMessage,
+    recordChatTurn,
     stopStreaming,
     regenerateLast,
     setInputDraft,

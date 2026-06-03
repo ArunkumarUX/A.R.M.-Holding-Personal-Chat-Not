@@ -1,4 +1,5 @@
 import { getStore } from '@netlify/blobs';
+import { createChatHttpResponse, getAnthropicConfig } from '../../server/chatCore.mjs';
 
 const SESSION_TTL_MS = 15 * 60 * 1000;
 const ACCESS_PIN = process.env.ADGM_ACCESS_PIN || '9898';
@@ -46,7 +47,12 @@ export default async (request) => {
   const path = url.pathname;
 
   if (request.method === 'GET' && path === '/api/health') {
-    return json({ ok: true, auth: true });
+    const { apiKey, model } = getAnthropicConfig();
+    return json({ ok: true, auth: true, claude: Boolean(apiKey), model });
+  }
+
+  if (request.method === 'POST' && path === '/api/chat') {
+    return createChatHttpResponse(request);
   }
 
   if (request.method === 'GET' && path === '/api/dev/public-origin') {
@@ -115,10 +121,6 @@ export default async (request) => {
     const entry = await store.get(`token:${token}`, { type: 'json' });
     const ok = Boolean(entry?.valid && Date.now() - entry.createdAt < SESSION_TTL_MS);
     return json({ ok });
-  }
-
-  if (request.method === 'POST' && path === '/api/chat') {
-    return json({ error: 'Chat API not configured on Netlify. Use npm run dev locally.' }, 503);
   }
 
   return json({ error: 'Not found' }, 404);

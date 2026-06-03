@@ -52,7 +52,7 @@ export function CommandCentreChatPage() {
   const {
     settings,
     executiveState,
-    sendMessage,
+    recordChatTurn,
     createConversation,
     activeConversationId,
     copyMessage,
@@ -103,7 +103,10 @@ export function CommandCentreChatPage() {
       };
 
       if (USE_CLAUDE) {
-        try {
+        const live = claudeLive || (await checkClaudeAvailable());
+        if (live) {
+          setClaudeLive(true);
+          try {
           const anim = runAgentAnimation(aid, agents);
           let streamed = '';
           const history = buildChatHistory(
@@ -137,6 +140,10 @@ export function CommandCentreChatPage() {
             }),
           ]);
 
+          if (!streamed.trim()) {
+            throw new Error('Empty response from Claude');
+          }
+
           setMsgs((m) =>
             m.map((x) =>
               x.id === aid && x.role === 'ai'
@@ -153,8 +160,26 @@ export function CommandCentreChatPage() {
             ),
           );
           return;
-        } catch (err) {
-          console.warn('[chat] Claude failed, using demo response', err);
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'AI request failed';
+            console.warn('[chat] Claude failed', err);
+            setMsgs((m) =>
+              m.map((x) =>
+                x.id === aid && x.role === 'ai'
+                  ? {
+                      ...x,
+                      text: ar
+                        ? `تعذر الاتصال بـ Claude: ${msg}`
+                        : `Could not reach Claude: ${msg}. Check ANTHROPIC_API_KEY and restart npm run dev.`,
+                      agents: meta.agents,
+                      activeAgent: null,
+                      thinking: false,
+                    }
+                  : x,
+              ),
+            );
+            return;
+          }
         }
       }
 
@@ -176,7 +201,7 @@ export function CommandCentreChatPage() {
         ),
       );
     },
-    [executiveState, runAgentAnimation, ar],
+    [executiveState, runAgentAnimation, ar, claudeLive],
   );
 
   const send = useCallback(
@@ -198,10 +223,23 @@ export function CommandCentreChatPage() {
       await fillAiMessage(aid, q, agents);
       setBusy(false);
 
-      if (!activeConversationId) createConversation(q.slice(0, 40));
-      sendMessage(q);
+      const aiRow = msgsRef.current.find((m) => m.id === aid && m.role === 'ai');
+      if (aiRow && aiRow.role === 'ai' && aiRow.text.trim()) {
+        let convId = activeConversationId;
+        if (!convId) convId = createConversation(q.slice(0, 40));
+        recordChatTurn(
+          q,
+          {
+            content: aiRow.text,
+            agents: aiRow.agents,
+            confidence: aiRow.confidence,
+            sources: aiRow.sources,
+          },
+          convId,
+        );
+      }
     },
-    [busy, activeConversationId, createConversation, sendMessage, fillAiMessage],
+    [busy, activeConversationId, createConversation, recordChatTurn, fillAiMessage],
   );
 
   const retryAiMessage = useCallback(
@@ -364,11 +402,11 @@ export function CommandCentreChatPage() {
         <p className="chat-composer__note">
           {claudeLive
             ? ar
-              ? 'مدعوم بـ Claude — المفتاح على الخادم المحلي فقط.'
-              : 'Powered by Claude — API key stays on the local server only.'
+              ? 'مدعوم بـ Claude — إجابات حية من نموذج Anthropic.'
+              : 'Powered by Claude — live answers from Anthropic.'
             : ar
-              ? 'وضع تجريبي — أضف ANTHROPIC_API_KEY في .env.local ثم npm run dev'
-              : 'Demo mode — add ANTHROPIC_API_KEY to .env.local and run npm run dev for live Claude answers.'}
+              ? 'وضع تجريبي — أضف ANTHROPIC_API_KEY في .env.local ثم npm run dev (أو في Netlify → Environment variables).'
+              : 'Demo mode — set ANTHROPIC_API_KEY in .env.local + npm run dev, or Netlify env vars for production.'}
         </p>
       </footer>
     </div>

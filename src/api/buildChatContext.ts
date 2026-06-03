@@ -1,5 +1,6 @@
 import { EXECUTIVE_USER } from '../config/user';
 import type { ExecutiveState } from '../data/executiveStore';
+import type { ChatMessage } from '../types';
 
 export function buildChatContext(state: ExecutiveState) {
   return {
@@ -15,6 +16,22 @@ export function buildChatContext(state: ExecutiveState) {
       documentsInKb: state.metrics.documentsInKb,
       avgConfidence: state.metrics.avgConfidence,
     },
+    meetings: state.meetings.map((m) => ({
+      title: m.title,
+      time: m.time,
+      attendees: m.attendees,
+      location: m.location,
+      prepStatus: m.prepStatus,
+    })),
+    openActions: state.actionRegister
+      .filter((a) => a.status !== 'done')
+      .map((a) => ({
+        title: a.title,
+        due: a.due,
+        status: a.status,
+        owner: a.owner,
+      })),
+    marketSnapshot: state.marketSnapshot,
   };
 }
 
@@ -30,6 +47,16 @@ export function buildChatHistory(
     .map((m) => ({
       role: (m.role === 'user' ? 'user' : 'assistant') as ChatHistoryItem['role'],
       content: m.text,
+    }))
+    .slice(-12);
+}
+
+export function buildChatHistoryFromMessages(messages: ChatMessage[]): ChatHistoryItem[] {
+  return messages
+    .filter((m) => m.content?.trim())
+    .map((m) => ({
+      role: (m.role === 'user' ? 'user' : 'assistant') as ChatHistoryItem['role'],
+      content: m.content,
     }))
     .slice(-12);
 }

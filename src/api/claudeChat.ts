@@ -58,7 +58,11 @@ export async function streamClaudeChat({
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `Chat API error ${res.status}`);
+    const detail =
+      typeof err.error === 'string'
+        ? err.error
+        : err.error?.message || err.message || `Chat API error ${res.status}`;
+    throw new Error(detail);
   }
 
   if (!res.body) throw new Error('No response body');
