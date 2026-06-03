@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.9",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "qrcode.react": "^4.2.0",

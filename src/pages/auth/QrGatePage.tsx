@@ -37,7 +37,7 @@ export function QrGatePage() {
       setSessionId(id);
     } catch {
       setError(
-        'Could not start secure session. In the project folder run: npm run dev (starts UI + API). Then refresh this page.',
+        'Could not start secure session. Check your connection and refresh. For local dev, run: npm run dev',
       );
       setSessionId(null);
     } finally {
@@ -118,13 +118,22 @@ export function QrGatePage() {
             <QRCodeSVG value={verifyUrl} size={220} level="M" includeMargin className="auth-gate__qr" />
           ) : (
             <div className="auth-gate__qr-placeholder">
-              {booting ? <Loader2 className="auth-gate__spinner" aria-hidden /> : null}
+              {booting && !error ? (
+                <>
+                  <Loader2 className="auth-gate__spinner" aria-hidden />
+                  <p className="auth-gate__hint" style={{ marginTop: 12 }}>
+                    Generating secure QR…
+                  </p>
+                </>
+              ) : null}
             </div>
           )}
         </div>
 
         <p className="auth-gate__instruction">
-          Scan this QR code with your phone (same Wi‑Fi as this computer), then enter your 4-digit PIN.
+          {qrUsesLocalhost
+            ? 'Scan this QR code with your phone (same Wi‑Fi as this computer), then enter your 4-digit PIN.'
+            : 'Scan this QR code with your phone, then enter your 4-digit PIN.'}
         </p>
 
         {qrUsesLocalhost && (
@@ -133,16 +142,16 @@ export function QrGatePage() {
           </p>
         )}
 
-        {import.meta.env.DEV && (
-          <p className="auth-gate__dev-pin" aria-label="Development PIN hint">
-            Demo PIN: <strong>9898</strong>
+        <p className="auth-gate__dev-pin" aria-label="Demo PIN hint">
+          Demo PIN: <strong>9898</strong>
+        </p>
+
+        {sessionId && verifyUrl && (
+          <p className="auth-gate__waiting">
+            <Loader2 className="auth-gate__spinner auth-gate__spinner--inline" aria-hidden />
+            Waiting for verification on your phone…
           </p>
         )}
-
-        <p className="auth-gate__waiting">
-          <Loader2 className="auth-gate__spinner auth-gate__spinner--inline" aria-hidden />
-          Waiting for verification on your phone…
-        </p>
 
         {sessionId && (
           <p className="auth-gate__fallback">
