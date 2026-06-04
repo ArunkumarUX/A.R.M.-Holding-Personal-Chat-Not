@@ -3,6 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
+import { BUILD_FEATURES } from '../../config/features';
 import { clearStoredAuth, restartProductTour } from '../../auth/authStorage';
 import { CHAT_PATH } from '../../config/auth';
 import { AGENTS } from '../../data/commandCentreData';
@@ -54,6 +55,8 @@ const COPY = {
     lastSync: 'Last sync',
     refreshData: 'Refresh data now',
     refreshing: 'Refreshing…',
+    buildInfo: 'Build',
+    buildHidden: 'Hidden on live: Create PPT, Architecture',
     langAr: 'Arabic (RTL)',
     langBi: 'Bilingual',
   },
@@ -100,6 +103,8 @@ const COPY = {
     lastSync: 'آخر مزامنة',
     refreshData: 'تحديث البيانات الآن',
     refreshing: 'جاري التحديث…',
+    buildInfo: 'الإصدار',
+    buildHidden: 'مخفي على الموقع المباشر: إنشاء عرض، البنية',
     langEn: 'English',
     langAr: 'العربية (RTL)',
     langBi: 'ثنائي اللغة',
@@ -268,6 +273,11 @@ export function SettingsView() {
             <CcIcon name="refresh-cw" size={16} className={isRefreshingData ? 'spin' : ''} />
             {isRefreshingData ? t.refreshing : t.refreshData}
           </button>
+          <p className="muted-3 settings-build-foot" style={{ margin: '14px 0 0', fontSize: 12 }}>
+            {t.buildInfo}: {BUILD_FEATURES.production ? (ar ? 'إنتاج' : 'Production') : (ar ? 'تطوير' : 'Development')}
+            {' · '}
+            {t.buildHidden}
+          </p>
         </IntelCardBody>
       </IntelCard>
 

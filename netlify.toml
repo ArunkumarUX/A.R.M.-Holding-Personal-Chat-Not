@@ -2,7 +2,7 @@
   command = "npm run build"
   publish = "dist"
 
-# Production: keep Create PPT and Architecture hidden (code ships; flags opt-in only)
+# Optional overrides (production builds ignore these — see src/config/features.ts)
 [build.environment]
   VITE_ENABLE_PPT_MASTER = "false"
   VITE_ENABLE_ARCHITECTURE = "false"
