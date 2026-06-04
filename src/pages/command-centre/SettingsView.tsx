@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // @ts-nocheck
 import { useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { BUILD_FEATURES } from '../../config/features';
 import { clearStoredAuth, restartProductTour } from '../../auth/authStorage';
@@ -188,6 +188,15 @@ export function SettingsView() {
   const ar = settings.language === 'ar';
   const t = ar ? COPY.ar : COPY.en;
 
+  const [deploySha, setDeploySha] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/build-info.json', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setDeploySha(j?.gitSha ?? null))
+      .catch(() => setDeploySha(null));
+  }, []);
+
   const lastSyncLabel = useMemo(() => {
     try {
       return new Date(executiveState.lastSync).toLocaleString(ar ? 'ar-AE' : 'en-GB', {
@@ -275,6 +284,7 @@ export function SettingsView() {
           </button>
           <p className="muted-3 settings-build-foot" style={{ margin: '14px 0 0', fontSize: 12 }}>
             {t.buildInfo}: {BUILD_FEATURES.production ? (ar ? 'إنتاج' : 'Production') : (ar ? 'تطوير' : 'Development')}
+            {deploySha ? ` · deploy ${deploySha}` : ''}
             {' · '}
             {t.buildHidden}
           </p>
