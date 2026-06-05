@@ -71,11 +71,17 @@ export async function streamClaudeChat({
   onToken: (text: string) => void;
   signal?: AbortSignal;
 }): Promise<void> {
+  const timeoutSignal = AbortSignal.timeout(120_000);
+  const combined =
+    signal && typeof AbortSignal.any === 'function'
+      ? AbortSignal.any([signal, timeoutSignal])
+      : timeoutSignal;
+
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, language, history, context }),
-    signal,
+    signal: signal ? combined : timeoutSignal,
   });
 
   if (!res.ok) {

@@ -79,6 +79,7 @@ export function RingGauge({
   stroke = 6,
   color = 'var(--accent-bright)',
   label,
+  ariaLabel,
 }: {
   value: number;
   max?: number;
@@ -86,13 +87,21 @@ export function RingGauge({
   stroke?: number;
   color?: string;
   label?: string;
+  ariaLabel?: string;
 }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.min(value / max, 1);
   const offset = c * (1 - pct);
+  const showLabel = Boolean(label) && size >= 72;
+  const valueSize = showLabel ? size * 0.26 : size * 0.32;
   return (
-    <div style={{ position: 'relative', width: size, height: size }}>
+    <div
+      className="ring-gauge"
+      style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}
+      role="img"
+      aria-label={ariaLabel ?? (label ? `${value} ${label}` : `${value}`)}
+    >
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }} aria-hidden>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--line)" strokeWidth={stroke} />
         <circle
@@ -116,21 +125,12 @@ export function RingGauge({
           textAlign: 'center',
         }}
       >
-        <div>
-          <div className="kpi-num" style={{ fontSize: size * 0.26, fontWeight: 600 }}>
+        <div className="ring-gauge__inner">
+          <div className="kpi-num ring-gauge__value" style={{ fontSize: valueSize, fontWeight: 600 }}>
             {value}
           </div>
-          {label && (
-            <div
-              style={{
-                fontSize: 9,
-                color: 'var(--ink-3)',
-                letterSpacing: '.08em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {label}
-            </div>
+          {showLabel && (
+            <div className="ring-gauge__label">{label}</div>
           )}
         </div>
       </div>

@@ -3,16 +3,21 @@ export const EXECUTIVE_USER = {
   firstName: 'Rajiv',
   fullName: 'Rajiv Sehgal',
   initials: 'RS',
+  /** Sidebar profile — Abu Dhabi skyline */
+  profileImage: '/images/executive-profile.png',
   title: 'Chief Strategy Officer',
   organisation: 'Abu Dhabi Global Market (ADGM)',
   orgShort: 'ADGM',
   email: 'rajiv.sehgal@adgm.com',
+  /** Demo mobile for login (UAE format) */
+  mobile: '+971 50 123 4567',
+  mobileE164: '971501234567',
   role: 'cso' as const,
 };
 
-/** Product naming — Personal AI for Rajiv Sehgal */
-export const PRODUCT_NAME = 'Personal AI for Rajiv Sehgal';
-export const PRODUCT_NAME_AR = 'الذكاء الشخصي لراجيف سيهغال';
+/** Product naming — browser title & auth chrome */
+export const PRODUCT_NAME = 'Personal AI chat - ADGM';
+export const PRODUCT_NAME_AR = 'محادثة الذكاء الشخصي - ADGM';
 export const PRODUCT_AGENT_NAME = 'Personal AI Agent';
 export const PRODUCT_AGENT_NAME_AR = 'وكيل الذكاء الشخصي';
 /** @deprecated Use PRODUCT_AGENT_NAME in product UI */
@@ -32,9 +37,4 @@ export const CSO_DAILY_CAPABILITIES = [
   'Review opportunities, risks and performance signals in one place',
 ] as const;
 
-export function greetingForTime(date = new Date()): string {
-  const hour = date.getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
-}
+export { greetingForGstTime as greetingForTime } from '../utils/gstGreeting';

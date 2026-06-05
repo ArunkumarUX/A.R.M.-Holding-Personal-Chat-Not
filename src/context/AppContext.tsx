@@ -2,10 +2,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
+import { dataCycleForGstTime } from '../config/dataRefreshSchedule';
+import {
+  formatRefreshSlotToast,
+  useScheduledExecutiveRefresh,
+  type ExecutiveRefreshOptions,
+} from '../hooks/useScheduledExecutiveRefresh';
 import { fetchExecutiveSnapshotPatch } from '../api/executiveSnapshot';
 import {
   applyExecutiveSnapshotPatch,
@@ -21,6 +29,7 @@ import {
   type ExecutiveState,
 } from '../data/executiveStore';
 import { FOCUS_AREA_MAP, resolveFocusAreaForQuery } from '../data/focusAreas';
+import type { KbCompanyId } from '../config/kbCompanies';
 import { EXECUTIVE_USER } from '../config/user';
 import { guessKbCategory } from '../command-centre/kbCorpus';
 import { buildChatHistoryFromMessages } from '../api/buildChatContext';
@@ -70,10 +79,21 @@ interface AppContextValue {
       content: string;
       agents?: AgentType[];
       confidence?: number;
+      grounding?: import('../types').GroundingLevel;
       sources?: Source[];
       followUps?: string[];
     },
     conversationId?: string | null,
+  ) => void;
+  patchAssistantReply: (
+    conversationId: string,
+    assistant: {
+      content: string;
+      agents?: AgentType[];
+      confidence?: number;
+      grounding?: import('../types').GroundingLevel;
+      sources?: Source[];
+    },
   ) => void;
   stopStreaming: () => void;
   regenerateLast: () => void;
@@ -89,7 +109,12 @@ interface AppContextValue {
   saveSettings: () => void;
   uploadDocument: (
     name: string,
-    options?: { knowledgeBase?: boolean; category?: string; documentDate?: string },
+    options?: {
+      knowledgeBase?: boolean;
+      category?: string;
+      documentDate?: string;
+      companyId?: KbCompanyId;
+    },
   ) => string;
   removeDocument: (id: string) => void;
   removeKnowledgeBaseDocument: (id: string) => void;
@@ -111,7 +136,7 @@ interface AppContextValue {
   toggleAgent: (id: AgentType) => void;
   setAutoRouteAgents: (on: boolean) => void;
   recordBriefingGenerated: () => void;
-  refreshExecutiveData: () => Promise<void>;
+  refreshExecutiveData: (options?: ExecutiveRefreshOptions) => Promise<void>;
   isRefreshingData: boolean;
 }
 
@@ -217,6 +242,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const selectConversation = useCallback((id: string) => {
     setActiveConversationId(id);
     setMobileDrawerOpen(false);
+    setSourcesPanelOpen(false);
   }, []);
 
   const startNewChat = useCallback(() => {
@@ -268,6 +294,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         content: string;
         agents?: AgentType[];
         confidence?: number;
+        grounding?: import('../types').GroundingLevel;
         sources?: Source[];
         followUps?: string[];
       },
@@ -294,6 +321,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         timestamp: new Date().toISOString(),
         agents: assistant.agents,
         confidence: assistant.confidence,
+        grounding: assistant.grounding,
         sources: assistant.sources,
         followUps: assistant.followUps,
       };
@@ -321,6 +349,48 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
     },
     [activeConversationId, createConversation, persistExecutive],
+  );
+
+  const patchAssistantReply = useCallback(
+    (
+      convId: string,
+      assistant: {
+        content: string;
+        agents?: AgentType[];
+        confidence?: number;
+        grounding?: import('../types').GroundingLevel;
+        sources?: Source[];
+      },
+    ) => {
+      const text = assistant.content.trim();
+      if (!text) return;
+      if (assistant.sources?.length) setActiveSources(assistant.sources);
+      persistExecutive((s) => ({
+        ...s,
+        conversations: s.conversations.map((c) => {
+          if (c.id !== convId) return c;
+          const msgs = [...c.messages];
+          const lastIdx = msgs.map((m) => m.role).lastIndexOf('assistant');
+          if (lastIdx < 0) return c;
+          msgs[lastIdx] = {
+            ...msgs[lastIdx],
+            content: text,
+            timestamp: new Date().toISOString(),
+            agents: assistant.agents ?? msgs[lastIdx].agents,
+            confidence: assistant.confidence,
+            grounding: assistant.grounding,
+            sources: assistant.sources,
+          };
+          return {
+            ...c,
+            messages: msgs,
+            preview: text.slice(0, 80),
+            updatedAt: new Date().toISOString(),
+          };
+        }),
+      }));
+    },
+    [persistExecutive],
   );
 
   const sendMessage = useCallback(
@@ -507,7 +577,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         autoRoute: autoRouteAgents,
       });
       const intel = buildIntelligentResponse(lastUser.content, executiveState);
-      const answer = intel.content + '\n\n*Regenerated from live store*';
+      const answer = intel.content + '\n\n*Regenerated from institutional records*';
       const grounded = resolveAnswerGrounding(answer, executiveState, intel.sourceDocIds);
       persistExecutive((s) => ({
         ...s,
@@ -531,7 +601,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }));
       setActiveSources(grounded.sources);
       setIsStreaming(false);
-      showToast('Answer regenerated from live data');
+      showToast('Answer regenerated from institutional data');
     }, 1200);
   }, [activeConversationId, autoRouteAgents, conversations, executiveState, persistExecutive, selectedAgents, showToast]);
 
@@ -635,7 +705,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const uploadDocument = useCallback(
     (
       name: string,
-      options?: { knowledgeBase?: boolean; category?: string; documentDate?: string },
+      options?: {
+        knowledgeBase?: boolean;
+        category?: string;
+        documentDate?: string;
+        companyId?: KbCompanyId;
+      },
     ): string => {
       const forKb = options?.knowledgeBase ?? false;
       const ext = name.split('.').pop()?.toLowerCase() ?? '';
@@ -657,6 +732,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         inKnowledgeBase: forKb,
         kbCategory,
         kbDocumentDate: forKb ? kbDocumentDate : undefined,
+        kbCompanyId: forKb ? options?.companyId : undefined,
         focusAreaIds: forKb ? ['knowledge'] : undefined,
       };
 
@@ -692,6 +768,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                     summary:
                       'Ready in knowledge base · RAG indexing and source citations enabled.',
                     keyInsights: [
+                      `Company: ${options?.companyId ?? '—'}`,
                       `Tagged under ${kbCategory ?? 'general'}`,
                       'Available to Chat and knowledge search with citations',
                     ],
@@ -720,7 +797,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                   ...d,
                   status: 'ready' as const,
                   summary:
-                    'Ingested into knowledge base · RAG + Knowledge Graph indexing complete (demo: 15 min SLA).',
+                    'Ingested into knowledge base · RAG + Knowledge Graph indexing complete.',
                   keyInsights: [
                     'Cross-linked with FSRA Virtual Assets Framework',
                     'Available to Policy and Strategy agents immediately',
@@ -811,28 +888,57 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }));
   }, [persistExecutive]);
 
-  const refreshExecutiveData = useCallback(async () => {
-    setIsRefreshingData(true);
-    try {
-      const patch = await fetchExecutiveSnapshotPatch();
-      persistExecutive((s) =>
-        patch
-          ? applyExecutiveSnapshotPatch(s, patch)
-          : refreshExecutiveState(s, { keepConversations: true }),
-      );
-      showToast(
-        patch
-          ? 'Command Centre data refreshed from server.'
-          : 'Command Centre data refreshed locally.',
-        'success',
-      );
-    } catch {
-      persistExecutive((s) => refreshExecutiveState(s, { keepConversations: true }));
-      showToast('Data refreshed locally.', 'success');
-    } finally {
-      setIsRefreshingData(false);
-    }
-  }, [persistExecutive, showToast]);
+  const refreshExecutiveData = useCallback(
+    async (options?: ExecutiveRefreshOptions) => {
+      const ar = settings.language === 'ar';
+      const cycle = options?.cycle ?? dataCycleForGstTime();
+      setIsRefreshingData(true);
+      try {
+        const patch = await fetchExecutiveSnapshotPatch(cycle);
+        persistExecutive((s) =>
+          patch
+            ? applyExecutiveSnapshotPatch(s, patch)
+            : refreshExecutiveState(s, { keepConversations: true }),
+        );
+        if (options?.scheduledSlot) {
+          showToast(formatRefreshSlotToast(options.scheduledSlot, ar), 'success');
+        } else if (!options?.silent) {
+          showToast(
+            patch
+              ? ar
+                ? 'تم تحديث بيانات مركز القيادة من الخادم.'
+                : 'Command Centre data refreshed from server.'
+              : ar
+                ? 'تم تحديث البيانات محلياً.'
+                : 'Command Centre data refreshed locally.',
+            'success',
+          );
+        }
+      } catch {
+        persistExecutive((s) => refreshExecutiveState(s, { keepConversations: true }));
+        if (!options?.silent) {
+          showToast(ar ? 'تم تحديث البيانات محلياً.' : 'Data refreshed locally.', 'success');
+        }
+      } finally {
+        setIsRefreshingData(false);
+      }
+    },
+    [persistExecutive, showToast, settings.language],
+  );
+
+  useScheduledExecutiveRefresh(
+    refreshExecutiveData,
+    isRefreshingData,
+    executiveState.lastSync,
+    settings.language === 'ar' ? 'ar' : 'en',
+  );
+
+  const didBootRefresh = useRef(false);
+  useEffect(() => {
+    if (didBootRefresh.current) return;
+    didBootRefresh.current = true;
+    void refreshExecutiveData({ silent: true });
+  }, [refreshExecutiveData]);
 
   const value: AppContextValue = {
     conversations,
@@ -859,6 +965,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     selectConversation,
     sendMessage,
     recordChatTurn,
+    patchAssistantReply,
     stopStreaming,
     regenerateLast,
     setInputDraft,

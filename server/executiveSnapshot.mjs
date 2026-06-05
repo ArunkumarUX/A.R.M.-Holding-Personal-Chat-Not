@@ -1,7 +1,13 @@
 /**
  * Fresh executive data patch for online refresh (GST / Abu Dhabi dates).
  * Client merges into local state; keeps conversations unless reset requested.
+ * When APIFY_TOKEN is set, pulls live headlines from Bloomberg via Apify actor.
  */
+
+import { fetchBloombergCategoryNews } from './apifyBloomberg.mjs';
+import { fetchLiveMarketTicker } from './liveMarketQuotes.mjs';
+import { fetchLiveMarketIntel } from './liveMarketIntel.mjs';
+import { fetchAllNewsFeeds, filterGccRelevant, getNewsByTag } from './liveNewsFeeds.mjs';
 
 function gstNow() {
   const now = new Date();
@@ -30,7 +36,7 @@ const MARKET_ROTATION = [
     gccEquities: '+0.8%',
     digitalAssetsWoW: '+12%',
     competitorNote: 'DIFC fintech sandbox expansion announced',
-    topSector: 'Climate tech (D33 score 88)',
+    topSector: 'Climate tech (Falcon Economy score 88)',
   },
   {
     gccEquities: '+1.1%',
@@ -52,10 +58,21 @@ const MARKET_ROTATION = [
   },
 ];
 
-export function buildExecutiveSnapshotPatch() {
+/** morning = post-08:00 GST · evening = post-22:00 GST */
+function resolveDataCycle(explicit, now) {
+  if (explicit === 'morning' || explicit === 'evening') return explicit;
+  const h = now.getHours();
+  if (h >= 22 || h < 8) return 'evening';
+  return 'morning';
+}
+
+export async function buildExecutiveSnapshotPatch(cycle) {
   const today = gstNow();
   const todayStr = dateOnly(today);
-  const dayIdx = today.getDay() % MARKET_ROTATION.length;
+  const dataCycle = resolveDataCycle(cycle, today);
+  const dayIdx =
+    (today.getDate() + today.getMonth() * 3 + (dataCycle === 'evening' ? 1 : 0)) %
+    MARKET_ROTATION.length;
 
   const meetings = [
     {
@@ -126,14 +143,106 @@ export function buildExecutiveSnapshotPatch() {
     dateOnly(addDays(today, -11)),
   ];
 
-  return {
+  const scheduleLabel =
+    dataCycle === 'morning' ? '08:00 GST morning refresh' : '22:00 GST evening refresh';
+
+  let bloomberg = null;
+  let liveTicker = null;
+  let liveMarketIntel = null;
+  let liveNewsItems = [];
+
+  // Fetch all data sources in parallel
+  const [bloombergR, tickerR, marketIntelR, newsR] = await Promise.allSettled([
+    fetchBloombergCategoryNews(),
+    fetchLiveMarketTicker(),
+    fetchLiveMarketIntel(),
+    fetchAllNewsFeeds(),
+  ]);
+
+  if (bloombergR.status === 'fulfilled') bloomberg = bloombergR.value;
+  else console.warn('[executiveSnapshot] Bloomberg Apify skipped:', bloombergR.reason?.message);
+
+  if (tickerR.status === 'fulfilled') liveTicker = tickerR.value;
+  else console.warn('[executiveSnapshot] Live ticker skipped:', tickerR.reason?.message);
+
+  if (marketIntelR.status === 'fulfilled') liveMarketIntel = marketIntelR.value;
+  else console.warn('[executiveSnapshot] Live market intel skipped:', marketIntelR.reason?.message);
+
+  if (newsR.status === 'fulfilled') liveNewsItems = newsR.value;
+  else console.warn('[executiveSnapshot] Live news feeds skipped:', newsR.reason?.message);
+
+  // Build market snapshot — prefer live data, fall back to rotation
+  const fallback = MARKET_ROTATION[dayIdx];
+  const asOfLabel = liveMarketIntel?.asOf
+    ? `${liveMarketIntel.asOf.slice(0, 10)} ${liveMarketIntel.asOf.slice(11, 16)} UTC`
+    : `${todayStr} ${dataCycle === 'morning' ? '08:00' : '22:00'} GST`;
+
+  const marketBase = {
+    // GCC equities: live if available, else rotation fallback
+    gccEquities: liveMarketIntel?.gccEquitiesSummary ?? fallback.gccEquities,
+    gccEquitiesSource: liveMarketIntel?.equities?.sourceLabel ?? 'Scenario data (prototype)',
+    gccEquitiesSourceUrl: liveMarketIntel?.equities?.sourceUrl ?? null,
+
+    // Digital assets: live CoinGecko if available
+    digitalAssetsWoW: liveMarketIntel?.digitalAssetsSummary ?? fallback.digitalAssetsWoW,
+    digitalAssetsSource: liveMarketIntel?.digital?.sourceLabel ?? 'Scenario data (prototype)',
+    digitalAssetsSourceUrl: liveMarketIntel?.digital?.sourceUrl ?? null,
+
+    // Oil: live Brent
+    oilSummary: liveMarketIntel?.oilSummary ?? null,
+    oilSourceUrl: liveMarketIntel?.oil?.sourceUrl ?? null,
+
+    // Gold: live COMEX via Yahoo Finance
+    goldSummary: liveMarketIntel?.goldSummary ?? null,
+    goldSourceUrl: liveMarketIntel?.goldSourceUrl ?? null,
+
+    // Top sector from live news or fallback
+    topSector: (() => {
+      const gccNews = filterGccRelevant(liveNewsItems, 1)[0];
+      return gccNews ? `${gccNews.source}: ${gccNews.title.slice(0, 80)}` : fallback.topSector;
+    })(),
+
+    // Competitor note: prefer Bloomberg live, then top GCC news, then rotation
+    competitorNote: bloomberg?.headline
+      ? `Bloomberg: ${bloomberg.headline.slice(0, 120)}`
+      : (() => {
+          const competitor = getNewsByTag('competitor', liveNewsItems, 1)[0];
+          return competitor
+            ? `${competitor.source}: ${competitor.title.slice(0, 120)}`
+            : fallback.competitorNote;
+        })(),
+
+    // Bloomberg lead if available
+    bloombergLead: bloomberg?.headline ?? undefined,
+
+    asOf: asOfLabel,
+    isLive: Boolean(liveMarketIntel?.isLive),
+  };
+
+  // Build news feed groups for signal cards
+  const signalNews = {
+    market:     getNewsByTag('market', liveNewsItems, 4),
+    competitor: getNewsByTag('competitor', liveNewsItems, 3),
+    investment: getNewsByTag('investment', liveNewsItems, 3),
+    regulatory: getNewsByTag('regulatory', liveNewsItems, 4),
+    followup:   getNewsByTag('followup', liveNewsItems, 3),
+    gccTop:     filterGccRelevant(liveNewsItems, 5),
+  };
+
+  const patch = {
     version: 4,
     lastSync: new Date().toISOString(),
     refreshedAt: new Date().toISOString(),
     timezone: 'Asia/Dubai',
+    dataCycle,
+    scheduleLabel,
     meetings,
     actionRegister,
-    marketSnapshot: MARKET_ROTATION[dayIdx],
+    marketSnapshot: marketBase,
+    liveMarketIntel: liveMarketIntel ?? undefined,
+    signalNews,
+    bloombergArticles: bloomberg?.items ?? undefined,
+    bloombergFetchedAt: bloomberg?.fetchedAt,
     metrics: {
       queriesThisWeek: 42 + (today.getDate() % 12),
       documentsInKb: 52,
@@ -148,13 +257,20 @@ export function buildExecutiveSnapshotPatch() {
       d4: documentDates[3],
       d5: documentDates[4],
     },
-    regulatoryHeadline: 'FSRA refreshes virtual-asset custody guidance',
+    regulatoryHeadline: bloomberg?.headline
+      ?? signalNews.regulatory[0]?.title
+      ?? 'Visit adgm.com/fsra for the latest FSRA guidance',
+    liveTicker: liveTicker?.length ? liveTicker : undefined,
+    liveTickerFetchedAt: liveTicker?.length ? new Date().toISOString() : undefined,
   };
+
+  return patch;
 }
 
-export function createExecutiveSnapshotResponse() {
+export async function createExecutiveSnapshotResponse(requestUrl) {
+  const cycle = requestUrl?.searchParams?.get('cycle') ?? undefined;
   return {
     ok: true,
-    patch: buildExecutiveSnapshotPatch(),
+    patch: await buildExecutiveSnapshotPatch(cycle),
   };
 }

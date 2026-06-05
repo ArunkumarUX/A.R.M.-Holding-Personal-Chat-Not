@@ -11,13 +11,13 @@ import {
 import { userRequestsNewDeck } from './parseDeckRequest';
 
 const SUGGESTIONS_EN = [
-  'Use Command Centre context — 10-slide ADGM board pack on digital assets and D33',
+  'Use Command Centre context — 10-slide ADGM board pack on digital assets and Falcon Economy',
   'Create a McKinsey-style investor deck on FSRA regulatory outlook for Q3',
   '8-slide CSO strategy update with Claude Design — navy hero, KPI slides',
 ];
 
 const SUGGESTIONS_AR = [
-  'أنشئ عرضاً من 10 شرائح لمجلس ADGM حول الأصول الرقمية وD33',
+  'أنشئ عرضاً من 10 شرائح لمجلس ADGM حول الأصول الرقمية والاقتصاد الصقور',
   'عرض للمستثمرين عن التوقعات التنظيمية لـ FSRA',
 ];
 
@@ -121,8 +121,8 @@ export default function SlideAIChat() {
       {apiLive === false && (
         <div className="cc-slideai__api-banner" role="status">
           {ar
-            ? 'الخادم غير متصل — شغّل npm run dev. سيتم استخدام عرض تجريبي حتى يتصل Claude.'
-            : 'API offline — run npm run dev. Offline previews follow your topic; connect Claude for full AI decks.'}
+            ? 'الخادم غير متصل — معاينة محلية من موضوعك حتى يعود التوليف بالذكاء الاصطناعي.'
+            : 'Server offline — local preview from your topic until AI synthesis is available.'}
         </div>
       )}
       <div className="cc-slideai__messages" role="log" aria-live="polite">

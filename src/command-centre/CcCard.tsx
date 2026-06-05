@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { CcIcon } from './CcIcon';
+import type { IntelLaymanBlock } from '../data/intelLaymanCopy';
+import { IntelLaymanInfo } from './IntelLaymanInfo';
 
 type IconName = string;
 
@@ -112,20 +114,28 @@ export function IntelSectionHead({
   eyebrow,
   title,
   action,
+  laymanInfo,
   titleAs = 'h3',
   style,
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
   action?: ReactNode;
+  /** Plain-language explainer for non-specialist readers */
+  laymanInfo?: IntelLaymanBlock;
   titleAs?: 'h2' | 'h3';
   style?: CSSProperties;
 }) {
   const Title = titleAs;
   return (
     <div className="section-head intel-section-head" style={style}>
-      <div>
-        {eyebrow ? <div className="eyebrow">{eyebrow}</div> : null}
+      <div className="intel-section-head__main">
+        {eyebrow || laymanInfo ? (
+          <div className="intel-section-head__eyebrow-row">
+            {eyebrow ? <div className="eyebrow">{eyebrow}</div> : null}
+            {laymanInfo ? <IntelLaymanInfo copy={laymanInfo} /> : null}
+          </div>
+        ) : null}
         <Title className="intel-section-head__title">{title}</Title>
       </div>
       {action}

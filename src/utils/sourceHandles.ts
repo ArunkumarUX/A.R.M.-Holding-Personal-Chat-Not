@@ -27,6 +27,16 @@ const KB_NUM: Record<string, string> = {
   d3: 'KB-003',
   d4: 'KB-004',
   d5: 'KB-005',
+  d6: 'KB-006',
+  d7: 'KB-007',
+  d8: 'KB-008',
+  d9: 'KB-009',
+  d10: 'KB-010',
+  d11: 'KB-011',
+  d12: 'KB-012',
+  d13: 'KB-013',
+  d14: 'KB-014',
+  d15: 'KB-015',
 };
 
 export function kbHandle(docId: string, index = 0): string {
@@ -80,7 +90,7 @@ export function buildGroundedRecords(state: ExecutiveState): GroundedRecord[] {
     records.push({
       handle: calHandle(m.id, m.time),
       kind: 'internal',
-      system: 'Calendar (Microsoft Graph demo)',
+      system: 'Calendar (Microsoft Graph)',
       label: m.title,
       snippet: `${m.time} · ${m.attendees} · ${m.location} · prep ${m.prepStatus}`,
       asOf: m.time.slice(0, 10),
@@ -107,15 +117,39 @@ export function buildGroundedRecords(state: ExecutiveState): GroundedRecord[] {
   });
 
   const mkt = state.marketSnapshot;
-  const mktDate = state.lastSync.slice(0, 10);
+  const mktDate = mkt.asOf?.slice(0, 10) ?? state.lastSync.slice(0, 10);
   const mktH = mktHandle(mktDate);
+  const bloombergLive = Boolean(state.bloombergFetchedAt && state.bloombergArticles?.length);
   records.push({
     handle: mktH,
     kind: 'external',
-    system: 'Market snapshot (Bloomberg / Refinitiv demo feed)',
+    system: bloombergLive
+      ? 'Market snapshot (Bloomberg live via Apify + GST refresh)'
+      : 'Market snapshot (GST scenario rotation — not a live terminal feed)',
     label: 'GCC & digital-assets market',
-    snippet: `GCC ${mkt.gccEquities} · digital assets ${mkt.digitalAssetsWoW} · ${mkt.competitorNote} · top sector ${mkt.topSector}`,
+    snippet: [
+      `GCC ${mkt.gccEquities}`,
+      `digital assets ${mkt.digitalAssetsWoW}`,
+      mkt.bloombergLead ? `Bloomberg lead: ${mkt.bloombergLead}` : mkt.competitorNote,
+      `top sector ${mkt.topSector}`,
+      mkt.asOf ? `as of ${mkt.asOf}` : '',
+    ]
+      .filter(Boolean)
+      .join(' · '),
     asOf: mktDate,
+  });
+
+  (state.bloombergArticles ?? []).slice(0, 5).forEach((article, i) => {
+    const headline = typeof article.headline === 'string' ? article.headline.trim() : '';
+    if (!headline) return;
+    records.push({
+      handle: `BBG-${String(i + 1).padStart(2, '0')}`,
+      kind: 'external',
+      system: 'Bloomberg (Apify category wire)',
+      label: headline.slice(0, 120),
+      snippet: `${headline}${article.url ? ` · ${article.url}` : ''}`,
+      asOf: article.publishedAt?.slice(0, 10) ?? mktDate,
+    });
   });
 
   return records;
@@ -141,7 +175,8 @@ ${external.map(line).join('\n') || '(none)'}
 Valid handles for this turn: ${records.map((r) => r.handle).join(', ')}`;
 }
 
-const HANDLE_RE = /\b(KB-\d{3}|ACT-\d{2,}|CAL-\d{4}|CRM-[a-z0-9-]+|MKT-\d{4}-\d{2}-\d{2})\b/gi;
+const HANDLE_RE =
+  /\b(KB-\d{3}(?:-\d{2})?|ACT-\d{2,}|CAL-\d{4}|CRM-[a-z0-9-]+|MKT-\d{4}-\d{2}-\d{2}|BBG-\d{2})\b/gi;
 
 export function extractCitedHandles(text: string): string[] {
   const found = new Set<string>();
@@ -151,6 +186,7 @@ export function extractCitedHandles(text: string): string[] {
     else if (/^act-/i.test(raw)) found.add(raw.toUpperCase());
     else if (/^cal-/i.test(raw)) found.add(raw.toUpperCase());
     else if (/^mkt-/i.test(raw)) found.add(raw.toUpperCase());
+    else if (/^bbg-/i.test(raw)) found.add(raw.toUpperCase());
     else if (/^crm-/i.test(raw)) found.add(`CRM-${raw.slice(4).toLowerCase()}`);
     else found.add(raw);
   }

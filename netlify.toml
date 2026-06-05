@@ -1,5 +1,6 @@
 [build]
-  command = "npm run build"
+  base = "."
+  command = "npm ci && npm run build"
   publish = "dist"
 
 # Optional overrides (production builds ignore these — see src/config/features.ts)

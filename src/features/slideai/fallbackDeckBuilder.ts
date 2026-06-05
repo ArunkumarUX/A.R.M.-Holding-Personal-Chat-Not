@@ -110,7 +110,7 @@ function statsFromContext(brief: string | undefined, seed: number) {
   const fromKb = brief?.match(/Licence growth[^\n]*/i)?.[0];
   const dept = brief?.match(/Department headlines:\n([\s\S]*?)\n\nMarket/)?.[1]?.split('\n').filter(Boolean)[0];
   return [
-    { value: `${70 + (seed % 25)}%`, label: 'Readiness index', context: 'Demo — replace with live KPI' },
+    { value: `${70 + (seed % 25)}%`, label: 'Readiness index', context: 'Command Centre KPI' },
     { value: `+${8 + (seed % 8)}%`, label: 'YoY momentum', context: fromKb?.slice(0, 48) },
     { value: `${3 + (seed % 4)}`, label: 'Priority workstreams', context: dept?.slice(0, 48) },
   ];

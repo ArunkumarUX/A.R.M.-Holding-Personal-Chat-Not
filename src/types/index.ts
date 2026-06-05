@@ -1,4 +1,6 @@
-export type AgentType = 'policy' | 'strategy' | 'cos' | 'relationship' | 'comms';
+import type { KbCompanyId } from '../config/kbCompanies';
+
+export type AgentType = 'policy' | 'strategy' | 'cos' | 'relationship' | 'comms' | 'explorer';
 
 /** CSO Personal AI — six core focus areas */
 export type FocusAreaId =
@@ -81,6 +83,8 @@ export interface DocumentFile {
   kbCategory?: string;
   /** User-tagged document date (ISO yyyy-mm-dd) */
   kbDocumentDate?: string;
+  /** Company repository — ADGM, ADIO, Company 3, Company 4 */
+  kbCompanyId?: KbCompanyId;
 }
 
 export interface PromptTemplate {

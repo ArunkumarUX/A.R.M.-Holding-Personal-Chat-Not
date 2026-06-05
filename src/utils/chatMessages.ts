@@ -1,4 +1,6 @@
-import type { ChatMessage } from '../types';
+import type { ExecutiveState } from '../data/executiveStore';
+import { resolveAnswerGrounding } from '../data/executiveStore';
+import type { ChatMessage, GroundingLevel, Source } from '../types';
 
 export type UiChatMsg =
   | { id: number; role: 'user'; text: string }
@@ -10,21 +12,48 @@ export type UiChatMsg =
       thinking?: boolean;
       activeAgent?: number | null;
       confidence?: number;
-      sources?: import('../types').Source[];
+      grounding?: GroundingLevel;
+      sources?: Source[];
     };
 
-export function conversationToUiMessages(messages: ChatMessage[]): UiChatMsg[] {
+/** Restore sources/grounding for saved threads (fixes history after older saves omitted metadata). */
+export function hydrateAssistantMessage(
+  message: ChatMessage,
+  state: ExecutiveState,
+): { sources: Source[]; grounding?: GroundingLevel } {
+  if (message.sources?.length) {
+    return {
+      sources: message.sources,
+      grounding: message.sources.length ? (message.grounding ?? 'partial') : undefined,
+    };
+  }
+  if (!message.content?.trim()) {
+    return { sources: [], grounding: undefined };
+  }
+  const resolved = resolveAnswerGrounding(message.content, state, []);
+  return {
+    sources: resolved.sources,
+    grounding: resolved.sources.length ? (message.grounding ?? resolved.grounding) : undefined,
+  };
+}
+
+export function conversationToUiMessages(
+  messages: ChatMessage[],
+  state: ExecutiveState,
+): UiChatMsg[] {
   return messages.map((m, i) => {
     if (m.role === 'user') {
       return { id: i + 1, role: 'user', text: m.content };
     }
+    const { sources, grounding } = hydrateAssistantMessage(m, state);
     return {
       id: i + 1,
       role: 'ai',
       text: m.content,
       agents: m.agents,
       confidence: m.confidence,
-      sources: m.sources,
+      grounding,
+      sources,
     };
   });
 }
@@ -50,4 +79,15 @@ export function formatChatRelativeTime(iso: string, ar: boolean): string {
   } catch {
     return '';
   }
+}
+
+/** Count assistant messages that have (or can resolve) sources */
+export function conversationSourceCount(messages: ChatMessage[], state: ExecutiveState): number {
+  let n = 0;
+  for (const m of messages) {
+    if (m.role !== 'assistant') continue;
+    const { sources } = hydrateAssistantMessage(m, state);
+    if (sources.length) n += sources.length;
+  }
+  return n;
 }

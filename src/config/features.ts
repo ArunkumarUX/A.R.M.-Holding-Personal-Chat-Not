@@ -1,16 +1,16 @@
 /**
  * Feature flags — baked in at build time (Vite).
  *
- * Production (Netlify): Architecture and Create PPT are ALWAYS hidden.
- * Local dev: opt in via .env.local (see .env.example).
+ * Opt in via env (see .env.example):
+ *   VITE_ENABLE_PPT_MASTER=true
+ *   VITE_ENABLE_ARCHITECTURE=true
  */
 const isProdBuild = import.meta.env.PROD;
 
-/** Create PPT / SlideAI — dev only unless you change isProdBuild guard */
-export const PPT_MASTER_ENABLED =
-  !isProdBuild && import.meta.env.VITE_ENABLE_PPT_MASTER === 'true';
+/** Create PPT / SlideAI — set VITE_ENABLE_PPT_MASTER=true at build time */
+export const PPT_MASTER_ENABLED = import.meta.env.VITE_ENABLE_PPT_MASTER === 'true';
 
-/** Architecture page — disabled on all production deploys */
+/** Architecture page — local/preview only by default */
 export const ARCHITECTURE_ENABLED =
   !isProdBuild && import.meta.env.VITE_ENABLE_ARCHITECTURE === 'true';
 

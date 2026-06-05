@@ -73,7 +73,7 @@
 # .env.local
 VITE_ENABLE_PPT_MASTER=true
 ANTHROPIC_API_KEY=sk-ant-...
-ANTHROPIC_MODEL=claude-sonnet-4-20250514
+ANTHROPIC_MODEL=claude-sonnet-4-6
 ```
 
 ### 2. Start full stack

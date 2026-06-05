@@ -70,10 +70,10 @@ export function PresentationBuilderPage() {
         craftLabel: 'حرفة التصميم',
         exportUnified: 'جميع المهارات (Cursor)',
         badge: 'محلي · غير منشور',
-        statusDemo: 'وضع تجريبي — أعد تشغيل npm run dev لتفعيل Claude.',
+        statusOffline: 'التوليف بالذكاء الاصطناعي غير متصل — تحقق من الخادم وANTHROPIC_API_KEY.',
         steps: ['المدخلات', 'توضيح', 'المخطط', 'معاينة', 'تصدير'],
         prompt: 'صف العرض',
-        promptPh: 'مثال: عرض استراتيجي Q2 لمجلس ADGM — D33 والأصول الرقمية',
+        promptPh: 'مثال: عرض استراتيجي Q2 لمجلس ADGM — Falcon Economy والأصول الرقمية',
         notes: 'ملاحظات أو أفكار خام',
         link: 'رابط (اختياري)',
         doc: 'لصق نص مستند',
@@ -112,10 +112,10 @@ export function PresentationBuilderPage() {
         craftLabel: 'Design craft',
         exportUnified: 'All skills (Cursor)',
         badge: 'Local · not on production',
-        statusDemo: 'Demo mode — restart npm run dev for live Claude generation.',
+        statusOffline: 'AI synthesis offline — check server connection and ANTHROPIC_API_KEY.',
         steps: ['Input', 'Clarify', 'Outline', 'Preview', 'Export'],
         prompt: 'Describe your presentation',
-        promptPh: 'e.g. Q2 board pack for ADGM — D33, digital assets, FSRA outlook',
+        promptPh: 'e.g. Q2 board pack for ADGM — Falcon Economy, digital assets, FSRA outlook',
         notes: 'Notes or rough ideas',
         link: 'Website link (optional)',
         doc: 'Paste document text',
@@ -281,7 +281,7 @@ export function PresentationBuilderPage() {
       {!apiLive ? (
         <p className="cc-pres-builder__status">
           <CcIcon name="info" size={14} />
-          {t.statusDemo}
+          {t.statusOffline}
         </p>
       ) : null}
 

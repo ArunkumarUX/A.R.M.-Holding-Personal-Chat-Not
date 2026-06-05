@@ -5,6 +5,7 @@ import { Emblem } from './CcPrimitives';
 import { mdToNodes } from './CcMarkdown';
 import { AGENTS } from '../data/commandCentreData';
 import type { Source } from '../types';
+import { panelSources } from '../utils/sourceLinks';
 
 function AgentChips({ ids, active }: { ids: string[]; active: number | null }) {
   const map = Object.fromEntries(AGENTS.map((a) => [a.id, a]));
@@ -33,6 +34,36 @@ function AgentChips({ ids, active }: { ids: string[]; active: number | null }) {
   );
 }
 
+function GroundingBadge({ level, ar }: { level?: string; ar: boolean }) {
+  if (!level) return null;
+  const cls = level === 'full' ? 'full' : level === 'partial' ? 'partial' : 'inferred';
+  const label =
+    level === 'full'
+      ? ar
+        ? 'تطابق قوي'
+        : 'Strong match'
+      : ar
+        ? 'تطابق جزئي'
+        : 'Partial match';
+  const title =
+    level === 'full'
+      ? ar
+        ? 'تطابق مصادر قوي'
+        : 'High source match'
+      : ar
+        ? 'تغطية مصادر محدودة'
+        : 'Limited source coverage';
+  return (
+    <span
+      className={`chat-ai-meta__grounding chat-ai-meta__grounding--${cls}`}
+      title={title}
+    >
+      <CcIcon name={level === 'full' ? 'shield-check' : 'shield'} size={13} aria-hidden />
+      <span className="chat-ai-meta__grounding-label">{label}</span>
+    </span>
+  );
+}
+
 export type CcChatAiMsg = {
   id: number;
   role: 'ai';
@@ -40,6 +71,8 @@ export type CcChatAiMsg = {
   agents?: string[];
   thinking?: boolean;
   activeAgent?: number | null;
+  confidence?: number;
+  grounding?: string;
   sources?: Source[];
 };
 
@@ -60,8 +93,11 @@ export function CcChatAiMessage({
   onRetry: () => void;
   onOpenSources: (sources: Source[]) => void;
 }) {
-  const sourceCount = m.sources?.length ?? 0;
-  const hasMeta = !m.thinking && m.text && sourceCount > 0;
+  const linkedSources = panelSources(m.sources ?? []);
+  const hasResources = linkedSources.length > 0;
+  const messageReady = !m.thinking && Boolean(m.text?.trim());
+  const showSourceMeta = messageReady && hasResources;
+  const showActions = messageReady;
 
   return (
     <div className="chat-ai-msg mi-chat-in">
@@ -79,39 +115,46 @@ export function CcChatAiMessage({
           <div className={`chat-ai-msg__content ${ar ? 'lang-ar' : ''}`}>{mdToNodes(m.text)}</div>
         )}
 
-        {hasMeta && (
+        {(showSourceMeta || showActions) && (
           <div className="chat-ai-meta">
-            <div className="chat-ai-meta__row">
-              <SourceCitationChip
-                sources={m.sources!}
-                ar={ar}
-                onClick={() => onOpenSources(m.sources!)}
-              />
+            <div
+              className={`chat-ai-meta__toolbar${showSourceMeta ? '' : ' chat-ai-meta__toolbar--actions-only'}`}
+            >
+              {showSourceMeta && (
+                <div className="chat-ai-meta__primary">
+                  <GroundingBadge level={m.grounding} ar={ar} />
+                  <SourceCitationChip
+                    sources={linkedSources}
+                    ar={ar}
+                    compact
+                    onClick={() => onOpenSources(linkedSources)}
+                  />
+                </div>
+              )}
+              {showActions && (
+              <div className="chat-ai-meta__actions" role="toolbar" aria-label={ar ? 'إجراءات الرسالة' : 'Message actions'}>
+                <button
+                  type="button"
+                  className={`chat-ai-meta__action-btn chat-ai-meta__action-btn--icon${copied ? ' mi-copied' : ''}`}
+                  onClick={onCopy}
+                  aria-label={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ' : 'Copy'}
+                  title={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ' : 'Copy'}
+                >
+                  <CcIcon name={copied ? 'check' : 'copy'} size={16} />
+                </button>
+                <button
+                  type="button"
+                  className="chat-ai-meta__action-btn chat-ai-meta__action-btn--icon"
+                  onClick={onRetry}
+                  disabled={busy}
+                  aria-label={ar ? 'إعادة المحاولة' : 'Retry'}
+                  title={ar ? 'إعادة المحاولة' : 'Retry'}
+                >
+                  <CcIcon name="rotate-ccw" size={16} />
+                </button>
+              </div>
+              )}
             </div>
-          </div>
-        )}
-
-        {m.text && !m.thinking && (
-          <div className="chat-ai-actions" role="toolbar" aria-label={ar ? 'إجراءات الرسالة' : 'Message actions'}>
-            <button
-              type="button"
-              className={`chat-ai-actions__btn${copied ? ' mi-copied' : ''}`}
-              onClick={onCopy}
-              aria-label={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ' : 'Copy'}
-              title={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ' : 'Copy'}
-            >
-              <CcIcon name={copied ? 'check' : 'copy'} size={16} />
-            </button>
-            <button
-              type="button"
-              className="chat-ai-actions__btn"
-              onClick={onRetry}
-              disabled={busy}
-              aria-label={ar ? 'إعادة المحاولة' : 'Retry'}
-              title={ar ? 'إعادة المحاولة' : 'Retry'}
-            >
-              <CcIcon name="rotate-ccw" size={16} />
-            </button>
           </div>
         )}
       </div>

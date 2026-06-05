@@ -3,7 +3,7 @@
 **Document purpose:** Stakeholder reference for how the five AI specialists behave, how they are selected for a question, and what structure answers follow.  
 **Product:** ADGM Command Centre / Personal AI (Chief Strategy Office prototype)  
 **Audience:** ADGM leadership, programme sponsors, architecture reviewers  
-**Version:** June 2026 — rev. adds **§6 Grounding & Source Integrity** and aligns answer formats to it.
+**Version:** June 2026 — aligned with **CSO Personal AI Assistant: Agent Prompt Pack & Response Standards** (implemented in `server/csoPromptPack.mjs`, `server/answerFormatRules.mjs`, `server/chatCore.mjs`).
 
 ---
 
@@ -70,15 +70,15 @@ Answers are grounded in demo institutional data: calendar, action register, know
 | Field | Detail |
 |-------|--------|
 | **Role** | Market intelligence |
-| **Tagline** | D33, competitors, geopolitical and sector signals |
-| **Primary tools** | Bloomberg feed, D33 scorecard, competitor radar |
+| **Tagline** | Falcon Economy, competitors, geopolitical and sector signals |
+| **Primary tools** | Bloomberg feed, Falcon Economy scorecard, competitor radar |
 | **Focus areas** | Strategic intelligence, knowledge |
 | **Integrations (target)** | Bloomberg / Refinitiv, regulatory feeds, knowledge base |
 
 **Behaviour**
 
 - Daily and on-demand intelligence: GCC markets, sector flows, competitor moves (DIFC, MAS, Hong Kong, Luxembourg).  
-- Scores opportunities against **D33** and Abu Dhabi economic priorities, citing the scorecard datapoint behind each score.  
+- Scores opportunities against **Falcon Economy** and Abu Dhabi economic priorities (not Dubai D33), citing the scorecard datapoint behind each score.  
 - Produces competitor benchmark tables (multi-dimension scoring) sourced to a named benchmark document.  
 - Connects market signals to CSO implications and timing (“why now”), with the read marked as analysis (§6.3).
 
@@ -134,7 +134,7 @@ Answers are grounded in demo institutional data: calendar, action register, know
 **Does not typically own**
 
 - Full regulatory benchmark matrices (Policy AI).  
-- D33 sector ranking lists without stakeholder angle (Strategy AI).
+- Falcon Economy sector ranking lists without stakeholder angle (Strategy AI).
 
 ---
 
@@ -190,7 +190,7 @@ Routing in a single-call architecture does not gate separate models. It selects 
 | Example question | Agents shown on answer |
 |------------------|------------------------|
 | Compare ADGM digital assets framework vs Singapore MAS | Strategy, Policy |
-| ADGM 2024 strategic decisions vs D33 | Strategy, Chief of Staff |
+| ADGM 2024 strategic decisions vs Falcon Economy | Strategy, Chief of Staff |
 | Brief me on my 3pm meeting tomorrow | Chief of Staff, Relationship |
 | Top investment opportunities for Abu Dhabi | Strategy |
 | Draft HH office note on Q2 performance in Arabic | Communications |
@@ -205,7 +205,7 @@ Routing in a single-call architecture does not gate separate models. It selects 
 |---------|--------|
 | **Language** | Executive English by default; Modern Standard Arabic when user writes in Arabic or requests AR output |
 | **Structure** | Markdown: `##` headings, bullet lists, tables where useful |
-| **Tone** | Decision-ready, specific to ADGM, Abu Dhabi, and D33 |
+| **Tone** | Decision-ready, specific to ADGM, Abu Dhabi, and Falcon Economy |
 | **Persona framing** | At the start of a turn, the user may also say: *"You are a senior McKinsey strategy manager."* That line sets consulting-grade structure (hypothesis-led, MECE, recommendation-first) for that answer. The default system prompt already includes this persona; saying it in the question reinforces tone without replacing ADGM grounding (§6). |
 | **Grounding** | Every factual claim cites a **source handle** (`KB-`, `CAL-`, `ACT-`, `CRM-`, `MKT-`) that is validated against the data injected into the call. The model's own interpretation is marked as **analysis**, never stated as fact. Full contract in §6. |
 | **Closing** | 2–3 short follow-up prompts the CSO might ask next |
@@ -240,7 +240,7 @@ Use these as the **expected sections** inside a unified answer. In a single-call
 #### Strategy AI
 
 - **Market & competitor context** (GCC, sectors, named centres) `[MKT-…]`  
-- **D33 alignment** or opportunity scores, each citing the scorecard datapoint  
+- **Falcon Economy alignment** or opportunity scores, each citing the scorecard datapoint  
 - **Strategic read** — one clear implication for the CSO, marked as analysis  
 - Tables: competitor comparison or ranked opportunities, sourced to a benchmark document
 
@@ -333,10 +333,10 @@ Briefings follow the same grounding contract (§6): every injected datapoint car
 | Briefing type | Typical agents | Required structure | Target time |
 |---------------|----------------|-------------------|-------------|
 | **Pre-meeting brief** | CoS, Relationship, Strategy | Who → Their likely agenda → Talking points → Watch-outs → Suggested ask | < 30 s |
-| **Board pack summary** | CoS, Strategy | Decisions required → D33 alignment → Risks → One recommendation | < 60 s |
+| **Board pack summary** | CoS, Strategy | Decisions required → Falcon Economy alignment → Risks → One recommendation | < 60 s |
 | **Stakeholder profile** | Relationship, CoS | Relationship & history → Focus areas → Open follow-ups → Next step | < 30 s |
 | **Policy impact analysis** | Policy, Strategy | What changed → Impact on ADGM → Gap vs competitor → Recommended action | < 90 s |
-| **Strategic opportunity brief** | Strategy | 4 opportunities with D33-style scores → Top 2 recommendations → Why now | < 60 s |
+| **Strategic opportunity brief** | Strategy | 4 opportunities with Falcon Economy-style scores → Top 2 recommendations → Why now | < 60 s |
 | **Ministerial note (AR/EN)** | Communications, Strategy | Formal Arabic paragraph(s) → English paragraph(s) → Key metrics cited | < 45 s |
 
 **Data injected into every briefing** (each item carries a handle and timestamp)
@@ -405,7 +405,7 @@ Sources: CAL-1500, CRM-emaar, ACT-07, ACT-11          Grounding: partial
 English
 [Matching formal paragraph]
 
-Metrics — departments green [KB-031]; D33 score [MKT-2026-06-03]
+Metrics — departments green [KB-031]; Falcon Economy score [MKT-2026-06-03]
 
 Sources: KB-031, MKT-2026-06-03    Grounding: full    Verification pass: passed
 ```
@@ -434,7 +434,7 @@ Ministerial output always runs the verification pass (§6.5) before it ships.
 | Term | Meaning |
 |------|---------|
 | **CoS** | Chief of Staff AI — orchestrator |
-| **D33** | Abu Dhabi economic vision alignment scorecard |
+| **Falcon Economy** | Abu Dhabi economic vision alignment scorecard |
 | **FSRA** | Financial Services Regulatory Authority (ADGM) |
 | **KB** | Knowledge base (ingested documents + graph) |
 | **Smart routing** | Automatic agent selection from question topic, driving block and data-slice assembly |

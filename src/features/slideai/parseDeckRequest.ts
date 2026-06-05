@@ -23,7 +23,7 @@ function inferDeckKind(text: string): ParsedDeckRequest['deckKind'] {
   if (/investor|fund|vc|capital\s*raise/.test(lower)) return 'investor';
   if (/fsra|regulat|compliance|legal/.test(lower)) return 'regulatory';
   if (/board|csO|executive\s+committee/.test(lower)) return 'board';
-  if (/strategy|roadmap|d33|digital\s*asset/.test(lower)) return 'strategy';
+  if (/strategy|roadmap|falcon|digital\s*asset/.test(lower)) return 'strategy';
   return 'general';
 }
 

@@ -13,7 +13,7 @@ export const ADGM_BRAND = {
   /** Personal AI app tile — favicon, chat inline */
   logoMarkSrc: '/personal-ai-mark.svg',
   logoAlt: 'ADGM',
-  productMarkAlt: 'Personal AI — ADGM Command Centre',
+  productMarkAlt: 'Personal AI chat - ADGM',
 
   typography: {
     /** Primary — Gilroy */

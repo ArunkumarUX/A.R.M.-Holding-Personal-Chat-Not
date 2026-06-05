@@ -186,9 +186,14 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="sb-user">
-          <span className="sb-user-initials" aria-hidden="true">
-            {EXECUTIVE_USER.initials}
-          </span>
+          <img
+            className="sb-user-avatar"
+            src={EXECUTIVE_USER.profileImage}
+            alt={EXECUTIVE_USER.fullName}
+            width={40}
+            height={40}
+            decoding="async"
+          />
           {showSidebarText && (
             <div className="sb-user-meta">
               <div className="sb-user-name">{EXECUTIVE_USER.fullName}</div>
@@ -203,16 +208,15 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
           <button type="button" className="icon-btn mobile-menu-btn" onClick={() => setMobileOpen(true)} aria-label="menu">
             <CcIcon name="menu" size={20} />
           </button>
-          <button type="button" className="icon-btn" onClick={toggleCollapsed} aria-label={effectiveCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+          <button
+            type="button"
+            className="icon-btn topbar-collapse-btn"
+            onClick={toggleCollapsed}
+            aria-label={effectiveCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
             <CcIcon name={effectiveCollapsed ? 'panel-left-open' : 'panel-left-close'} size={20} />
           </button>
           <div className="topbar__spacer" aria-hidden />
-          <div className="pill ghost" style={{ height: 32 }}>
-            <span className="dot good pulse" style={{ color: 'var(--status-good)' }} />
-            <span className="mono" style={{ fontSize: 11.5 }}>
-              50+ {ar ? 'مستند' : 'docs'}
-            </span>
-          </div>
           <div className="seg" role="group" aria-label="language">
             <button type="button" className={!ar ? 'on' : ''} onClick={() => updateSettings({ language: 'en' })}>
               EN

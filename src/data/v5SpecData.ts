@@ -95,7 +95,7 @@ export const PERFORMANCE_DEPARTMENTS: DepartmentPerformance[] = [
     shortName: 'Strategy',
     rag: 'green',
     kpis: [
-      { label: 'D33 alignment score', value: '82 / 100', highlight: false },
+      { label: 'Falcon Economy alignment', value: '82 / 100', highlight: false },
       { label: 'Strategic initiatives on track', value: '7 / 9', highlight: false },
     ],
     achievements: ['Italy engagement milestone complete', 'Competitor intelligence digest automated'],

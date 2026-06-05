@@ -103,23 +103,23 @@ Structure: Who · Their likely agenda · Talking points · Watch-outs · Suggest
 
   boardpack: {
     id: 'boardpack',
-    fallbackQuery: 'What strategic decisions did ADGM make in 2024 and how do they track against D33?',
-    cannedKey: 'What strategic decisions did ADGM make in 2024 and how do they track against D33?',
+    fallbackQuery: 'What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?',
+    cannedKey: 'What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?',
     agents: ['cos', 'strategy'],
     buildUserMessage: (state, ar) => {
       const boardDocs = state.documents
-        .filter((d) => /board|d33|strategic/i.test(d.name))
+        .filter((d) => /board|falcon|strategic/i.test(d.name))
         .map((d) => `- ${d.name}: ${d.summary}`)
         .join('\n');
       return ar
-        ? `لخّص حزمة مجلس الإدارة إلى قرارات تنفيذية ومحاذاة D33.
+        ? `لخّص حزمة مجلس الإدارة إلى قرارات تنفيذية ومحاذاة الاقتصاد الصقور.
 
 **مستندات ذات صلة:**
 ${boardDocs || DOC_LIST(state)}
 
 **مقاييس حية:** ${state.metrics.departmentsOnTrack}/9 إدارات خضراء · ${state.metrics.openActions} إجراءات مفتوحة.
 
-الهيكل: قرارات مطلوبة · محاذاة D33 · مخاطر · توصية واحدة.`
+الهيكل: قرارات مطلوبة · محاذاة الاقتصاد الصقور · مخاطر · توصية واحدة.`
         : `Produce a **board pack summary** — condense materials to decisions, not narrative.
 
 **Relevant knowledge base:**
@@ -127,7 +127,7 @@ ${boardDocs || DOC_LIST(state)}
 
 **Live context:** ${state.metrics.departmentsOnTrack}/9 departments green · ${state.metrics.openActions} open actions.
 
-Structure: Decisions required · D33 alignment score/narrative · Risks · One recommendation. Markdown for board prep.`;
+Structure: Decisions required · Falcon Economy alignment score/narrative · Risks · One recommendation. Markdown for board prep.`;
     },
   },
 
@@ -198,22 +198,22 @@ Structure: What changed · Impact on ADGM · Gap vs competitor · Recommended ac
     agents: ['strategy'],
     buildUserMessage: (state, ar) => {
       return ar
-        ? `إحاطة **فرص استراتيجية** لأبوظبي — رتّب حسب توافق D33.
+        ? `إحاطة **فرص استراتيجية** لأبوظبي — رتّب حسب توافق الاقتصاد الصقور.
 
 **لمحة السوق:** ${state.marketSnapshot.topSector} · تدفقات رقمية ${state.marketSnapshot.digitalAssetsWoW} · GCC ${state.marketSnapshot.gccEquities}
 
 **مستندات:**
 ${DOC_LIST(state)}
 
-الهيكل: 4 فرص بدرجات D33 · توصية بأولويتين · لماذا الآن.`
-        : `Strategic **opportunity brief** for Abu Dhabi — rank vs D33.
+الهيكل: 4 فرص بدرجات Falcon Economy · توصية بأولويتين · لماذا الآن.`
+        : `Strategic **opportunity brief** for Abu Dhabi — rank vs Falcon Economy.
 
 **Market snapshot:** ${state.marketSnapshot.topSector} · digital assets ${state.marketSnapshot.digitalAssetsWoW} · GCC ${state.marketSnapshot.gccEquities}
 
 **Knowledge base:**
 ${DOC_LIST(state)}
 
-Structure: 4 opportunities with D33-style scores · Top 2 recommendations · Why now.`;
+Structure: 4 opportunities with Falcon Economy scores · Top 2 recommendations · Why now.`;
     },
   },
 

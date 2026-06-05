@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // @ts-nocheck
-import { useCallback, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { Emblem, AnimatedNumber, Sparkline, RingGauge, RagPill } from '../../command-centre/CcPrimitives';
@@ -10,13 +10,16 @@ import {
   SIGNALS, DEPARTMENTS, AGENTS, CENTRES, BENCH_DIMS, BRIEF_FORMATS, PLAN, INTEGRATIONS,
   SUGGESTIONS, CANNED, TICKER, MOMENTUM, FLOWS, REGULATORY, KB_CATS, KB_DOCS, DIFFERENTIATION,
 } from '../../data/commandCentreData';
+import { deriveCommandCentreSignals } from '../../data/deriveCommandCentreSignals';
 import { useApp } from '../../context/AppContext';
 import { PRODUCT_AGENT_NAME, PRODUCT_AGENT_NAME_AR } from '../../config/user';
+import { useGstLive } from '../../utils/gstGreeting';
 import { AdgmInfoPanel } from '../../components/brand/AdgmInfoPanel';
 import { IntelCard, IntelCardBody, IntelIconBox } from '../../command-centre/CcCard';
+import { IntelCardSources } from '../../command-centre/IntelCardSources';
+import { getSourcesForSignal } from '../../data/signalSources';
 
-function MarketTicker() {
-  const items = TICKER;
+function MarketTicker({ items }: { items: typeof TICKER }) {
   const Row = ({ k }) => {
     const up = k.c > 0, flat = k.c === 0;
     const col = flat ? 'var(--ink-3)' : up ? 'var(--status-good)' : 'var(--status-risk)';
@@ -42,21 +45,10 @@ function MarketTicker() {
   );
 }
 
-function useClock() {
-  const [now, setNow] = useState(new Date());
-  useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
-  return now;
-}
-
 function GreetingHero({ lang, setView }) {
   const ar = lang === 'ar';
-  const now = useClock();
-  // Abu Dhabi time = UTC+4
-  const ad = new Date(now.getTime() + (now.getTimezoneOffset() + 240) * 60000);
-  const h = ad.getHours();
-  const part = h < 12 ? (ar ? 'صباح الخير' : 'Good morning') : h < 18 ? (ar ? 'مساء الخير' : 'Good afternoon') : (ar ? 'مساء الخير' : 'Good evening');
-  const dateStr = ad.toLocaleDateString(ar ? 'ar-AE' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const timeStr = ad.toLocaleTimeString(ar ? 'ar-AE' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+  const gst = useGstLive(lang);
+  const { greeting: part, dateStr, timeStr, briefingLabel } = gst;
   return (
     <div
       className="card rise greeting-hero"
@@ -79,16 +71,18 @@ function GreetingHero({ lang, setView }) {
             {part}, {ar ? 'راجيف' : 'Rajiv'}.
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.78)', fontSize: 16, maxWidth: 560, lineHeight: 1.5, margin: 0 }}>
-            {ar ? 'إليك ما حدث بين عشية وضحاها عبر أولوياتك الاستراتيجية وفرقك التسعة.' : "Here's what happened overnight across your strategic priorities and your nine teams."}
+            {ar
+              ? 'إليك ما حدث بين عشية وضحاها عبر أولوياتك الاستراتيجية، و4 شركات، و9 فرق.'
+              : "Here's what happened overnight across your strategic priorities, 4 companies, and 9 teams."}
             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, display: 'block', marginTop: 4 }}>{dateStr}</span>
           </p>
           <div style={{ display: 'flex', gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-primary" onClick={() => setView('chat')}><CcIcon name="sparkles" size={17} />{ar ? 'إحاطة الصباح' : 'Open morning briefing'}</button>
+            <button type="button" className="btn btn-primary" onClick={() => setView('chat')}><CcIcon name="sparkles" size={17} />{briefingLabel}</button>
             <button type="button" className="btn btn-ghost btn-on-dark" onClick={() => setView('performance')}><CcIcon name="gauge" size={17} />{ar ? 'لوحة الأداء' : 'Performance'}</button>
           </div>
         </div>
         <div className="greeting-hero__stats">
-          {[{ n: 9, l: ar ? 'إدارات مباشرة' : 'live departments' }, { n: 5, l: ar ? 'وكلاء ذكاء' : 'AI agents' }, { n: 88, l: 'D33' }].map((s) => (
+          {[{ n: 9, l: ar ? 'إدارات مباشرة' : 'live departments' }, { n: 5, l: ar ? 'وكلاء ذكاء' : 'AI agents' }, { n: 88, l: ar ? 'الاقتصاد الصقور' : 'Falcon Economy' }].map((s) => (
             <div key={s.l} style={{ textAlign: 'center' }}>
               <div className="kpi-num" style={{ fontSize: 38, color: '#fff' }}><AnimatedNumber value={s.n} /></div>
               <div className="eyebrow" style={{ color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>{s.l}</div>
@@ -100,15 +94,12 @@ function GreetingHero({ lang, setView }) {
   );
 }
 
-function SignalCard({ s, lang, setView, big }) {
+function SignalCard({ s, lang, big, sources }) {
   const ar = lang === 'ar';
   const L = ar ? s.ar : s;
   const toneColor = { good: 'var(--status-good)', warn: 'var(--status-warn)', risk: 'var(--status-risk)', info: 'var(--status-info)' }[s.tone];
-  const clickable = !!(s.deptLink || s.link);
   return (
     <IntelCard
-      interactive={clickable}
-      onClick={clickable ? () => { if (s.link) setView(s.link); else if (s.deptLink) setView('performance'); } : undefined}
       className={big ? 'intel-card--wide' : undefined}
       style={{ display: 'flex', flexDirection: 'column' }}
     >
@@ -118,33 +109,51 @@ function SignalCard({ s, lang, setView, big }) {
           <div className="eyebrow" style={{ color: toneColor }}>{L.label}</div>
           <div className="kpi-num" style={{ marginInlineStart: 'auto', fontSize: 22, color: toneColor, fontWeight: 600 }}>{s.metric}</div>
         </div>
-        <div className={`type-title ${big ? 'type-title-md' : ''}`} style={{ fontSize: big ? 21 : 17 }}>{L.headline}</div>
+        <div className="intel-signal-headline">
+          <div className={`type-title ${big ? 'type-title-md' : ''}`} style={{ fontSize: big ? 21 : 17, lineHeight: 1.35 }}>
+            {L.headline}
+          </div>
+          {L.headlineSub ? (
+            <div className="intel-signal-headline__sub">{L.headlineSub}</div>
+          ) : null}
+        </div>
         <p className="muted" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, flex: 1 }}>{L.body}</p>
         <div className="cc-card-foot">
           <div className="cc-card-foot__spark">
             <Sparkline data={s.spark} color={toneColor} height={34} />
             <div className="eyebrow muted-3" style={{ fontSize: 10.5, marginTop: 2 }}>{L.metricLabel}</div>
           </div>
-          {(s.deptLink || s.link) && <span className="pill ghost" style={{ height: 28 }}>{ar ? 'تفاصيل' : 'Drill in'} <CcIcon name="arrow-right" size={13} /></span>}
         </div>
+        <IntelCardSources sources={sources} ar={ar} />
       </IntelCardBody>
     </IntelCard>
   );
 }
 
 export function ExecutiveHomePage() {
-  const { settings } = useApp();
+  const { settings, executiveState, startNewChat } = useApp();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
+  const signals = useMemo(() => deriveCommandCentreSignals(executiveState), [executiveState]);
+  const tickerItems = executiveState.liveTicker?.length ? executiveState.liveTicker : TICKER;
+  const signalSourcesById = useMemo(() => {
+    const map: Record<string, ReturnType<typeof getSourcesForSignal>> = {};
+    for (const sig of signals) {
+      map[sig.id] = getSourcesForSignal(sig.id, executiveState);
+    }
+    return map;
+  }, [executiveState, signals]);
   const navigate = useNavigate();
   const setView = (v: string) => { if (v === 'performance') navigate('/performance'); else if (v === 'regulatory') navigate('/regulatory'); else if (v === 'home') navigate('/dashboard'); else navigate(`/${v}`); };
-  const onAsk = (q: string) => navigate(`/chat?seed=${encodeURIComponent(q)}`);
+  const onAsk = (q: string) => {
+    startNewChat();
+    navigate(`/chat?seed=${encodeURIComponent(q)}`);
+  };
   const ar = lang === 'ar';
-  const quick = ar
-    ? ['مرحباً', 'ما الذي حدث اليوم؟', 'قارن إطار الأصول الرقمية مع سنغافورة']
-    : ['Hi', "Good morning — what's happened today?", "Compare ADGM's digital assets framework against Singapore MAS."];
+  const gst = useGstLive(lang);
+  const quick = gst.suggestions.map((s) => s.q);
   return (
     <div className="grid mi-stagger cc-page" style={{ gap: 22 }}>
-      <MarketTicker />
+      <MarketTicker items={tickerItems} />
       <GreetingHero lang={lang} setView={setView} />
 
       <div className="section-head" style={{ marginBottom: -4, marginTop: 6 }}>
@@ -152,11 +161,18 @@ export function ExecutiveHomePage() {
           <div className="eyebrow">{ar ? 'إشارات اليوم ذات الأولوية' : "Today's priority signals"}</div>
           <h2 style={{ fontSize: 22, marginTop: 4 }}>{ar ? 'أهم ما يجب أن تعرفه' : 'The most important things to know'}</h2>
         </div>
-        <span className="pill ghost"><span className="dot good pulse" style={{ color: 'var(--status-good)' }}></span>{ar ? 'محدث 06:00 بتوقيت الإمارات' : 'Updated 06:00 GST'}</span>
+        <span className="pill ghost"><span className="dot good pulse" style={{ color: 'var(--status-good)' }}></span>{ar ? 'يُحدَّث 08:00 و22:00 بتوقيت الإمارات' : 'Updated 08:00 & 22:00 GST'}</span>
       </div>
 
       <div className="grid mi-stagger cc-grid-auto">
-        {SIGNALS.map((s) => <SignalCard key={s.id} s={s} lang={lang} setView={setView} />)}
+        {signals.map((s) => (
+          <SignalCard
+            key={s.id}
+            s={s}
+            lang={lang}
+            sources={signalSourcesById[s.id] ?? []}
+          />
+        ))}
       </div>
 
       <IntelCard rise className="intel-card--insight">
@@ -211,8 +227,8 @@ export function ExecutiveHomePage() {
         ) : (
           <>
             <p>
-              Responses are drawn from approved knowledge sources and illustrative executive
-              scenarios. They aim to offer clarity and do not constitute legal or regulatory advice.
+              Responses are drawn from approved knowledge sources, calendar, and action register
+              records. They aim to offer clarity and do not constitute legal or regulatory advice.
             </p>
             <p>
               If there is any conflict with official ADGM regulations, rules, or guidance, the

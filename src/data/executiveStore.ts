@@ -25,7 +25,9 @@ import { buildFocusAreaResponse } from './focusResponses';
 import { AGENT_LABELS, routeAgentsForQuery } from './agents';
 import { buildPersonalGreetingResponse } from './personalGreeting';
 import { detectChatIntent } from '../utils/chatIntent';
+import { FALCON_KB_SOURCES, retrieveFalconExcerpts } from './kb/falconKb';
 import type { ExecutiveSnapshotPatch } from '../api/executiveSnapshot';
+import type { BloombergArticle } from '../api/executiveSnapshot';
 import {
   actionNow,
   agentTag,
@@ -41,7 +43,7 @@ const MARKET_ROTATION: ExecutiveState['marketSnapshot'][] = [
     gccEquities: '+0.8%',
     digitalAssetsWoW: '+12%',
     competitorNote: 'DIFC fintech sandbox expansion announced',
-    topSector: 'Climate tech (D33 score 88)',
+    topSector: 'Climate tech (Falcon Economy score 88)',
   },
   {
     gccEquities: '+1.1%',
@@ -206,7 +208,18 @@ export interface ExecutiveState {
     digitalAssetsWoW: string;
     competitorNote: string;
     topSector: string;
+    asOf?: string;
+    bloombergLead?: string;
+    gccEquitiesSource?: string;
+    gccEquitiesSourceUrl?: string;
+    digitalAssetsSource?: string;
+    digitalAssetsSourceUrl?: string;
   };
+  bloombergArticles?: BloombergArticle[];
+  bloombergFetchedAt?: string;
+  regulatoryHeadline?: string;
+  liveTicker?: { k: string; v: string; c: number }[];
+  liveTickerFetchedAt?: string;
 }
 
 const SEED_DOCUMENTS: DocumentFile[] = [
@@ -218,7 +231,7 @@ const SEED_DOCUMENTS: DocumentFile[] = [
     uploadedAt: '2026-06-01',
     status: 'ready',
     summary:
-      'Q2 board materials: FSRA performance, strategic partnerships, D33 alignment. Three board decisions flagged.',
+      'Q2 board materials: FSRA performance, strategic partnerships, Falcon Economy alignment. Three board decisions flagged.',
     keyInsights: [
       'Digital assets framework — board decision required',
       'Licence growth +12% YoY',
@@ -270,17 +283,56 @@ const SEED_DOCUMENTS: DocumentFile[] = [
   },
   {
     id: 'd5',
-    name: 'D33_Strategic_Alignment_2024-26.xlsx',
+    name: 'Falcon_Economy_Strategic_Alignment_2024-26.xlsx',
     type: 'XLSX',
     size: '890 KB',
     uploadedAt: '2026-05-20',
     status: 'ready',
-    summary: 'Knowledge Graph temporal view of 2024 ADGM strategic decisions vs D33 KPIs.',
+    summary: 'Knowledge Graph temporal view of 2024 ADGM strategic decisions vs Falcon Economy KPIs.',
     keyInsights: ['Alignment score 82/100', 'Digital assets milestone Q2 2026', 'Italy engagement complete'],
     focusAreaIds: ['knowledge', 'strategic-intelligence'],
     clauses: [],
   },
 ];
+
+function kbSeedSizeMb(src: { pageEstimate?: number; id: string }): string {
+  if (src.id === 'falcon-economy') return '10.7 MB';
+  if (src.id === 'falcon-strategy') return '2.3 MB';
+  const mb = Math.max(0.2, (src.pageEstimate ?? 12) * 0.08);
+  return `${mb.toFixed(1)} MB`;
+}
+
+/** Indexed institutional PDFs — Falcon + ADGM Archive (see falconKbChunks.json) */
+const FALCON_SEED_DOCUMENTS: DocumentFile[] = FALCON_KB_SOURCES.map((src) => ({
+  id: src.docId,
+  name: src.pdfName,
+  type: 'PDF',
+  size: kbSeedSizeMb(src),
+  uploadedAt: src.date,
+  status: 'ready',
+  inKnowledgeBase: true,
+  kbCategory: src.category,
+  kbDocumentDate: src.date,
+  kbCompanyId: src.category === 'strategy' ? 'adio' : 'adgm',
+  summary: src.summary.replace(/\s+/g, ' ').slice(0, 500),
+  keyInsights: [
+    src.title,
+    `Knowledge base · ${src.handle} · ${src.chunkCount} indexed sections`,
+    src.category === 'policy'
+      ? 'ADGM regulations and federal instruments — cite KB handles in answers'
+      : 'Abu Dhabi economic strategy — cite KB handles in answers',
+  ],
+  focusAreaIds: ['knowledge', src.category === 'policy' ? 'regulatory' : 'strategic-intelligence'],
+  clauses: [],
+}));
+
+function ensureFalconKbDocuments(docs: DocumentFile[]): DocumentFile[] {
+  const byId = new Map(docs.map((d) => [d.id, d]));
+  for (const seed of FALCON_SEED_DOCUMENTS) {
+    if (!byId.has(seed.id)) byId.set(seed.id, seed);
+  }
+  return Array.from(byId.values());
+}
 
 function buildSeedConversations(today: Date): Conversation[] {
   const stamp = new Date(
@@ -328,7 +380,10 @@ export function createSeedState(): ExecutiveState {
       openActions: actionRegister.filter((a) => a.status !== 'done').length,
     },
     departments,
-    documents: applyDocumentDates(structuredClone(SEED_DOCUMENTS), today),
+    documents: applyDocumentDates(
+      structuredClone([...SEED_DOCUMENTS, ...FALCON_SEED_DOCUMENTS]),
+      today,
+    ),
     conversations: buildSeedConversations(today),
     meetings: buildDynamicMeetings(today),
     actionRegister,
@@ -370,6 +425,11 @@ export function applyExecutiveSnapshotPatch(
     meetings: patch.meetings,
     actionRegister: patch.actionRegister,
     marketSnapshot: patch.marketSnapshot,
+    bloombergArticles: patch.bloombergArticles ?? state.bloombergArticles,
+    bloombergFetchedAt: patch.bloombergFetchedAt ?? state.bloombergFetchedAt,
+    regulatoryHeadline: patch.regulatoryHeadline ?? state.regulatoryHeadline,
+    liveTicker: patch.liveTicker ?? state.liveTicker,
+    liveTickerFetchedAt: patch.liveTickerFetchedAt ?? state.liveTickerFetchedAt,
     documents,
     departments,
     metrics: {
@@ -407,7 +467,10 @@ export function loadExecutiveState(): ExecutiveState {
     if (parsed.version !== 4) {
       return refreshExecutiveState(parsed, { keepConversations: true });
     }
-    return parsed;
+    return {
+      ...parsed,
+      documents: ensureFalconKbDocuments(parsed.documents ?? []),
+    };
   } catch {
     return createSeedState();
   }
@@ -534,15 +597,24 @@ export function getSourcesFromHandles(state: ExecutiveState, handles: string[]):
 export function resolveAnswerGrounding(
   answerText: string,
   state: ExecutiveState,
-  fallbackDocIds: string[],
-): { grounding: GroundingLevel; sources: Source[] } {
+  _fallbackDocIds: string[], // kept for API compat — no longer used as fallback
+): { grounding?: GroundingLevel; sources: Source[] } {
   const records = buildGroundedRecords(state);
   const meta = deriveGroundingMeta(answerText, records);
+
+  // Only show sources that Claude actually cited via handles in the response text.
+  // Never fall back to guessing — that produces fake "adgm.com" chips on unrelated answers.
+  if (!meta.citedHandles.length) {
+    return { grounding: undefined, sources: [] };
+  }
+
   const fromHandles = getSourcesFromHandles(state, meta.citedHandles);
-  const fallback = getSourcesForQuery(state, fallbackDocIds);
-  const merged = enrichSources(fromHandles.length ? fromHandles : fallback, state);
+  const merged = enrichSources(fromHandles, state);
   const visible = panelSources(merged);
-  return { grounding: meta.level, sources: visible.length ? visible : merged };
+  if (!visible.length) {
+    return { grounding: undefined, sources: [] };
+  }
+  return { grounding: meta.level, sources: visible };
 }
 
 export interface IntelligentResponse {
@@ -593,13 +665,13 @@ ${plainTerms('ADGM is better for large banks and funds; Singapore is ahead on re
 ${metricTable(
   ['What it means', 'Number', 'Signal'],
   [
-    ['ADGM rules strength (demo benchmark)', '88/100', `${signalEmoji('good')} Strong`],
-    ['MAS rules strength (demo benchmark)', '90/100', `${signalEmoji('watch')} Slightly ahead`],
+    ['ADGM rules strength (benchmark)', '88/100', `${signalEmoji('good')} Strong`],
+    ['MAS rules strength (benchmark)', '90/100', `${signalEmoji('watch')} Slightly ahead`],
     ['Sales vs target', revenue, signalEmoji('watch')],
     ['GCC markets today', state.marketSnapshot.gccEquities, signalEmoji('good')],
   ],
 )}
-**D33 / framework**
+**Falcon Economy / framework**
 ${scoreBar(88)}
 
 ${metricTable(
@@ -615,38 +687,46 @@ ${agentTag(['Policy AI', 'Strategy AI'])}`,
     };
   }
 
-  if (q.includes('d33') || (q.includes('2024') && q.includes('strategic'))) {
+  if (q.includes('falcon') || (q.includes('2024') && q.includes('strategic'))) {
+    const excerpts = retrieveFalconExcerpts(q, 6);
+    if (excerpts.length) {
+      const excerptBlock = excerpts
+        .map(
+          (ex) =>
+            `**[${ex.handle}] ${ex.docTitle}**\n${ex.text.slice(0, 520).replace(/\n+/g, ' ').trim()}…`,
+        )
+        .join('\n\n');
+      return {
+        agents: ['strategy', 'cos'],
+        confidence: 0.94,
+        sourceDocIds: ['d6', 'd7'],
+        followUps: [
+          'Summarise economic clusters from Falcon Economy 2025–2045',
+          'Compare Falcon Strategy observations vs current ADGM priorities',
+          'Which enablers need FSRA / ADGM alignment first?',
+        ],
+        content: `## Falcon Economy & Strategy — knowledge base
+
+${plainTerms('Answer grounded in the two approved Falcon PDFs in the knowledge base — not generic scorecards.')}
+
+${excerptBlock}
+
+**Sources (mandatory):** ${excerpts.map((e) => e.handle).join(', ')} · ${FALCON_KB_SOURCES.map((s) => s.pdfName).join(' · ')}
+${agentTag(['Strategy AI', 'Chief of Staff AI'])}`,
+      };
+    }
     return {
       agents: ['strategy', 'cos'],
       confidence: 0.89,
-      sourceDocIds: ['d5', 'd1'],
+      sourceDocIds: ['d6', 'd7', 'd5'],
       followUps: [
-        'Open performance dashboard — Strategy department',
-        'Which milestones are at risk?',
-        'Prepare board narrative on D33 score',
+        'Open Falcon Economy Strategy 2025–2045 in Knowledge Base',
+        'Which economic clusters are prioritised to 2045?',
+        'Prepare board narrative on diversification enablers',
       ],
-      content: `## 2024 decisions vs D33
+      content: `## Falcon Economy & Strategy
 
-${plainTerms('Most 2024 bets are on track; talent retention is the one area that needs attention.')}
-**Overall D33 alignment (demo store)**
-${scoreBar(82)}
-
-${metricTable(
-  ['Initiative', 'Status', 'Signal'],
-  [
-    ['Digital assets framework', 'On track · Q2 2026', signalEmoji('good')],
-    ['Italy financial engagement', 'Done · May 2026', signalEmoji('good')],
-    ['Fund reforms (ACCESSADGM)', 'On track · licences +12% YoY', signalEmoji('good')],
-    ['Talent pipeline', `At risk · attrition ${attrition}`, signalEmoji('risk')],
-  ],
-)}
-${metricTable(
-  ['Org health', 'Number', 'Signal'],
-  [
-    ['Departments on track', `${state.metrics.departmentsOnTrack} / 9`, signalEmoji('good')],
-    ['Open actions', String(state.metrics.openActions), signalEmoji('watch')],
-  ],
-)}
+${plainTerms('Falcon documents are in the knowledge base — ask a specific question (clusters, FDI, non-oil GDP, enablers) for cited excerpts.')}
 ${agentTag(['Strategy AI', 'Chief of Staff AI'])}`,
     };
   }
@@ -724,7 +804,7 @@ ${metricTable(
     ['MAS policy comparison note', '12 Jun', signalEmoji('watch')],
   ],
 )}
-**Market & ops (demo)**
+**Market & operations**
 ${scoreBar(82)}
 | Metric | Value | Signal |
 |--------|-------|--------|
@@ -759,7 +839,7 @@ ${metricTable(
   [
     ['Time', '15:00 UAE today', signalEmoji('good')],
     ['With', mtg.attendees, '—'],
-    ['Partner size', '~USD 300bn AUM (demo)', signalEmoji('good')],
+    ['Partner size', '~USD 300bn AUM', signalEmoji('good')],
   ],
 )}
 ${overdue ? actionNow(`Send overdue item: ${overdue.title} (was due ${overdue.due}).`) : `${signalEmoji('good')} No overdue actions.`}
@@ -791,9 +871,9 @@ ${agentTag(['Chief of Staff', 'Relationship', 'Strategy'])}`,
       ],
       content: `## Abu Dhabi — top opportunities
 
-${plainTerms('Climate tech and tokenised funds are the best bets right now; both fit D33 and ADGM’s strengths.')}
+${plainTerms('Climate tech and tokenised funds are the best bets right now; both fit Falcon Economy and ADGM’s strengths.')}
 ${metricTable(
-  ['Sector', 'D33 score (demo)', 'Signal'],
+  ['Sector', 'Falcon Economy score', 'Signal'],
   [
     ['Climate tech', '88/100', signalEmoji('good')],
     ['Tokenised funds / digital assets', '86/100', signalEmoji('good')],
@@ -830,21 +910,21 @@ ${plainTerms('Strong quarter to report; mention licence growth and flag talent r
 ${metricTable(
   ['Metric', 'Value', 'Signal'],
   [
-    ['D33 alignment', '82/100', signalEmoji('good')],
+    ['Falcon Economy alignment', '82/100', signalEmoji('good')],
     ['Licence growth', '+12% YoY', signalEmoji('good')],
     ['Departments green', `${state.metrics.departmentsOnTrack}/9`, signalEmoji('good')],
     ['HR attrition', attrition, signalEmoji('watch')],
     ['Sales vs target', revenue, signalEmoji('watch')],
   ],
 )}
-**D33 alignment**
+**Falcon Economy alignment**
 ${scoreBar(82)}
 
 ### English (short)
-Your Excellency, ADGM had a strong Q2: more licences, a healthy FSRA pipeline, and D33 score 82/100. Watch-items: competition from DIFC fintech and staff attrition.
+Your Excellency, ADGM had a strong Q2: more licences, a healthy FSRA pipeline, and Falcon Economy score 82/100. Watch-items: competition from DIFC fintech and staff attrition.
 
 ### العربية (مختصر)
-معالي الشيخ، أداء قوي للربع الثاني مع نمو التراخيص ومحاذاة D33. يجب متابعة المنافسة التقنية والاحتفاظ بالمواهب.
+معالي الشيخ، أداء قوي للربع الثاني مع نمو التراخيص ومحاذاة الاقتصاد الصقور. يجب متابعة المنافسة التقنية والاحتفاظ بالمواهب.
 
 *Full draft: Ministerial_Note_Q2_AR_EN.docx*
 ${agentTag(['Communications AI', 'Strategy AI'])}`,
@@ -911,7 +991,7 @@ ${metricTable(
 )}
 
 **Analysis (${AGENT_LABELS[agents[0]]})**
-I don't have a pre-built demo script for this exact wording. Name a **meeting**, **regulator**, **stakeholder**, or **document** and I'll answer directly from calendar, CRM, and knowledge-base sources.
+I don't have a matching briefing template for this exact wording. Name a **meeting**, **regulator**, **stakeholder**, or **document** and I'll answer from calendar, CRM, and knowledge-base sources.
 
 ${nextMeeting ? actionNow(`Or ask: “Brief me on ${nextMeeting.title}” for a calendar-grounded answer.`) : ''}
 ${agentTag(agents.map((a) => AGENT_LABELS[a]))}`,

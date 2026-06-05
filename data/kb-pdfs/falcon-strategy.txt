@@ -1,0 +1,403 @@
+Falcon Strategy
+Executive Summary
+
+July 2024
+3 economic phases grew Abu Dhabi’s economy 12x in the last 40 years
+
+          Abu Dhabi Nominal GDP (1980 – 2022), USD Bn
+
+
+              Oil-driven prosperity                                        Build-up phase                  Diversification drive
+              (80s – 2000)                                                 (2000 – 2010)                   (2010 – 2020)
+
+
+
+
+               Non-Oil
+                                                                                                                  4.9%
+               Oil
+                                                                                                                                   303
+
+                                                                                            13.0%
+                                                                                                    174
+                                                                        5.1%
+                                           2.0%
+                                                                                      51
+                 26                                              31
+
+               1980                                              1990                2000           2010                           2022
+
+
+ Non-Oil CAGR                             8.0%                          6.4%                12.8%                5.1%
+
+ Oil CAGR                                 -1.2%                         3.9%                13.3%                4.7%
+
+Source: SCAD data, using exchange rate of 3.67 from AED to USD                                                                            2
+     However, certain lagging observations will need to be addressed
+
+                                                 Stagnant Economy                                                                                         Low Non-Oil FDI Inflows                                                                                                                            Low Non-Oil Exports
+       Abu Dhabi’s non-oil economy has largely remained                                                                    Abu Dhabi’s domestic and foreign investments levels                                                                                                  Abu Dhabi’s non-oil exports as a percentage of GDP is
+       stagnant as its diversification efforts have been limited                                                           are low, showed by low non-oil FDI inflows and non-                                                                                                  much lower than benchmark countries
+       to a few sectors                                                                                                    oil gross fixed capital formation                                                                                                                    Average Non-Oil Exports as a % of GDP [2016-2022]
+       Abu Dhabi Nominal GDP with Non-Oil Contribution
+                                                                                                                           FDI Inflows [USD billion, 2019-2022]
+       [USD1 billions, 2007-2022]
+                                                                                                                             Singapore           Israel           UAE       South Korea          Saudi Arabia          Estonia    Abu Dhabi
+
+
+
+400
+                                            Non Oil Contribution
+
+                                               68%        66%
+                                                                         Non Oil GDP         Oil GDP
+
+                                                                                            69%                      80                                                                        131.2
+                                                                                                                                                                                                                              141.2                                                                          75%                              16%
+                                    65%                                           62%                         303
+                                                                       58%                             59%                 97.5
+300                50%                                           254                                          52%    60
+                                                          222                     240                  237
+                                    212        207
+200                174                                                                      185               158
+                                                                                                                     40
+                                                                                                                                                              72.9                                                             22.7
+                                    138                   146
+                                                                       148        149                  140                                                                                            20.7                  27.8 18.0 7.9                                                                   Benchmarks                   Abu Dhabi
+                       88                      141                                          127                                                                    23.1 19.9                      21.5     22.1 19.3
+100                                                                                                                  20      17.4 17.9
+                                                                                                                                         9.6
+                                                                                                                                                                                                                                         1.2
+                                                                                                              145                                                         8.8 5.4
+                       86            74         66         75          106        91         58         97                                     4.6 3.1 0.2                          3.4 -0.1                            0.7                 0.9
+        0                                                                                                            0                                                                                                                                                          Benchmarks include Singapore, Estonia, South Korea, Israel
+                   2010             2015       2016       2017         2018      2019       2020       2021   2022                   2019                                2020                                  2021                   2022
+
+
+
+
+                                           Low Non-Oil Productivity                                                                                       Low-Skilled Workers Mix                                                                                                Low R&D Spending & Innovation Output
+     Economic output is being generated by sectors that                                                                    The workers mix in Abu Dhabi is characterized by a                                                                                   Low R&D spending and innovation output in Abu Dhabi
+     are less productive, indicating lack of focus on high                                                                 predominance of low-skilled labor and a low                                                                                          has wide-reaching impacts on the overall economy
+     productive sectors                                                                                                    percentage of high-skilled workers
+                                                                                                                                                                                                                                                                R&D spending (% GDP) and Productivity [Constant GDP, 2021]
+    Non-oil productivity and GDP contribution2 [AED Millions, %, 2022]                                                     Employment by Skill [Thousands persons (% total employment), 2022]
+
+
+
+
+                                                                                                                                                                                                                                                  Productivity (US$/employed)
+                                                                                                                                                                                                                                                                                0.7
+                                                                                                                                                                                                                                                                                                                           SGP
+               5                                                                                       Abu Dhabi Sectors          28.229                  2.547              2.351                 3.952               3.613          2.342                                     0.6                                NOR
+                                                                                                                                                                                                                                                                                                                           DNK      USA
+                                                                                                                                                                                                                                        598                                     0.5                                            BEL SWE
+               4                                                                                                                  11.175                                                                                1.490                                                                                        NLD ISL                                             ISR
+
+
+Productivity
+                   Low GDP contribution,                                      High GDP contribution,                                                      1.202                                        2.051                           (26%)
+                                                                                                                                  (40%)                                       1.450                                     (41%)                                                   0.4
+               3
+                   high productivity                                          high productivity                                                           (47%)
+                                                                                                                                                                              (62%)
+                                                                                                                                                                                                       (52%)                                                                                                ITA CAN        FIN    AUT
+                                                                                                                                                                                                                                       1.040                                    0.3                     ESP         FRA       DEU JPN
+                                                                              High GDP contribution,                                                                                                                                   (44%)                                                                   EST
+               2                                                              low productivity                                    12.868                                                                                1.479                                                               KSA      AD               SVN                                    KOR
+                                                                                                                                  (46%)                   1.129                                        1.463            (41%)                                                   0.2                     GRC
+                                                                                                                                                                               640
+               1                                 Low GDP contribution,                                                                                    (44%)                                        (37%)                                                                            ROU         SVK POL      PRT CZE
+                                                                                                                                   4.186
+                                                                                                                                                                              (27%)
+                                                                                                                                                                                                                         644
+                                                                                                                                                                                                                                        704                                     0.1                          HUN
+                                                      low productivity                                                                                     216                 260                      439                            (30%)
+                                                                                                                                   (15%)                                                                                (18%)
+               0                                                                                                                                           (8%)               (11%)                    (11%)                                                                    0.0
+                   0        1   2     3    4    5     6   7      8   9 10 11 12 13 14 15 16 17 18 19                                KR                       IE                 SG                      IL               HK             AD                                            0.0     0.5     1.0    1.5    2.0     2.5   3.0   3.5     4.0   4.5   5.0    5.5         6.0
+                                                          GDP Contribution %                                                                                 High-Skilled           Medium-Skilled                Low-Skilled                                                                                             R&D Spending (%GDP)
+
+     Source: SCAD, World Investment Report 2023, World Bank, ILO, 1Exchange rate of 3.67 from AED to USD; 2Productivity is calculated as the GDP output per worker,
+                                                                                                                                                                                                                                                                                                                                                                                     3
+To address the shortcomings, 6 guiding principles were defined with a
+north star ambition…
+
+                                        $1 Trillion economy by 2045
+
+
+
+      Resilient                   Skilled                    Competitive                   Export Driven                        Agile
+
+
+Diversifying the          Cultivating a Highly          An attractive business         Shifting to non-oil            Exploiting advanced
+economy for sustainable   Skilled Workforce and         environment with;              export-led economy,            technologies and
+growth and self           unleashing the power of       •   Favorable regulations      with a focus on                emerging disruptive
+sufficiency with less     automation to enhance                                        manufacturing                  economic trends with a
+reliance on oil exports   operational efficiency        •   Strong infrastructure      industries (i.e., SAVI,        strong emphasis on
+and imports of key        and boost productivity        •   Growth/investment          metals etc.)                   research and
+commodities                                                 opportunities                                             development (R&D)
+
+
+
+                                      Fostering a cohesive and attractive environment for residents and visitors with best-in-class
+               Quality of Life        infrastructure and state of the art experiences while maintaining affordable cost of living
+
+                                                                                                                                               4
+… to shape a resilient, highly skilled, and export-driven economy
+  All monetary values expressed in nominal terms
+
+
+                                                                                                                              From                                                                                                                               To
+                                                                            Metrics                                             2022                                                                                                         2045 $1 tn economy
+
+  Shift to a more diverse and                                               Non-oil                                                58                                                         X3.0                                                    160 – 190
+  knowledge-based economy                                                   productivity1                               Thousand USD                                                                                                                 Thousand USD
+
+
+
+  With a higher skilled labor                                               Workforce1                                            2.8                       26% skilled                       X1.9                       46% skilled                    5.1 – 5.5
+  force                                                                     Total employed
+                                                                                                                                Million                                                                                                                         Million
+
+
+  A population growth that
+  maintains demographic                                                     Demographics2                                         3.7                     20% Emiratis                        X2.0                     17% Emiratis
+                                                                                                                                                                                                                                                        7.3 – 7.6
+                                                                            Total population
+                                                                                                                                Million                                                                                                                         Million
+  balance
+
+
+  Shifting from consumption                                                 Non-oil exports3                                       63                                                         X6.8                                                  ~381 – 463
+  to an export-led economy                                                  (Goods and services)
+                                                                                                                            Billion USD                                                                                                                  Billion USD
+
+Source: DED Economic Model, 1. Estimated using latest employment data from establishment survey in 2020, 2. Estimated from latest census conducted in 2021, number is currently under revision, 3. 2022 figure estimated. Non-oil exports excludes re-exports
+                                                                                                                                                                                                                                                                          5
+The $1 Trillion GDP goal will be achieved through 3 key levers
+Abu Dhabi’s GDP, nominal in USD bn                                                                                                                                                      Non-Oil            Oil   X    Cumulative financial capital required2, USD
+
+
+
+                                                     ~0.37 – 0.74 Tn                                                              ~1.49 – 1.9 Tn                                                         ~0.01 – 0.02 Tn                   ~2.24 Tn3
+
+                                                         Infrastructure
+                                                          expenditure
+                                                                                                                                                                                                                 59                            1 Tn
+                                                                                                                                                                       271
+                                                                                                                                                                                                         Capitalize on new
+                                                                                                                                                                      100%                               economic trends
+                                                                                                                     361                                                                                   through agile
+                                                                                                                                                                                                           intervention                        76%
+                                                                                                                                                           Active cluster
+                                                                                                               272 (75%)                                  orchestration to
+                                                                                                                                                            drive further
+                                                                  310                                           89 (25%)                                 economic growth
+                  140
+                                                                  50%
+                                                                                                                       1                                                 2                                        3
+                    42%                                                                                                                                                                                                                        24%
+                    58%                                           50%
+
+                   2006                                           2022                                   Organic growth1                               New clusters growth                               Spillover activities                  2045
+
+
+
+1. Based on 2% CAGR for Oil GDP and 4.5% CAGR for Non-Oil GDP, 2. Based on benchmarking and high-level estimates of comparable markets, 3. 76%, ~1.41 – 2 Tn USD, goes to non-oil economic activities,
+                                                                                                                                                                                                                                                                6
+A robust process was adopted to identify and shortlist growth plays...
+Clusters Selection process
+                                                          Phase 1                                                                                                                             Phase 2                                                    Execution
+                                                                                                                                                                                                                               Cluster
+            Sectors / Subsectors                                         Sectors / Subsectors Baseline                                                                                                                                                  Enablers Plan
+                                                                                                                                                        Clusters Development                                                 Opportunity
+               Prioritization                                                       Analysis                                                                                                                                                              Detailing
+                                                                                                                                                                                                                              Detailing
+                                                       GICS               1       Definition and value chain                                    •     Define cluster plays and                                         •     Abu Dhabi cluster      •   Design and
+ Sectors                                                                                                                                              opportunities                                                          positioning                implement
+ Industry Groups                                                                                                                                                                                                                                        government
+                                                                          2       Market size and growth                                        •     Assess potential GDP impact                                      •     Economic targets
+ Industries                                                                                                                                                                                                                                             enablers and
+                                                    Short-list
+                                                                                                                                                      horizon for overall clusters                                           for cluster (GDP,
+ Sub-Industries                                                                                                                                                                                                                                         initiatives
+                                                                                                                                                                                                                             jobs, investments
+                                                                          3       Trends and innovations
+ Segments                                                                                                                                                                                                                    required, etc.)        •   Align with all
+                                                                                                                                                                                                                       •     Trade,                     stakeholders
+  Alignment with AD’s priorities                                          4       AD ecosystem
+                                                                                                                                                                                                                             partnerships and       •   Develop regional
+  •     National resilience
+                                                                                                                                                                                                                             market access              strategies
+  •     Potential to export                                               5       Gaps and opportunities for AD                                                                                                              requirements
+                                                                                                                                                                                                                                                    •   Activate G2G
+  •     Favorable natural conditions
+                                                                                  Opportunity sizing (GDP and                                                                                                          •     Enablers (human            partnerships
+  Global markets’ viability                                               6                                                                                                                                                  capital, funding
+                                                                                  jobs)
+  •     Size and growth                                                                                                                                                                                                      and incentives)
+  •     Innovation potential                                              7       Enablers
+
+
+
+                         163                                                                       20                                                               +120                                                             13
+           Sub-industries Analyzed                                            Prioritized Economic Sectors1                                             Investment Opportunities                                       Playbooks Completed
+
+Note: GICS taxonomy defines 11 Sectors | 25 Industry Groups | 74 Industries | 163 Sub-industries. The sub-segments are further detailing of a specific sub-industry into more granular activities (e.g. Electric Vehicles under Automotive, etc.)
+1Total market size of the selected 20 priority sectors in 2022 amounted to USD ~58 Tn, with a minimum CAGR of 5%
+…that are grouped into complementary and interrelated themes
+        Resources                    Technology                Liveability
+
+
+
+
+                                 Value Added Services
+  For each identified cluster, key information has been gathered to create
+  an execution playbook
+  A unified cluster playbook framework has been implemented across 13 clusters
+
+
+
+
+        Overview                  Global Key Trends                 Opportunities                     Enablers                   Implementation
+                                                                                                                                    Roadmap
+
+
+
+
+Identified growth potential,   Analyzed key trends in each    Highlighted opportunities in    Identified a set of enablers   Developed a comprehensive
+  strategic vision, and key    cluster to demonstrate their     each cluster to showcase       for each cluster related to    roadmap illustrating the
+  partners for each cluster       impact on revenue and       potential partners and socio-     infrastructure, funding,      cluster's progression over
+                                      advancements                 economic impact                talent, policies, G2G                the years
+                                                                                                 agreements, and R&D
+ Key enablers were identified across each cluster
+ Examples across the enablers for different clusters                                                                                                      Illustrative
+
+
+
+     Physical & Digital Infrastructure                                                               Regulatory Enhancement
+                                                                                                     •Implement energy transition regulations (e.g., distributed
+      Clean Electricity          5.4GW          Gas          ~80 MMBtu                                renewable energy generation)
+
+      H2        ~1.5K Kg             Cooling Water             ~1 Mn M3                              •Introduce certifications for carbon credit and GHG
+                                                                                                      emissions
+           Metals & Critical Minerals     Chemicals          Semiconductors
+                                                                                  6          1                          Energy Transition     Chemicals
+
+
+
+
+Financing & Funding                                                                                        G2G Agreements for Market Access
+•Establish specialized VC funds focused on high-growth                        5       ENABLERS   2         •Establish country relationships across all clusters to:
+ digital sectors
+                                                                                                             Source material
+•Create loan guarantee programs for SMEs
+                                                                                                             Access talents and tech
+              Digital & Technology      Financial Services                                                   Export products
+                                                                                  4          3
+
+    Talent Development & Retention                                                                    Innovation and R&D
+    •Introduce specialized programs in AI                                                             •Provide R&D grants for clinical trials
+
+    •Attract specialized talent to build competitive niches (e.g.,                                    •Provide R&D grants for tech startups and enhance local IP
+     broker and asset management, financial reserving, etc.)                                           commercialization
+
+               SAVI      Digital & Technology      Financial Services                                             Biotech & Life Sciences   Digital & Technology
+                                                                                                                                                                         10
+10 parameters were taken into consideration to prioritise the clusters
+
+                                                                                       1    Resilience/Complexity   Diversity of economic sectors and activities
+
+                                    1
+                                                                                       2    Skill Mix               Ratio of high and medium-skill to lower-skill jobs
+          10                                                           2
+
+                                                                                       3    Competitiveness         Ratio of incentives required to capital expenditures
+
+9                                                                                  3
+                                                                                       4    Export Value            Total export value (2045)
+
+
+                                                                                       5    Agility/Productivity    Productivity measured by total GDP1 per employee
+8                                                                                  4
+
+
+                                                                                       6    Quality of Life         Average annual salary per cluster
+
+           7                                                           5
+                                                                                       7    Lead Time               Time required to realize impact on GDP1
+                                               6
+                                                         Illustrative                  8    Regulations             Number of regulatory and policy changes required
+
+
+                                                                                       9    Energy Requirements2    Estimated energy capacity requirements
+
+    1.   Direct + Indirect GDP contribution. Direct contribution is the sum of
+         EBTIDA, total CapEx, total wages, VAT, subtracting the subsidies, while       10   Total GDP1              GDP contribution of the cluster (2045)
+         the indirect is determined through a multiplier based on benchmarks
+    2.   See appendix
+                                                                                                                                                                           11
+Defining the strategic ambition creates focus and prioritizes efforts
+                          Top 3 Priority Sectors                                       DED/ADIO Focus
+
+                  1                                       2                                    3                                          4
+Strategic
+Ambition                 Megatrend Enablers                         No Regrets                                 Big Bets                           Cruise Control
+
+
+                                                                                                                                                 Advanced Services
+Clusters                     Energy Transition                  Digital & Technology                              SAVI
+                                                                                                                                                   & Industries
+                              Semiconductors                     Financial Services                      Alternative Proteins                         Chemicals
+                                                               Media, Entertainment
+                          Biotech & Life Sciences                                                                                                 Travel & Tourism
+                                                                    & Gaming
+                                                                                                                                                  Trade & Logistics
+                                                                                                                                                  Metals & Critical
+                                                                                                                                                     Minerals
+
+                      • Creating an enabling regulatory   • Implementing progressive and           • Accelerate speed-to-market           • Align and orchestrate opportunities
+                        framework                           agile regulatory frameworks              through regulatory sandboxes           with existing stakeholders and
+DED / ADIO Role       • Supporting champions by           • Promote and incentivize                • Seed and anchor disruptive
+                                                                                                                                            national champions
+                        providing globally competitive      companies to drive FDI, capital          opportunities to attract follow-on   • This includes sectors such as
+                        incentive programs                  and employment                           investments                            construction, real estate, utilities
+                                                                                                                                            professional services and education
+
+
+Incremental Incentives
+(Over 20 years)                       -                               $13 Bn                                   $7 Bn                                   $0 Bn
+                                                                                       $1 Bn per annum
+                                                                                                                                                                          12
+ Moving forward, ADIO will take a central role in orchestrating the
+ execution of the Falcon Economy Strategy
+A B U D H A B I I N V E S T M E N T O F F I C E O P E R AT I O N A L M O D E L   BUSINESS UNITS
+
+                                                                                 Cluster Business Development              Execute economic projects
+                                                                                                                           which includes targeted
+                                      Chairman                                   Investor Growth & Promotion               investment attraction and
+                         Department of Economic Development                                                                value creation while
+                                                                                 Enterprise, Trade & Industry              meeting defined targets and
+                                                                                                                           KPIs to drive growth and
+                                  Director General                               Special Programs                          achieve strategic objectives
+                                                                                 Includes:
+                                                                                 • Musataha Program                      • Tourism Development Program
+       Internal Audit                                           Finance          • Private-Public Partnerships Program   • UHNWIs Program
+                                                                                 • Retail Development Program            • Al Ain/ Al Dhafra Activation
+                                                           Legal, Governance &
+    Corporate Services
+                                                               Compliance        SUPPORT UNITS
+
+                                                                                 Finance
+Marketing & Communications                                      Strategy
+                                                                                 Internal Audit                            Provide support to business
+                                                                                                                           units which includes aligning
+                                                                                 Strategy                                  strategies across and with
+                                                                                                                           the broader Abu Dhabi
+                                                                                 Legal, Governance & Compliance            vision, supporting in
+Cluster Business        Investor Growth     Enterprise, Trade         Special
+ Development              & Promotion          & Industry            Programs                                              investment attraction and
+                                                                                 Marketing & Communications                evaluating their Impact
+                                                                                 Corporate Services
+

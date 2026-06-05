@@ -4,6 +4,11 @@ import type { ExecutiveState } from '../data/executiveStore';
 import type { AgentType, ChatMessage } from '../types';
 import { detectChatIntent } from '../utils/chatIntent';
 import {
+  falconExcerptsToGroundedRecords,
+  isFalconKbQuery,
+  retrieveFalconExcerpts,
+} from '../data/kb/falconKb';
+import {
   actHandle,
   buildGroundedRecords,
   calHandle,
@@ -11,6 +16,11 @@ import {
   kbHandle,
   mktHandle,
 } from '../utils/sourceHandles';
+import {
+  formatGstClock,
+  greetingForGstTime,
+  greetingPeriodForGst,
+} from '../utils/gstGreeting';
 
 function meetingCrmSlug(title: string): string {
   const t = title.toLowerCase();
@@ -37,7 +47,12 @@ export function buildChatContext(state: ExecutiveState, options?: ChatContextOpt
       : []);
 
   const groundedRecords = buildGroundedRecords(state);
+  const falconExcerpts = query && isFalconKbQuery(query) ? retrieveFalconExcerpts(query) : [];
+  if (falconExcerpts.length) {
+    groundedRecords.push(...falconExcerptsToGroundedRecords(falconExcerpts));
+  }
   const mktDate = state.lastSync.slice(0, 10);
+  const gstAt = new Date();
 
   return {
     executiveName: EXECUTIVE_USER.fullName,
@@ -47,17 +62,24 @@ export function buildChatContext(state: ExecutiveState, options?: ChatContextOpt
     userQuestion: query,
     chatIntent,
     conversationalMode:
-      chatIntent === 'greeting' ? 'greeting' : chatIntent === 'thanks' ? 'thanks' : undefined,
+      chatIntent === 'greeting'
+        ? 'greeting'
+        : chatIntent === 'thanks'
+          ? 'thanks'
+          : chatIntent === 'irrelevant'
+            ? 'irrelevant'
+            : undefined,
     routedAgents,
     primaryAgent: routedAgents[0] ?? 'cos',
     agentDelegation: routedAgents.map((id) => ({
-      id,
+      id, // cos | strategy | policy | relationship | comms
       name: AGENT_MAP[id].name,
       shortName: AGENT_MAP[id].shortName,
       role: AGENT_MAP[id].role,
       tagline: AGENT_MAP[id].tagline,
     })),
     groundedRecords,
+    falconExcerpts,
     validHandles: groundedRecords.map((r) => r.handle),
     documents: state.documents.map((d, i) => ({
       id: d.id,
@@ -114,6 +136,12 @@ export function buildChatContext(state: ExecutiveState, options?: ChatContextOpt
       })),
     marketSnapshot: state.marketSnapshot,
     marketHandle: mktHandle(mktDate),
+    bloombergArticles: state.bloombergArticles,
+    bloombergFetchedAt: state.bloombergFetchedAt,
+    gstGreeting: greetingForGstTime('en', gstAt),
+    gstGreetingPeriod: greetingPeriodForGst(gstAt),
+    gstTimeLabel: `${formatGstClock(gstAt, 'en')} GST`,
+    bloombergLive: Boolean(state.bloombergFetchedAt && state.bloombergArticles?.length),
   };
 }
 

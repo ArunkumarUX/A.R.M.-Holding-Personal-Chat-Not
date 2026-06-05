@@ -2,13 +2,13 @@ import { lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { PRODUCT_NAME, PRODUCT_NAME_AR } from './config/user';
-import { ARCHITECTURE_ENABLED, PPT_MASTER_ENABLED } from './config/features';
 import { AppShell } from './components/layout/AppShell';
 import { RequireOnboarding } from './auth/AuthGate';
-import { QrGatePage } from './pages/auth/QrGatePage';
+import { LoginPage } from './pages/auth/LoginPage';
 import { MobileVerifyPage } from './pages/auth/MobileVerifyPage';
 import { ChatbotWelcomePage } from './pages/auth/ChatbotWelcomePage';
 import { WelcomePage } from './pages/WelcomePage';
+import { PPT_MASTER_ENABLED } from './config/features';
 
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 const ChatPage = lazy(() => import('./pages/ChatPage').then((m) => ({ default: m.ChatPage })));
@@ -17,7 +17,7 @@ const MarketPage = lazy(() => import('./pages/MarketPage').then((m) => ({ defaul
 const RegulatoryPage = lazy(() => import('./pages/RegulatoryPage').then((m) => ({ default: m.RegulatoryPage })));
 const KnowledgePage = lazy(() => import('./pages/KnowledgePage').then((m) => ({ default: m.KnowledgePage })));
 const BriefingsPage = lazy(() => import('./pages/BriefingsPage').then((m) => ({ default: m.BriefingsPage })));
-const ArchitecturePage = lazy(() => import('./pages/ArchitecturePage').then((m) => ({ default: m.ArchitecturePage })));
+// Architecture page removed from live nav — route redirects to dashboard
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
 const DocumentsPage = lazy(() => import('./pages/DocumentsPage').then((m) => ({ default: m.DocumentsPage })));
 const WorkflowsPage = lazy(() => import('./pages/WorkflowsPage').then((m) => ({ default: m.WorkflowsPage })));
@@ -50,7 +50,7 @@ function AppRoutes() {
     <>
       <RtlSync />
       <Routes>
-        <Route path="/" element={<QrGatePage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/verify/:sessionId" element={<MobileVerifyPage />} />
         <Route path="/welcome" element={<ChatbotWelcomePage />} />
         <Route path="/home" element={<WelcomePage />} />
@@ -68,11 +68,7 @@ function AppRoutes() {
           <Route path="/regulatory" element={<RegulatoryPage />} />
           <Route path="/knowledge" element={<KnowledgePage />} />
           <Route path="/briefings" element={<BriefingsPage />} />
-          {ARCHITECTURE_ENABLED ? (
-            <Route path="/architecture" element={<ArchitecturePage />} />
-          ) : (
-            <Route path="/architecture" element={<Navigate to="/dashboard" replace />} />
-          )}
+          <Route path="/architecture" element={<Navigate to="/dashboard" replace />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/workflows" element={<WorkflowsPage />} />
           <Route path="/prompts" element={<PromptsPage />} />
@@ -80,7 +76,7 @@ function AppRoutes() {
           {PPT_MASTER_ENABLED ? (
             <>
               <Route path="/create-ppt" element={<PptMasterPage />} />
-              <Route path="/deck-builder" element={<Navigate to="/create-ppt" replace />} />
+              <Route path="/deck-builder" element={<PptMasterPage />} />
             </>
           ) : (
             <>

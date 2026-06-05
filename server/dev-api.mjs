@@ -11,6 +11,7 @@ import { getAnthropicConfig, streamChat } from './chatCore.mjs';
 import { handlePresentationRequest } from './presentationBuilder.mjs';
 import { handleSlideAiRequest } from './slideAi.mjs';
 import { createExecutiveSnapshotResponse } from './executiveSnapshot.mjs';
+import { isValidEmailShape, isValidUaeMobileShape } from './authCredentials.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -157,12 +158,18 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.pathname === '/api/health') {
     const { apiKey, model } = getAnthropicConfig();
-    sendJson(res, 200, { ok: true, claude: Boolean(apiKey), model });
+    const { buildHealthDataTrust } = await import('./dataProvenance.mjs');
+    sendJson(res, 200, {
+      ok: true,
+      claude: Boolean(apiKey),
+      model,
+      dataTrust: buildHealthDataTrust(),
+    });
     return;
   }
 
   if (req.method === 'GET' && url.pathname === '/api/executive/snapshot') {
-    sendJson(res, 200, createExecutiveSnapshotResponse());
+    sendJson(res, 200, await createExecutiveSnapshotResponse(url));
     return;
   }
 
@@ -236,6 +243,32 @@ const server = http.createServer(async (req, res) => {
       status: session.status === 'verified' ? 'verified' : 'pending',
       clientToken: session.clientToken,
     });
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/auth/login') {
+    const body = await readJsonBody(req);
+    if (body === null) {
+      sendJson(res, 400, { ok: false, error: 'invalid_json' });
+      return;
+    }
+    const channel = body.channel === 'mobile' ? 'mobile' : 'email';
+    const identifier = String(body.identifier || '').trim();
+    if (!identifier) {
+      sendJson(res, 400, { ok: false, error: 'missing_identifier' });
+      return;
+    }
+    if (channel === 'email' && !isValidEmailShape(identifier)) {
+      sendJson(res, 400, { ok: false, error: 'invalid_email' });
+      return;
+    }
+    if (channel === 'mobile' && !isValidUaeMobileShape(identifier)) {
+      sendJson(res, 400, { ok: false, error: 'invalid_mobile' });
+      return;
+    }
+    const clientToken = `adgm-${randomId(32)}`;
+    validClientTokens.add(clientToken);
+    sendJson(res, 200, { ok: true, clientToken });
     return;
   }
 

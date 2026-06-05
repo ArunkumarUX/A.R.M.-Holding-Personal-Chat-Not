@@ -51,7 +51,7 @@ export function buildDeckSourceMarkdown(
     `- Footer: ${ADGM_PPT_FOOTER}`,
     `- Audience: ${EXECUTIVE_USER.fullName}, CSO`,
     `- Include: title, 3–5 insight slides, one comparison or metrics table, closing "Do this" slide`,
-    `- Cite demo data handles where used (KB-, ACT-, CAL-, MKT-)`,
+    `- Cite source handles where used (KB-, ACT-, CAL-, MKT-)`,
     ``,
   );
 

@@ -5,7 +5,7 @@ export function demoClarifications() {
   return {
     questions: [
       'Who is the primary audience — board, FSRA, or external investors?',
-      'Should the deck emphasise D33 alignment and Abu Dhabi positioning?',
+      'Should the deck emphasise Falcon Economy alignment and Abu Dhabi positioning?',
       'Do you need bilingual (Arabic + English) speaker notes on any slides?',
     ],
   };
@@ -25,7 +25,7 @@ export function demoOutline(prompt: string): PresentationOutline {
       { type: 'key-insights', title: 'Key insights', summary: 'GCC and regulatory signals' },
       { type: 'strategy-recommendation', title: 'Strategic recommendation', summary: 'One clear path' },
       { type: 'framework-model', title: 'Decision framework', summary: 'MECE options' },
-      { type: 'data-metrics', title: 'Metrics that matter', summary: 'D33 & licence KPIs' },
+      { type: 'data-metrics', title: 'Metrics that matter', summary: 'Falcon Economy & licence KPIs' },
       { type: 'visual-infographic', title: 'Market snapshot', summary: 'Visual competitive lens' },
       { type: 'action-roadmap', title: '90-day roadmap', summary: 'Owners and dates' },
       { type: 'conclusion-next-steps', title: 'Next steps', summary: 'Ask of leadership' },
@@ -48,7 +48,7 @@ export function demoSlides(outline: PresentationOutline): PresentationDeck {
       title: o.title,
       bullets: [
         'Lead with one crisp insight for the CSO',
-        'Ground claims in ADGM demo data where available',
+        'Ground claims in approved ADGM sources where available',
         'Label strategic read as analysis, not fact',
       ],
       visualHint:
@@ -57,7 +57,7 @@ export function demoSlides(outline: PresentationOutline): PresentationDeck {
       metrics:
         o.type === 'data-metrics'
           ? [
-              { label: 'D33 alignment', value: '82/100' },
+              { label: 'Falcon Economy alignment', value: '82/100' },
               { label: 'Licence growth YoY', value: '+12%' },
             ]
           : undefined,

@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CcIcon } from '../../command-centre/CcIcon';
-import { buildKbCorpus, countKbByCategory, humanizeFileName } from '../../command-centre/kbCorpus';
+import { buildKbCorpus, humanizeFileName } from '../../command-centre/kbCorpus';
+import { KbFiltersRow } from '../../components/knowledge/KbFiltersRow';
+import { KB_COMPANIES, getKbCompany } from '../../config/kbCompanies';
 import { Emblem, AnimatedNumber, Sparkline, RingGauge, RagPill } from '../../command-centre/CcPrimitives';
 import { RadarChart, Donut, MomentumChart, CapitalFlow } from '../../command-centre/CcCharts';
 import { mdToNodes } from '../../command-centre/CcMarkdown';
@@ -87,25 +89,15 @@ function RegulatoryView({ lang, onAsk }) {
 }
 
 export function RegulatoryMonitorPage() {
-  const { settings } = useApp();
+  const { settings, startNewChat } = useApp();
   const navigate = useNavigate();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
-  const onAsk = (q: string) => navigate(`/chat?seed=${encodeURIComponent(q)}`);
+  const onAsk = (q: string) => {
+    startNewChat();
+    navigate(`/chat?seed=${encodeURIComponent(q)}`);
+  };
   return <RegulatoryView lang={lang} onAsk={onAsk} />;
 }
-
-const KB_QUICK = {
-  en: [
-    'Summarise the Q1 2026 board pack',
-    'Digital assets framework vs Singapore',
-    'AML policy precedents',
-  ],
-  ar: [
-    'لخّص حزمة مجلس الربع الأول 2026',
-    'إطار الأصول الرقمية مقابل سنغافورة',
-    'سوابق سياسة مكافحة غسل الأموال',
-  ],
-};
 
 function KbStatusPill({ status, ar }) {
   if (status === 'uploading') {
@@ -281,12 +273,15 @@ function KbUploadSheet({
   pendingFileSize,
   pendingTitle,
   pendingCat,
+  pendingCompany,
   pendingDate,
   catLabel,
+  companyLabel,
   submitPhase,
   pickFile,
   onTitleChange,
   onCatChange,
+  onCompanyChange,
   onDateChange,
   onSubmit,
   onClearFile,
@@ -300,7 +295,7 @@ function KbUploadSheet({
   const isReady = submitPhase === 'ready';
   const displayName = pendingTitle?.trim() || (pendingFile ? humanizeFileName(pendingFile) : '');
 
-  const formComplete = Boolean(pendingCat && pendingDate && pendingTitle?.trim());
+  const formComplete = Boolean(pendingCompany && pendingCat && pendingDate && pendingTitle?.trim());
   const flowPhase = isReady
     ? 'ready'
     : submitPhase || 'details';
@@ -387,8 +382,8 @@ function KbUploadSheet({
             {!busy ? (
               <p className="kb-sheet__subtitle muted-3">
                 {ar
-                  ? 'اختر المجموعة والتاريخ ثم ارفع إلى المستودع المعتمد.'
-                  : 'Choose category and date, then upload to the approved repository.'}
+                  ? 'اختر الشركة والمجموعة والتاريخ، ثم ارفع إلى مستودع تلك الشركة.'
+                  : 'Select company, category, and date — documents upload to that company’s repository.'}
               </p>
             ) : null}
           </div>
@@ -424,6 +419,9 @@ function KbUploadSheet({
               </p>
               {displayName ? (
                 <p className="kb-upload-panel__phase-file">{displayName}</p>
+              ) : null}
+              {companyLabel && !isReady ? (
+                <span className="pill ghost kb-upload-panel__phase-cat">{companyLabel}</span>
               ) : null}
               {catLabel && !isReady ? (
                 <span className="pill ghost kb-upload-panel__phase-cat">{catLabel}</span>
@@ -486,6 +484,22 @@ function KbUploadSheet({
                   <CcIcon name="x" size={16} />
                 </button>
               </div>
+
+              <label className="kb-upload-panel__field">
+                <span className="kb-upload-panel__label">{ar ? 'الشركة' : 'Company'} *</span>
+                <select
+                  className="kb-upload-panel__input"
+                  value={pendingCompany}
+                  onChange={(e) => onCompanyChange(e.target.value)}
+                >
+                  <option value="">{ar ? 'اختر شركة…' : 'Select company…'}</option>
+                  {KB_COMPANIES.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {ar ? c.labelAr : c.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
               <label className="kb-upload-panel__field">
                 <span className="kb-upload-panel__label">{ar ? 'عنوان العرض' : 'Display title'} *</span>
@@ -561,7 +575,7 @@ function KbUploadSheet({
   );
 }
 
-function KbDocSheet({ doc, cat, ar, onClose, onAsk, onDelete }) {
+function KbDocSheet({ doc, cat, company, ar, onClose, onAsk, onDelete }) {
   const ready = doc.status === 'ready';
   const busy = doc.status === 'uploading' || doc.status === 'processing';
 
@@ -604,10 +618,16 @@ function KbDocSheet({ doc, cat, ar, onClose, onAsk, onDelete }) {
           </button>
         </header>
         <div className="kb-sheet__body">
-          <span className="kb-sheet__topic pill ghost">
-            <span className="kb-sheet__dot" style={{ background: cat.color }} />
-            {ar ? cat.labelAr : cat.label}
-          </span>
+          <div className="kb-sheet__tags">
+            <span className="kb-sheet__topic pill ghost">
+              <span className="kb-sheet__dot" style={{ background: company?.color ?? cat.color }} />
+              {ar ? company?.labelAr ?? company?.label : company?.label}
+            </span>
+            <span className="kb-sheet__topic pill ghost">
+              <span className="kb-sheet__dot" style={{ background: cat.color }} />
+              {ar ? cat.labelAr : cat.label}
+            </span>
+          </div>
           <p className="kb-sheet__meta-line muted-3">
             {doc.date} · <span className="mono">{doc.pages}p</span> · {doc.by}
           </p>
@@ -666,13 +686,22 @@ function KbDocSheet({ doc, cat, ar, onClose, onAsk, onDelete }) {
   );
 }
 
-function KbDocTable({ docs, catMap, ar, onOpen, onAsk, onDelete }) {
+function KbDocTable({ docs, catMap, companyMap, ar, onOpen, onAsk, onDelete }) {
   return (
     <div className="kb-table-wrap">
       <table className="kb-table">
+        <colgroup>
+          <col className="kb-col-doc" />
+          <col className="kb-col-company" />
+          <col className="kb-col-topic" />
+          <col className="kb-col-status" />
+          <col className="kb-col-date" />
+          <col className="kb-col-actions" />
+        </colgroup>
         <thead>
           <tr>
             <th scope="col">{ar ? 'المستند' : 'Document'}</th>
+            <th scope="col">{ar ? 'الشركة' : 'Company'}</th>
             <th scope="col">{ar ? 'المجموعة' : 'Topic'}</th>
             <th scope="col">{ar ? 'الحالة' : 'Status'}</th>
             <th scope="col">{ar ? 'تاريخ' : 'Updated'}</th>
@@ -684,6 +713,7 @@ function KbDocTable({ docs, catMap, ar, onOpen, onAsk, onDelete }) {
         <tbody>
           {docs.map((d) => {
             const c = catMap[d.cat] ?? catMap.general;
+            const co = companyMap[d.companyId] ?? companyMap.adgm;
             const ready = d.status === 'ready';
             const busy = d.status === 'uploading' || d.status === 'processing';
             return (
@@ -730,12 +760,18 @@ function KbDocTable({ docs, catMap, ar, onOpen, onAsk, onDelete }) {
                   </button>
                 </td>
                 <td>
+                  <span className="kb-table__company pill ghost">
+                    <span className="kb-table__topic-dot" style={{ background: co.color }} />
+                    {ar ? co.labelAr : co.label}
+                  </span>
+                </td>
+                <td>
                   <span className="kb-table__topic">
                     <span className="kb-table__topic-dot" style={{ background: c.color }} />
                     {ar ? c.labelAr : c.label}
                   </span>
                 </td>
-                <td>
+                <td className="kb-table__status-cell">
                   <KbStatusPill status={d.status} ar={ar} />
                 </td>
                 <td className="kb-table__date muted-3">{d.date}</td>
@@ -786,6 +822,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
   const { documents, uploadDocument, removeKnowledgeBaseDocument } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const fileRef = useRef(null);
+  const [company, setCompany] = useState('all');
   const [cat, setCat] = useState('all');
   const [q, setQ] = useState('');
   const [sheetDoc, setSheetDoc] = useState(null);
@@ -793,6 +830,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
   const [pendingFileSize, setPendingFileSize] = useState('');
   const [pendingTitle, setPendingTitle] = useState('');
   const [pendingCat, setPendingCat] = useState('');
+  const [pendingCompany, setPendingCompany] = useState('');
   const [pendingDate, setPendingDate] = useState(todayIso);
   const [submitPhase, setSubmitPhase] = useState(null);
   const [trackingId, setTrackingId] = useState(null);
@@ -802,6 +840,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
 
   const corpus = useMemo(() => buildKbCorpus(documents, ar), [documents, ar]);
   const catMap = Object.fromEntries(KB_CATS.map((c) => [c.id, c]));
+  const companyMap = Object.fromEntries(KB_COMPANIES.map((c) => [c.id, c]));
   const query = q.trim().toLowerCase();
 
   useEffect(() => {
@@ -813,17 +852,16 @@ function KnowledgeBaseView({ lang, onAsk }) {
   }, [corpus, searchParams, setSearchParams]);
 
   const filtered = corpus.filter((d) => {
+    if (company !== 'all' && d.companyId !== company) return false;
     if (cat !== 'all' && d.cat !== cat) return false;
     if (query && !d.t.toLowerCase().includes(query)) return false;
     return true;
   });
 
-  const askKb = (prompt) =>
-    onAsk((ar ? 'ابحث في قاعدة المعرفة عن: ' : 'Search the knowledge base for: ') + prompt);
-
-  const quick = ar ? KB_QUICK.ar : KB_QUICK.en;
+  const isSearchMode = Boolean(query);
   const sheetCat = sheetDoc ? catMap[sheetDoc.cat] ?? catMap.general : null;
-  const hasFilters = cat !== 'all' || query;
+  const sheetCompany = sheetDoc ? companyMap[sheetDoc.companyId] : null;
+  const hasFilters = company !== 'all' || cat !== 'all' || query;
   const busyCount = corpus.filter(
     (d) => d.status === 'uploading' || d.status === 'processing',
   ).length;
@@ -836,6 +874,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
     setPendingFileSize(formatFileSize(f.size));
     setPendingTitle(humanizeFileName(f.name));
     setPendingCat('');
+    setPendingCompany(company !== 'all' ? company : '');
     setPendingDate(todayIso());
     setSubmitPhase(null);
     setTrackingId(null);
@@ -856,6 +895,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
     setPendingFileSize('');
     setPendingTitle('');
     setPendingCat('');
+    setPendingCompany('');
     setPendingDate(todayIso());
     setSubmitPhase(null);
     setTrackingId(null);
@@ -868,6 +908,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
     setPendingFileSize('');
     setPendingTitle('');
     setPendingCat('');
+    setPendingCompany('');
     setPendingDate(todayIso());
     setSubmitPhase(null);
     setTrackingId(null);
@@ -888,6 +929,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
   const openUpload = () => {
     setSheetDoc(null);
     resetPending();
+    if (company !== 'all') setPendingCompany(company);
     setUploadOpen(false);
     // Picker only on click — slider opens after a file is chosen (see onFileChosen).
     fileRef.current?.click();
@@ -919,14 +961,30 @@ function KnowledgeBaseView({ lang, onAsk }) {
 
   const pendingCatMeta = KB_CATS.find((c) => c.id === pendingCat);
   const pendingCatLabel = pendingCatMeta ? (ar ? pendingCatMeta.labelAr : pendingCatMeta.label) : '';
+  const pendingCompanyMeta = getKbCompany(pendingCompany);
+  const pendingCompanyLabel = pendingCompanyMeta
+    ? ar
+      ? pendingCompanyMeta.labelAr
+      : pendingCompanyMeta.label
+    : '';
 
   const submitUpload = () => {
-    if (!pendingFile || !pendingCat || !pendingDate || !pendingTitle?.trim() || submitPhase) return;
+    if (
+      !pendingFile ||
+      !pendingCompany ||
+      !pendingCat ||
+      !pendingDate ||
+      !pendingTitle?.trim() ||
+      submitPhase
+    ) {
+      return;
+    }
     const name = buildUploadName(pendingTitle, pendingFile);
     const id = uploadDocument(name, {
       knowledgeBase: true,
       category: pendingCat,
       documentDate: pendingDate,
+      companyId: pendingCompany,
     });
     setTrackingId(id);
     setSubmitPhase('uploading');
@@ -968,114 +1026,98 @@ function KnowledgeBaseView({ lang, onAsk }) {
         tabIndex={-1}
         aria-hidden
       />
-      <div className="section-head" style={{ marginBottom: -4 }}>
-        <div>
-          <div className="eyebrow">{ar ? 'المعرفة المؤسسية' : 'Institutional knowledge'}</div>
-          <h2 style={{ fontSize: 24, marginTop: 4 }}>{ar ? 'قاعدة المعرفة المعتمدة' : 'Approved knowledge base'}</h2>
-          <p className="muted" style={{ margin: '6px 0 0', fontSize: 14, maxWidth: 480 }}>
-            {ar
-              ? 'ابحث في المستندات المعتمدة أو أضف مستنداً جديداً.'
-              : 'Search approved documents or add a new one below.'}
-          </p>
-        </div>
-        <span className="pill ghost">
-          <span className="dot good pulse" style={{ color: 'var(--status-good)', background: 'currentColor' }} />
-          {ar ? 'مزامنة SharePoint' : 'SharePoint sync'}
-        </span>
-      </div>
-
-      <IntelCard>
-        <IntelCardBody className="kb-toolbar">
-          <form
-            className="kb-search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (q.trim()) askKb(q.trim());
-            }}
-            onClick={(e) => e.currentTarget.querySelector('input')?.focus()}
-            role="search"
-          >
-            <span className="kb-search__icon" aria-hidden>
-              <CcIcon name="search" size={18} />
-            </span>
-            <input
-              className="kb-search__input"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={ar ? 'ابحث بالعنوان أو اطرح سؤالاً…' : 'Search by title or ask a question…'}
-              aria-label={ar ? 'بحث' : 'Search'}
-            />
-            <button type="submit" className="kb-search__cta" disabled={!q.trim()}>
-              <CcIcon name="sparkles" size={16} />
-              <span>{ar ? 'اسأل' : 'Ask AI'}</span>
-            </button>
-          </form>
-          <div className="kb-toolbar__row">
-            <div className="kb-toolbar__quick" aria-label={ar ? 'اقتراحات' : 'Suggestions'}>
-              <span className="kb-toolbar__quick-label muted-3">{ar ? 'جرّب' : 'Try'}</span>
-              <div className="kb-toolbar__quick-chips">
-                {quick.map((text) => (
-                  <button key={text} type="button" className="kb-toolbar__quick-btn" onClick={() => onAsk(text)}>
-                    {text}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button type="button" className="btn btn-ghost btn-sm kb-toolbar__add" onClick={openUpload}>
-              <CcIcon name="upload" size={15} />
-              {ar ? 'إضافة مستند' : 'Add document'}
-            </button>
+      {!isSearchMode ? (
+        <div className="section-head" style={{ marginBottom: -4 }}>
+          <div>
+            <div className="eyebrow">{ar ? 'المعرفة المؤسسية' : 'Institutional knowledge'}</div>
+            <h2 style={{ fontSize: 24, marginTop: 4 }}>{ar ? 'قاعدة المعرفة المعتمدة' : 'Approved knowledge base'}</h2>
+            <p className="muted" style={{ margin: '6px 0 0', fontSize: 14, maxWidth: 480 }}>
+              {ar
+                ? 'ابحث بالعنوان أو صفِّ حسب الشركة والموضوع.'
+                : 'Search by document title, or filter by company and topic.'}
+            </p>
           </div>
-        </IntelCardBody>
-      </IntelCard>
-
-      <div className="kb-filters-bar">
-        <div className="seg kb-filters" role="tablist" aria-label={ar ? 'تصفية حسب الموضوع' : 'Filter by topic'}>
-          <button type="button" role="tab" aria-selected={cat === 'all'} className={cat === 'all' ? 'on' : ''} onClick={() => setCat('all')}>
-            {ar ? 'الكل' : 'All'} <span className="kb-filters__n">{corpus.length}</span>
-          </button>
-          {KB_CATS.map((c) => {
-            const n = countKbByCategory(corpus, c.id);
-            return (
-              <button
-                key={c.id}
-                type="button"
-                role="tab"
-                aria-selected={cat === c.id}
-                className={cat === c.id ? 'on' : ''}
-                onClick={() => setCat(c.id)}
-              >
-                {ar ? c.labelAr : c.label} <span className="kb-filters__n">{n}</span>
-              </button>
-            );
-          })}
+          <span className="pill ghost">
+            <span className="dot good pulse" style={{ color: 'var(--status-good)', background: 'currentColor' }} />
+            {ar ? 'مزامنة SharePoint' : 'SharePoint sync'}
+          </span>
         </div>
+      ) : null}
+
+      <div className="kb-page-bar">
+        <form
+          className="kb-page-bar__search"
+          onSubmit={(e) => e.preventDefault()}
+          role="search"
+        >
+          <CcIcon name="search" size={18} className="kb-page-bar__search-icon" aria-hidden />
+          <input
+            type="search"
+            className="kb-page-bar__search-input"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={ar ? 'ابحث بعنوان المستند…' : 'Search by document title…'}
+            aria-label={ar ? 'بحث في المستندات' : 'Search documents'}
+          />
+          {q.trim() ? (
+            <button
+              type="button"
+              className="kb-page-bar__search-clear"
+              onClick={() => setQ('')}
+              aria-label={ar ? 'مسح البحث' : 'Clear search'}
+            >
+              <CcIcon name="x" size={15} />
+            </button>
+          ) : null}
+        </form>
+        {!isSearchMode ? (
+          <button type="button" className="btn btn-primary btn-sm kb-page-bar__upload" onClick={openUpload}>
+            <CcIcon name="upload" size={15} />
+            {ar ? 'إضافة مستند' : 'Add document'}
+          </button>
+        ) : null}
       </div>
+
+      <KbFiltersRow
+        company={company}
+        cat={cat}
+        corpus={corpus}
+        ar={ar}
+        hasFilters={hasFilters}
+        onCompanyChange={setCompany}
+        onCatChange={setCat}
+        onClear={() => {
+          setCompany('all');
+          setCat('all');
+          setQ('');
+        }}
+      />
 
       <IntelCard className="kb-docs">
         <header className="kb-docs__head">
           <div>
-            <h3 className="kb-docs__title">{ar ? 'كل المستندات المعتمدة' : 'All approved documents'}</h3>
+            <h3 className="kb-docs__title">{ar ? 'المستندات' : 'Documents'}</h3>
             <p className="kb-docs__sub muted-3">
-              {hasFilters
+              {isSearchMode
                 ? ar
-                  ? `${filtered.length} من ${corpus.length} مستند`
-                  : `${filtered.length} of ${corpus.length} documents`
-                : ar
-                  ? `${corpus.length} مستندات${busyCount ? ` · ${busyCount} قيد المعالجة` : ''}`
-                  : `${corpus.length} documents${busyCount ? ` · ${busyCount} in progress` : ''}`}
+                  ? query
+                    ? `${filtered.length} نتيجة لـ «${q.trim()}»`
+                    : `${filtered.length} مستند`
+                  : query
+                    ? `${filtered.length} result${filtered.length === 1 ? '' : 's'} for “${q.trim()}”`
+                    : `${filtered.length} document${filtered.length === 1 ? '' : 's'}`
+                : hasFilters
+                  ? ar
+                    ? `${filtered.length} من ${corpus.length} مستند`
+                    : `${filtered.length} of ${corpus.length} documents`
+                  : ar
+                    ? `${corpus.length} مستند${busyCount ? ` · ${busyCount} قيد المعالجة` : ''}`
+                    : `${corpus.length} document${corpus.length === 1 ? '' : 's'}${busyCount ? ` · ${busyCount} in progress` : ''}`}
             </p>
           </div>
-          {hasFilters ? (
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => {
-                setCat('all');
-                setQ('');
-              }}
-            >
-              {ar ? 'إظهار الكل' : 'Show all'}
+          {isSearchMode ? (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setQ('')}>
+              {ar ? 'إنهاء البحث' : 'Exit search'}
             </button>
           ) : null}
         </header>
@@ -1092,6 +1134,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
           <KbDocTable
             docs={filtered}
             catMap={catMap}
+            companyMap={companyMap}
             ar={ar}
             onOpen={(d) => {
               setUploadOpen(false);
@@ -1113,8 +1156,10 @@ function KnowledgeBaseView({ lang, onAsk }) {
           pendingFileSize={pendingFileSize}
           pendingTitle={pendingTitle}
           pendingCat={pendingCat}
+          pendingCompany={pendingCompany}
           pendingDate={pendingDate}
           catLabel={pendingCatLabel}
+          companyLabel={pendingCompanyLabel}
           submitPhase={submitPhase}
           dragOver={dragOver}
           onDragOver={onUploadDragOver}
@@ -1123,6 +1168,7 @@ function KnowledgeBaseView({ lang, onAsk }) {
           pickFile={pickFile}
           onTitleChange={setPendingTitle}
           onCatChange={setPendingCat}
+          onCompanyChange={setPendingCompany}
           onDateChange={setPendingDate}
           onSubmit={submitUpload}
           onClearFile={() => {
@@ -1132,10 +1178,11 @@ function KnowledgeBaseView({ lang, onAsk }) {
         />
       ) : null}
 
-      {sheetDoc && sheetCat && !uploadOpen ? (
+      {sheetDoc && sheetCat && sheetCompany && !uploadOpen ? (
         <KbDocSheet
           doc={sheetDoc}
           cat={sheetCat}
+          company={sheetCompany}
           ar={ar}
           onClose={() => setSheetDoc(null)}
           onAsk={onAsk}
@@ -1147,10 +1194,13 @@ function KnowledgeBaseView({ lang, onAsk }) {
 }
 
 export function KnowledgeBasePage() {
-  const { settings } = useApp();
+  const { settings, startNewChat } = useApp();
   const navigate = useNavigate();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
-  const onAsk = (q) => navigate(`/chat?seed=${encodeURIComponent(q)}`);
+  const onAsk = (q) => {
+    startNewChat();
+    navigate(`/chat?seed=${encodeURIComponent(q)}`);
+  };
   return <KnowledgeBaseView lang={lang} onAsk={onAsk} />;
 }
 

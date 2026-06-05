@@ -1,0 +1,1729 @@
+ADMINISTRATIVE REGULATIONS 2025
+(CONSOLIDATED VERSION APRIL 2026)
+                                         TABLE OF CONTENTS
+
+PART 1 – SUBJECT MATTER AND OBJECTIVES
+1.    Subject Matter ............................................................................................ 1
+2.    Powers and Statutory Objectives of the Registration Authority ................... 1
+PART 2 - CONTRAVENTIONS
+3.    General Contravention ............................................................................... 3
+4.    Tier 1 Contraventions ................................................................................. 3
+5.    Tier 2 Contraventions ................................................................................. 3
+PART 3 - INFORMATION GATHERING AND INVESTIGATION POWERS
+6.    Information gathering powers ..................................................................... 4
+7.    Appointment of a Skilled Person ................................................................. 4
+8.    Appointment of Investigators to carry out Investigations ............................. 5
+9.    Direction of an Investigation ....................................................................... 6
+10.   Powers of Investigators .............................................................................. 7
+11.   Additional provisions in relation to information and documents ................... 9
+12.   Protected Items ........................................................................................ 10
+13.   Entry of premises under warrant ............................................................... 11
+14.   Retention of Seized Documents ............................................................... 12
+15.   Injunctions in cases of Investigations and proceedings ............................. 12
+16.   Appointment of managers......................................................................... 13
+17.   Costs of an Investigation .......................................................................... 13
+18.   Contraventions ......................................................................................... 13
+PART 4 - SUPERVISORY POWERS
+19.   Supervisory powers of the Registration Authority ..................................... 15
+PART 5 - EXCEPTIONAL POWERS
+20.   Exceptional powers of the CEO ................................................................ 16
+PART 6 - PROCEDURE FOR TIER 1 CONTRAVENTIONS
+21.   Financial Penalty Notice ........................................................................... 18
+22.   Objection process for Financial Penalty Notices ....................................... 18
+23.   Review process for Statement of Representations ................................... 19
+PART 7 - PROCEDURE FOR TIER 2 CONTRAVENTIONS
+24.   Warning Notices ....................................................................................... 20
+25.   Content of a Warning Notice..................................................................... 20
+26.   Access to material .................................................................................... 20
+27.   Responding to a Warning Notice .............................................................. 21
+28.   Decision Notices ....................................................................................... 22
+29.         Discontinuance Notices ............................................................................ 22
+30.         Consent Process ...................................................................................... 23
+31.         Settlement Process .................................................................................. 23
+32.         Enforceable Undertakings ........................................................................ 24
+33.         Publication of Notices ............................................................................... 24
+34.         Third party rights ...................................................................................... 25
+PART 8 - ENFORCEMENT POWERS
+35.         Exercising of enforcement powers ............................................................ 27
+36.         Imposition of requirements ....................................................................... 27
+37.         Variation of a Licence ............................................................................... 27
+38.         Licence Suspension or Restriction............................................................ 28
+39.         Cancellation of a Licence.......................................................................... 28
+40.         Prohibition Orders .................................................................................... 29
+41.         Strike Off .................................................................................................. 29
+42.         Disqualification of Persons ....................................................................... 30
+43.         Censure statements ................................................................................. 30
+44.         Fines ........................................................................................................ 30
+45.         Annulment of Fines................................................................................... 31
+46.         Statements of Policy ................................................................................. 31
+PART 9 - JUDICIAL REVIEW
+47.         Scope of Judicial Review .......................................................................... 33
+PART 10 - NOTICE INFORMATION
+48.         Service of notices under these Administrative Regulations ....................... 34
+PART 11 - FINAL PROVISIONS
+49.         Short title and commencement ................................................................. 35
+PART 12 - DEFINITIONS
+50.         Definitions ................................................................................................ 36
+Schedule 1: Fines Scale ...................................................................................... 39
+                         ADMINISTRATIVE REGULATIONS 2025
+Regulations to make provision for investigative powers, information gathering powers and
+administrative enforcement procedures.
+
+                                                        Date of Publication: 28 October 2025
+
+The Board of Directors of the Abu Dhabi Global Market, in exercise of its powers under Article
+6(1) of Law No. 4 of 2013, as amended, concerning the Abu Dhabi Global Market issued by
+His Highness the Ruler of the Emirate of Abu Dhabi, hereby enacts the following Regulations:
+
+                     PART 1: SUBECT MATTER AND OBJECTIVES
+
+1       Subject Matter
+
+(1)     These Regulations make provision for investigative powers, information gathering
+        powers and administrative enforcement procedures in the Abu Dhabi Global Market.
+(2)     These Regulations apply to the Commercial Legislation.
+(3)     These Regulations apply to any Person who is subject to or in scope of the
+        Commercial Legislation.
+2       Powers and Statutory Objectives of the Registration Authority
+
+(1)     The Registration Authority may do whatever it considers necessary for or in
+        connection with, or reasonably incidental to or in furtherance of, performing its
+        functions and exercising its powers whether arising under the ADGM Founding Law,
+        any enactment, these Regulations or otherwise.
+(2)     Except as specified otherwise in Part 5, powers of the Registration Authority set out
+        in these Regulations may be exercised by the Registration Authority acting through
+        its Registrar, CEO or any duly authorised Officer. Any references to a power of the
+        Registration Authority in these Regulations includes the Registration Authority acting
+        in such manner.
+(3)     In performing its functions and exercising its powers, the Registration Authority shall
+        have regard to and where possible pursue the following objectives —
+        (a)   to foster an environment of continuous compliance by Persons in the Abu
+              Dhabi Global Market;
+        (b)   to promote and enhance the integrity of the Abu Dhabi Global Market, including
+              its financial system;
+        (c)   to promote fairness, transparency and efficiency in the Abu Dhabi Global
+              Market;
+        (d)   to build and maintain commercial and regulatory stakeholder relationships;
+        (e)   to prevent, detect and restrain conduct that causes or may cause damage to
+              the reputation of the Abu Dhabi Global Market through appropriate means
+              including the imposition of sanctions;
+        (f)   to secure an appropriate degree of protection for direct and indirect users, and
+              prospective users of the Abu Dhabi Global Market;
+        (g)   to promote public understanding of the regulation of the Abu Dhabi Global
+              Market;
+
+                                                                                             1
+(h)   to foster and maintain confidence in corporate and sustainability reporting by
+      companies incorporated or active in the Abu Dhabi Global Market;
+(i)   to promote that users of reports and accounts have access to timely,
+      meaningful and credible information;
+(j)   to promote a level playing field and consistency in the quality of Controlled
+      Activities in the jurisdiction through monitoring activities, including by means of
+      onsite inspections;
+(k)   to foster and maintain the resilience and high quality of the Abu Dhabi Global
+      Market audit and assurance market;
+(l)   to promote that Persons are held accountable by initiating enforcement action
+      where there is a breach of relevant requirements;
+(m)   to promote that the information contained in the Register is accurate and that
+      the Register contains the information that it ought to contain, including by
+      requiring businesses in the Abu Dhabi Global Market to accurately report and
+      update information in the Register and by imposing sanctions where this is not
+      done properly;
+(n)   to promote transparency and prevent records kept by the Registration Authority
+      from creating a false or misleading impression to members of the public;
+(o)   to take steps against Persons from carrying out unlawful activities, or
+      facilitating the carrying out by others of unlawful activities, including through
+      detection, enforcement and imposition of sanctions;
+(p)   to further the interests and objectives of the Abu Dhabi Global Market; and
+(q)   to pursue any other lawful objectives as the Board of Directors may set.
+
+
+
+
+                                                                                       2
+                                PART 2: CONTRAVENTIONS
+
+3         General Contravention
+
+(1)       A Person who—
+
+          (a)   does an act or thing that the Person is prohibited from doing by or under these
+                Regulations, or the Commercial Legislation;
+          (b)   omits to do an act or thing that the Person is required to do by or under these
+                Regulations, or the Commercial Legislation;
+          (c)   fails to comply with a requirement or condition imposed by or under these
+                Regulations, or the Commercial Legislation; or
+          (d)   otherwise contravenes a provision of these Regulations, or the Commercial
+                Legislation,
+          commits a Contravention and may be liable to a Fine and/or any other enforcement
+          action, as applicable, set out in Part 8 of these Regulations, or the relevant
+          Commercial Legislation.
+
+4         Tier 1 Contraventions 1
+
+(1)       A Tier 1 Contravention means a contravention of the Commercial Legislation
+          pursuant to which any Person found to have committed such contravention shall be
+          liable to a Fine categorised as level 1 or level 2 on the Fines Scale where such Fine
+          shall not exceed USD 2,000.
+
+5         Tier 2 Contraventions
+
+(1)       A Tier 2 Contravention means a contravention of the Commercial Legislation
+          pursuant to which any Person found to have committed such contravention shall be
+          liable to:
+
+          (a)   a Fine categorised as level 3 or above on the Fines Scale where such Fine
+                shall not exceed USD 54,000,000; and/or
+          (b)   any of the other enforcement actions set out in Part 8 or the relevant
+                Commercial Legislation.
+
+
+
+
+1 Amended 24 April 2026
+
+
+
+                                                                                             3
+            PART 3: INFORMATION GATHERING AND INVESTIGATION POWERS
+6     Information gathering powers
+
+(1)   If it appears to the Registration Authority that there is good reason for doing so, the
+      Registration Authority may use the powers conferred under this Part 3 as reasonably
+      required, including for statistical data collection purposes, as well as any other
+      investigative or information gathering powers conferred under any other Commercial
+      Legislation (as applicable).
+
+(2)   The Registration Authority may, by notice in writing or through digitalised survey
+      requests, given to a Person, or given to any person connected with the Person
+      require that person to —
+      (a)   provide specified information or information of a specified description; and/or
+      (b)   produce specified documents or documents of a specified description.
+(3)   A notice given by the Registration Authority under subsection (2) shall set out a
+      reasonable period in which, and such place, as the specified information or specified
+      documents must be produced.
+(4)   The Registration Authority may require any information and documents provided
+      under this section to be provided in such form as it may reasonably require.
+(5)   The Registration Authority may require—
+      (a)   any information provided, whether in a document or otherwise, to be verified;
+            and/or
+      (b)   any document produced to be authenticated,
+      in such manner as it may reasonably require.
+(6)   For the purposes of this section 6, a person is connected with another Person if the
+      person is or has at the relevant time been –
+      (a)   a member of the Person’s group;
+      (b)   an officer, manager or agent of the Person or the Person’s group;
+      (c)   a Controller or employee of the Person; or
+      (d)   a member, manager, agent or employee of a partnership of which the Person
+            is a member.
+7     Appointment of a Skilled Person
+
+(1)   The Registration Authority may at any time (whether or not a Warning Notice or
+      Decision Notice has been issued) –
+
+      (a)   require a Person to appoint a Skilled Person nominated or approved by the
+            Registration Authority; or
+      (b)   itself appoint a Skilled Person,
+      to-
+            (i)   provide the Registration Authority with a report on any matter (the Matter
+                  Concerned), in any written format specified by the Registration Authority
+
+                                                                                              4
+                   where the Registration Authority has required or could require a Person
+                   to whom Part 3 applies to provide information or produce documents with
+                   respect to the Matter Concerned; and/or
+            (ii)   collect or update information where the Registration Authority considers
+                   that a Person has contravened such a requirement to collect, and keep
+                   up to date, information of a description specified under the relevant
+                   Commercial Legislation.
+(2)   The Registration Authority must give written notice of an appointment of a Skilled
+      Person under subsection (1)(b) to the Person.
+(3)   The Person or any person who is providing (or who has at any time provided)
+      services in relation to the Matter Concerned has a duty to provide all such assistance
+      as the Skilled Person may reasonably require to prepare a report on the Matter
+      Concerned under subsection (1)(i).
+(4)   The obligation imposed under subsection (3) is enforceable, on application brought
+      by the Registration Authority, by an order of the ADGM Courts.
+(5)   The Skilled Person may require any person to provide all such assistance as the
+      Skilled Person may reasonably require for collecting or updating the information
+      under subsection (1)(ii).
+(6)   A requirement imposed under subsection (5) is enforceable, on application brought
+      by the Registration Authority, by an order of the ADGM Courts.
+(7)   A contractual or other requirement imposed on a person to keep any information in
+      confidence does not apply if —
+      (a)   the information is or may be relevant to anything required to be done as a result
+            of this section;
+      (b)   the Person or a Skilled Person requests or requires a person to provide the
+            information for the purpose of securing anything required to be done as a result
+            of this section is done; and
+      (c)   the Registration Authority has approved the making of the request or the
+            imposition of the requirement before it is made or imposed.
+(8)   A Person may provide information (whether received under subsection (7) or
+      otherwise) that would otherwise be subject to a contractual or other requirement to
+      keep it in confidence if it is provided for the purposes of anything required to be done
+      as a result of this section.
+(9)   The Registration Authority may require that expenses incurred by it in relation to an
+      appointment of a Skilled Person under subsection (1)(b) be payable as a fee by the
+      Person to whom a Skilled Person has been appointed.
+8     Appointment of Investigators to carry out Investigations
+
+(1)   If it appears to the Registration Authority that there is good reason for doing so, the
+      Registration Authority may appoint one or more Investigators to conduct an
+      Investigation on its behalf into—
+
+      (a)   the nature, conduct or state of the Business of a Person;
+      (b)   a particular aspect of that Business; and/or
+
+
+                                                                                            5
+      (c)   the ownership or control of a Person.
+(2)   The powers conferred by subsections (1)(a) to (1)(c) may be exercised in relation to
+      a former Person but only in relation to the time when it was a Person.
+(3)   If the Registration Authority reasonably suspects that a Person may have committed
+      a Contravention of these Regulations or any Commercial Legislation, the
+      Registration Authority may appoint an Investigator or Investigators to conduct an
+      Investigation on its behalf into the matter.
+(4)   If an Investigator deems it necessary for the purposes of an Investigation, the
+      Investigator may also investigate the Business of a person who is or has at any
+      relevant time been—
+      (a)   a member of the group of which the Person under Investigation is part; or
+      (b)   a partnership of which the Person under Investigation is a member.
+(5)   Subject to subsection (7), the Registration Authority must give written notice of the
+      appointment of an Investigator to the Person who is the subject of the Investigation.
+(6)   A notice under subsection (5) must specify the provisions under which, and as a
+      result of which, the Investigator was appointed and state the reason for the
+      Investigator's appointment.
+(7)   Subsection (5) does not apply if the Investigator under subsection (3) and the
+      Registration Authority believes that the notice required by subsection (5) would
+      likely—
+      (a)   result in the Investigation or any investigation of any other Relevant Authority
+            being frustrated, compromised or prejudiced in any manner; or
+      (b)   have an adverse effect on the objectives of the Abu Dhabi Global Market as
+            set out in Part 1.
+9     Direction of an Investigation
+
+(1)   The Registration Authority may, by a direction to an Investigator, control —
+
+      (a)   the scope of the Investigation;
+      (b)   the period during which the Investigation is to be conducted;
+      (c)   the conduct of the Investigation; and/or
+      (d)   the reporting of the Investigation.
+(2)   A direction may, in particular—
+      (a)   confine the Investigation to particular matters;
+      (b)   extend the Investigation to additional matters;
+      (c)   require the Investigator to discontinue the Investigation or to take only such
+            steps as are specified in the direction; and/or
+      (d)   require the Investigator to make such interim reports as specified.
+(3)   If there is a change in the scope or conduct of the Investigation and, in the opinion
+      of the Registration Authority, a Person is likely to be significantly prejudiced by not
+      being made aware of it, that Person must be given written notice of the change.
+
+                                                                                           6
+(4)   Subsection (3) does not apply if the Investigator appointed under section 8(3) and
+      the Registration Authority believes that the notice required by subsection (3) would
+      likely—
+      (a)   result in the Investigation or any investigation of any other Relevant Authority
+            being frustrated, compromised or prejudiced in any manner; or
+      (b)   have an adverse effect on the objectives of the Abu Dhabi Global Market as
+            set out in Part 1.
+10    Powers of Investigators
+
+(1)   An Investigator may require the Person under Investigation, or any person connected
+      with the Person under Investigation –
+
+      (a)   to attend before the Investigator at a specified time and place and answer
+            questions;
+      (b)   to provide such information as the Investigator may require;
+      (c)   to produce at a requested time and place any requested documents or
+            documents of a specified description; and/or
+      (d)   to give it any assistance in relation to the Investigation which the person is able
+            to give,
+      only so far as the Investigator concerned reasonably considers the question,
+      provision of information or production of the document to be relevant to the
+      Investigation.
+(2)   Where the Investigator exercises its power to conduct an Investigation under section
+      8(3), an Investigator may require any person who is neither the Person under
+      Investigation nor a person connected to the Person under Investigation –
+      (a)   to attend before the Investigator at a specified time and place and answer
+            questions; and/or
+      (b)   to provide such information as the Investigator may require,
+      provided the investigator is satisfied that the requirement is necessary or expedient
+      for the purposes of the investigation,
+      And/or
+      (c)   to produce at a requested time and place any requested documents or
+            documents of a specified description which appear to the Investigator to relate
+            to any matter relevant to the Investigation; and/or
+      (d)   to give it any assistance in relation to the Investigation which the person is able
+            to give.
+(3)   Where the Investigator exercises its power under subsection (1)(a) and subsection
+      (2)(a) to conduct an interview, it may give a direction—
+      (a)   concerning who may be present;
+      (b)   preventing any person present during any part of the interview from disclosing
+            to any other person any information provided to the interviewee or questions
+            asked by the interviewer during the interview;
+
+
+                                                                                             7
+      (c)   concerning the conduct of any person present, including as to the manner in
+            which they will participate in the interview;
+      (d)   requiring the interviewee to give an affirmation that the answers of the
+            interviewee will be true; and/or
+      (e)   requiring the interviewee to answer any questions relevant to the Investigation.
+(4)   All interviews conducted pursuant to subsection (1)(a) and subsection (2)(a) will be
+      recorded, and the interviewee shall have the right to request a copy of the recording
+      or a transcript of the interview, if available. The provision of a recording or transcript
+      may be subject to any reasonable conditions imposed by the Investigator. The
+      Investigator may make directions to protect the confidentiality of information and
+      documents which are part of an interview.
+(5)   Where a person makes a statement in response to any question asked or produces
+      information or documents in compliance with a requirement made under subsection
+      (1) and subsection (2), the Registration Authority must maintain confidentiality of
+      such statement, information or documents, unless disclosure is required by law or
+      an order of the ADGM Court to disclose the information.
+(6)   Where the Investigator reasonably considers that the Person who is under
+      Investigation or any person connected with the Person under Investigation is or may
+      be able to give information or produce a document which is or may be relevant to an
+      Investigation, it may—
+      (a)   enter the business premises of such person during normal business hours for
+            the purpose of inspecting and copying information or documents stored in any
+            form on such premises; and/or
+      (b)   require such person to give it any assistance in relation to the Investigation
+            which the person is able to give.
+(7)   Where the Investigator exercises its power under subsection (6)(a) to enter the
+      business premises, it may —
+      (a)   require any appropriate person to make available any relevant information
+            stored at those premises for inspection or copying;
+      (b)   require any appropriate person to convert any relevant information into a form
+            capable of being copied; and/or
+      (c)   use the facilities of the occupier of the premises, free of charge, to make copies
+            of relevant information.
+(8)   A person shall not without reasonable excuse engage in any conduct, including
+      without limitation the —
+      (a)   destruction of documents;
+      (b)   failure to give or produce information or documents specified by the
+            Investigator;
+      (c)   failure to attend before the Investigator at a specified time and place to answer
+            questions;
+      (d)   giving of information that is false or misleading; and/or
+      (e)   failure to give any assistance in relation to an Investigation which the person
+            is able to give,
+
+                                                                                              8
+       that is intended to obstruct the Investigator in the exercise of any powers under this
+       Part 3.
+(9)    It is not a reasonable excuse for the purpose of subsection (8) for a person to refuse
+       or fail to —
+       (a)   permit inspection and copying of any information or document;
+       (b)   give or produce, or procure the giving or production of, any information or
+             document; or
+       (c)   answer questions;
+       on the grounds that any such information or document or answer, as the case may
+       be —
+             (i)    might tend to incriminate the person; or
+             (ii)   is, or contains, or might reveal a communication made in confidence.
+(10)   Where the Investigator considers that, if disclosed, the fact of the issuing of a notice
+       requiring a person to —
+       (a)   produce documents;
+       (b)   give information;
+       (c)   attend a compulsory interview; and/or
+       (d)   give assistance,
+       may hinder the Investigation to which it relates, the Investigator may direct a person
+       who receives a direction under this section 10 not to disclose the receipt of a notice
+       or any information relating to compliance therewith to any other person, other than
+       his legal representative under a duty of confidentiality.
+(11)   A statement made to an Investigator by a person in compliance with a requirement
+       under this section 10 is admissible in evidence in any proceedings, so long as it
+       complies with any requirements governing the admissibility of evidence in the
+       circumstances in question.
+(12)   For the purposes of this section 10, a person is connected with a Person under
+       Investigation if the person is or has at the relevant time been –
+       (a)   a member of the Person under Investigation’s group;
+       (b)   an officer, manager, employee, agent, banker, auditor, actuary or lawyer of the
+             Person under Investigation or the Person under Investigation’s group;
+       (c)   a Controller of the Person under Investigation;
+       (d)   a member, manager agent or employee of a partnership of which the Person
+             under Investigation is a member.
+11     Additional provisions in relation to information and documents
+
+(1)    If a document is produced in response to a requirement imposed under this Part 3,
+       the person to whom it is produced may —
+
+       (a)   take copies or extracts from the document; and/or
+
+
+                                                                                             9
+      (b)   require the person producing the document, or any relevant Person, to provide
+            an explanation of the document.
+(2)   A document so produced may be retained for so long as the person to whom it is
+      produced considers that it is necessary to retain it (rather than copies of it) for the
+      purposes for which the document was requested.
+(3)   If the person to whom a document is so produced has reasonable grounds for
+      believing—
+      (a)   that the document may have to be produced for the purposes of any legal
+            proceedings; and
+      (b)   that it might otherwise be unavailable for those purposes,
+      it may be retained until the proceedings are concluded.
+(4)   If a person who is required under this Part 3 to produce a document fails to do so,
+      the Registration Authority or an Investigator may require him to state, to the best of
+      his knowledge and belief, where the document is.
+(5)   No person may be required under this Part 3 to disclose information or produce a
+      document in respect of which the person owes a duty of confidentiality unless —
+      (a)   he is the Person under Investigation or a member of that Person's group;
+      (b)   the person to whom the duty of confidentiality is owed is the Person under
+            Investigation or a member of that Person's group;
+      (c)   the person to whom the duty of confidentiality is owed consents to the
+            disclosure or production; or
+      (d)   the imposing on a person of a requirement with respect to such information or
+            document has been specifically authorised by the Registration Authority.
+12    Protected Items
+
+(1)   A person may not be required by or under these Regulations or any other Commercial
+      Legislation to produce, disclose or permit the inspection of Protected Items.
+
+(2)   "Protected Items" means—
+      (a)   communications between professional legal advisers and their client or any
+            person representing a client which fall within subsection (c);
+      (b)   communications between professional legal advisers and their client or any
+            person representing a client and any other person which fall within subsection
+            (c) (as a result of paragraph (c)(ii) of that subsection);
+      (c)   items which—
+            (i)     are enclosed with, or referred to in, such communications;
+            (ii)    are made in connection with the giving of legal advice to the client or in
+                    the connection with, or in contemplation of, legal proceedings and for the
+                    purposes of those proceedings; and
+            (iii)   are in the possession of a person entitled to possession of them;
+            and/or
+
+
+                                                                                           10
+      (d)   in the case of any information held by the Registration Authority, information
+            which—
+            (i)     is supplied by or relating to bodies dealing with security matters;
+            (ii)    is held by public authorities in the exercise of their functions;
+            (iii)   relates to national security or international relations;
+            (iv)    relates to the reputation of Abu Dhabi Global Market or to its financial
+                    stability; and/or
+            (v)     constitutes trade secrets.
+(3)   A communication or item is not a Protected Item if it is held with the intention of
+      furthering a criminal purpose.
+13    Entry of premises under warrant
+
+(1)   The ADGM Courts may issue a warrant under this section if satisfied on information
+      on oath given by or on behalf of the Registration Authority or an Investigator that there
+      are reasonable grounds for believing that the first or second set of conditions as set
+      out in subsections (2) and (3) respectively is satisfied or any other conditions that the
+      ADGM Courts sees fit is satisfied.
+
+(2)   The first set of conditions is —
+      (a)   that a person on whom an information requirement has been imposed has failed
+            (wholly or in part) to comply with it; and
+      (b)   that on the premises specified in the warrant —
+            (i)     there are documents which have been required; or
+            (ii)    there is information which has been required.
+(3)   The second set of conditions is —
+      (a)   that the premises specified in the warrant are premises of a Person;
+      (b)   that there are on the premises documents or information in relation to which an
+            information requirement could be imposed; and
+      (c)   that if such a requirement were to be imposed —
+            (i)     it would not be complied with; or
+            (ii)    the documents or information to which it related would be removed,
+                    tampered with or destroyed.
+(4)   A warrant under this section shall authorise the person executing it —
+      (a)   to enter the premises specified in the warrant;
+      (b)   to search the premises and take possession of any documents or information
+            appearing to be documents or information of a kind in respect of which a warrant
+            under this section was issued or to take, in relation to any such documents or
+            information, any other steps which may appear to be necessary for preserving
+            them or preventing interference with them;
+
+
+
+                                                                                            11
+      (c)   to take copies of, or extracts from, any documents or information appearing of
+            a kind in respect of which a warrant under this section was issued;
+      (d)   to require any person on the premises to provide an explanation of any
+            document or information appearing to be of a kind in respect of which a warrant
+            under this section was issued or to state where it may be found;
+      (e)   to use such force as may be reasonably necessary; and/or
+      (f)   to do any other act or thing that the ADGM Courts sees fit.
+(5)   A warrant under this section may be executed by any person authorised by the ADGM
+      Courts to execute it.
+(6)   The warrant may authorise persons to accompany any person who is executing it.
+14    Retention of Seized Documents
+
+(1)   Any Seized Document may be retained so long as it is necessary to retain it (rather
+      than copies of it) in the circumstances.
+
+(2)   A person claiming to be the owner of a Seized Document may apply to the ADGM
+      Courts for an order for the delivery of the Seized Document to the person appearing
+      to the ADGM Courts to be the owner.
+(3)   If on an application under subsection (2) the ADGM Courts cannot ascertain who is
+      the owner of the Seized Document the ADGM Courts may make such order as the
+      courts sees fit.
+(4)   An order under subsections (2) or (3) does not affect the right of any person to take
+      legal proceedings against any person in possession of a Seized Document for the
+      recovery of the Seized Document.
+15    Injunctions in cases of Investigations and proceedings
+
+(1)   If it appears to the Registration Authority that there is good reason for doing so, the
+      Registration Authority may apply to the ADGM Courts to make one or more of the
+      orders set out in subsection (2).
+
+(2)   The ADGM Courts may, in accordance with subsection (1), make one or more of the
+      following orders —
+      (a)   an order restraining the Person from engaging in certain conduct, including but
+            not limited to, engaging in the conduct that may constitute a Contravention of
+            these Regulations or any other Commercial Legislation;
+      (b)   an order requiring the Person to do any act or thing including, but not limited
+            to, acts or things to remedy the Contravention or to minimise loss or damage;
+      (c)   an order restraining the Person from paying, transferring, disposing of, or
+            otherwise dealing with, any assets which the Person is reasonably likely to
+            dispose of or otherwise deal with;
+      (d)   an order restraining any other person holding assets on behalf of the Person
+            from paying, transferring, disposing of, or otherwise dealing with, any assets
+            of the Person which are reasonably likely to be disposed of or otherwise dealt
+            with;
+
+
+
+                                                                                          12
+      (e)   an order prohibiting the Person or any other person from taking or sending out
+            of the jurisdiction of the ADGM Courts or out of the Abu Dhabi Global Market
+            any assets of the Person or held on a person’s behalf; and/or
+      (f)   any other order as the ADGM Courts sees fit.
+16    Appointment of managers
+
+(1)   The Registration Authority may on application to the ADGM Courts require a Person
+      to appoint one or more individuals to act as managers of the business of the Person
+      on such terms as the Registration Authority may specify and the ADGM Courts shall
+      order. Such terms may be varied from time to time, subject to further order from the
+      ADGM Courts, by notice in writing given by the Registration Authority to the Person.
+
+(2)   The Registration Authority may impose a requirement under subsection (1) where it
+      considers it necessary or desirable to appoint a manager—
+      (a)   for the orderly transition of the Person from one set of owners or controllers to
+            a new set of owners or controllers;
+      (b)   to wind down the operations of the Person for the protection of customers of
+            the Licensed Person;
+      (c)   to ensure that customers or other Persons are not adversely affected; or
+      (d)   to maintain the integrity of the Abu Dhabi Global Market.
+17    Costs of an Investigation
+
+(1)   Subject to subsection (2) or otherwise agreed in writing with the Person, the
+      Registration Authority shall be responsible for the costs and expenses of an
+      Investigation.
+
+(2)   Where, as a result of an Investigation under this Part 3, a Person is found by the
+      Registration Authority or ADGM Courts to have committed a Contravention of these
+      Regulations, the ADGM Courts may order, on application brought by the Registration
+      Authority, that the Person pay or reimburse the Registration Authority in respect of
+      the whole, or a specified part of, the costs and expenses of the Investigation,
+      including the remuneration of any person involved in the Investigation or any other
+      order the ADGM Courts sees fit.
+(3)   The ADGM Courts may make an order under subsection (2), on an application by
+      the Registration Authority, whether or not the person has commenced, or intends to
+      commence, a reference, appeal or other proceeding in relation to a decision of the
+      Registration Authority.
+18    Contraventions
+
+(1)   A Person who knows or suspects that an Investigation is being or is likely to be
+      conducted under this Part 3 commits a Contravention of these Regulations if-
+
+      (a)   the Person falsifies, conceals, destroys or otherwise disposes of a document
+            which the person knows, or suspects is, or would be relevant to such an
+            Investigation; or
+
+
+
+
+                                                                                          13
+      (b)   the Person causes or permits the falsification, concealment, destruction or
+            disposal of such a document, unless the person shows that there was no
+            intention of concealing facts disclosed by the documents from the Investigator.
+(2)   A Person who, in purported compliance with a requirement imposed on him under
+      this Part 3 -
+      (a)   provides information which he knows to be false or misleading in a material
+            particular; or
+      (b)   recklessly provides information, which is false or misleading in a material
+            particular,
+      commits a Tier 2 Contravention of these Regulations.
+(3)   Any Person who commits any of the Tier 2 Contraventions set out in subsections (1)
+      to (2) shall be liable to a Fine not exceeding level 8 on the Fines Scale.
+(4)   If the Registration Authority considers that a Person has contravened a relevant
+      requirement imposed on the Person under this Part 3, the Registration Authority may
+      impose on them a Fine, of such amount as it considers appropriate, provided such
+      Fine shall not exceed level 9 on the Fines Scale.
+(5)   If a person other than the Investigator fails to comply with a requirement imposed on
+      a person under this Part 3, the Registration Authority may apply to the ADGM Courts
+      for a declaration.
+(6)   If the ADGM Courts are satisfied that the person failed without reasonable excuse to
+      comply with the requirement, it may issue any order that the ADGM Courts sees fit.
+
+
+
+
+                                                                                        14
+                              PART 4: SUPERVISORY POWERS
+19    Supervisory powers of the Registration Authority
+
+(1)   The Registration Authority may, on its own initiative, immediately upon issuing a
+      Supervisory Notice to a Person and without following the procedure for Tier 2
+      Contraventions as set out in Part 7, exercise any of the powers set out in:
+
+      (a)   Part 8, section 36 (Imposition of requirements) provided a relevant ground
+            under section 36(1) is satisfied; and/or
+      (b)   Part 8, section 37 (Variation of a Licence) provided a relevant ground under
+            section 37(1) is satisfied.
+(2)   Where the Registration Authority exercises its supervisory powers under this section
+      19, the Supervisory Notice must specify—
+      (a)   the relevant grounds under Part 8, section 36(1) or 37(1) on which the
+            supervisory powers are being exercised;
+      (b)   the supervisory action being taken;
+      (c)   that the supervisory action will take immediate effect or take effect on the date
+            specified in the notice;
+      (d)   the Person's right to make representations;
+      (e)   the timeframe for making such written Statement of Representations; and
+      (f)   the right of the Person to refer the matter to the ADGM Courts for Judicial
+            Review under Part 9.
+(3)   The relevant Person against whom the Supervisory Notice is issued may make
+      written representations to the Registration Authority to address whether the original
+      Supervisory Notice should stand by submitting a Statement of Representations, in
+      the same way as a person may submit a Statement of Representations to make
+      representations in relation to a Warning Notice under Part 7, section 27. A Person
+      has a right to make oral representations but may only do so after giving notice that it
+      seeks to make such oral representations to the Registration Authority.
+(4)   When a Supervisory Notice takes effect, the Registration Authority may publish such
+      information about the matter to which the Supervisory Notice relates as it considers
+      appropriate in accordance with Part 7, section 33 as if the Supervisory Notice were
+      a type of notice listed in that section.
+(5)   A Person has the right to refer the matter that is the subject of a Supervisory Notice
+      to the ADGM Courts for Judicial Review in accordance with Part 9 immediately on
+      receipt of a Supervisory Notice without being required to first submit a Statement of
+      Representations to the Registration Authority.
+(6)   Notwithstanding that a Person may exercise their rights to refer the matter to the
+      ADGM Courts for Judicial Review under Part 9, as soon as it receives a Supervisory
+      Notice, the Registration Authority may follow the procedure for Tier 2 Contraventions
+      under Part 7 as if the Supervisory Notice were a Warning Notice and will issue a
+      Decision Notice or a Discontinuance Notice to either reconfirm or revoke the
+      supervisory action taken under this Part 4, in accordance with that process.
+
+
+
+
+                                                                                          15
+                                PART 5: EXCEPTIONAL POWERS
+20    Exceptional powers of the CEO
+
+(1)   The Registration Authority, acting through its CEO, may on its own initiative,
+      immediately upon issuing an Exceptional Notice to a Person, and without following
+      the procedure for Tier 2 Contraventions as set out in Part 7, exercise any of the
+      powers set out in Part 8, sections 38 (Licence Suspension or Restriction), 39
+      (Cancellation of Licence) and 40 (Prohibition Orders).
+
+(2)   The Registration Authority, acting through its CEO, may not delegate any of the
+      exceptional powers set out in subsection (1) to any Officer, agent, employee or other
+      person.
+(3)   The Registration Authority, acting through its CEO, may exercise its power set out in
+      Part 8, sections 38, 39 and 40 in relation to a Person:
+      (a)   if it appears to the Registration Authority that –
+            (i)     it has reasonable grounds to suspect a serious Contravention of any
+                    Commercial Legislation;
+            (ii)    the Registration Authority's objectives set forth in Part 1 are likely to be
+                    prejudiced or placed in material jeopardy unless the powers are
+                    exercised;
+            (iii)   the Registration Authority assesses that there is a reasonable likelihood
+                    of criminal activity; and/or
+            (iv)    the Registration Authority concludes there is:
+                    (A)   a reasonable risk of imminent material harm to consumers or
+                          businesses;
+                    (B)   a reasonable risk to the Abu Dhabi Global Market or the United
+                          Arab Emirates; or
+                    (C)   a reasonable likelihood of a threat to public health or safety or
+                          property;
+            And
+      (b)   the Registration Authority has reason to believe that issuing an Exceptional
+            Notice would materially mitigate a risk specified under subsection (a).
+(4)   Where the Registration Authority, acting through its CEO, exercises its exceptional
+      powers under this section 20, the Exceptional Notice must specify—
+      (a)   the relevant grounds under subsection (3) on which the exceptional powers
+            are being exercised;
+      (b)   the enforcement action being taken;
+      (c)   that the enforcement action will take immediate effect or take effect on the date
+            specified in the notice;
+      (d)   the Person's right to make representations to address whether the Exceptional
+            Notice should stand by submitting a Statement of Representations;
+      (e)   the timeframe for making such written Statement of Representations; and
+
+                                                                                             16
+      (f)   the right of the Person to refer the matter to the ADGM Courts for Judicial
+            Review under Part 9.
+(5)   The relevant Person against whom the Exceptional Notice is issued may make
+      written representations to the Registration Authority to address whether the original
+      Exceptional Notice should stand by submitting a Statement of Representations, in
+      the same way as a person may submit a Statement of Representations to make
+      representations in relation to a Warning Notice under Part 7, section 27. A Person
+      has a right to make oral representations but may only do so after giving notice that it
+      seeks to make such oral representations to the Registration Authority.
+(6)   When an Exceptional Notice takes effect, the Registration Authority may publish
+      such information about the matter to which the Exceptional Notice relates as it
+      considers appropriate in accordance with Part 7, section 33 as if the Exceptional
+      Notice were a type of notice listed in that section.
+(7)   A Person has the right to refer the matter that is the subject of an Exceptional Notice
+      to the ADGM Courts for Judicial Review in accordance with Part 9 immediately on
+      receipt of an Exceptional Notice without being required to first submit a Statement of
+      Representations to the Registration Authority.
+(8)   Notwithstanding that a Person may exercise their rights to refer the matter to the
+      ADGM Courts for Judicial Review under Part 9, as soon as it receives an Exceptional
+      Notice, the Registration Authority may follow the procedure for Tier 2 Contraventions
+      under Part 7 as if the Exceptional Notice were a Warning Notice and will issue a
+      Decision Notice or a Discontinuance Notice to either reconfirm or revoke the
+      enforcement action taken under this Part 5, in accordance with that process.
+
+
+
+
+                                                                                          17
+                          PART 6: PROCEDURE FOR TIER 1 CONTRAVENTIONS
+21        Financial Penalty Notice
+
+(1)       When the Registration Authority asserts that a Person has committed a Tier 1
+          Contravention, the Registration Authority shall issue a Financial Penalty Notice to that
+          Person.
+(2)       The Registration Authority shall not be required to issue a Warning Notice in relation to
+          a Tier 1 Contravention, as a precondition of issuing a Financial Penalty Notice or
+          otherwise.
+(3)       A Financial Penalty Notice shall be in the form prescribed by the Registration Authority,
+          and shall set out –
+          (a)   the provision of the relevant Commercial Legislation under which the Tier 1
+                Contravention is alleged to have been committed;
+          (b)   particulars of the Tier 1 Contravention, where available;
+          (c)   the applicable Fine for that Tier 1 Contravention and the due date by which the
+                Person must pay the Fine, being the date that is 30 Days from the date of
+                issuance of the Financial Penalty Notice;
+          (d)   the period in which a Person may submit a Statement of Representations in
+                accordance with section 22 in relation to the Financial Penalty Notice, being the
+                date that is no later than 30 Days from the date of issuance of the Financial
+                Penalty Notice; and
+          (e)   the right of the Person to refer the matter to the ADGM Courts for Judicial Review
+                under Part 9.
+(4)       The amounts of standard Fines for each Tier 1 Contravention shall be on the Fines
+          Scale as set out in Schedule 1 of these Regulations.
+(5)       A Financial Penalty Notice issued more than 6 years after the date on which the
+          Registration Authority became aware, or ought reasonably to have become aware, of
+          the relevant Tier 1 Contravention shall be invalid.
+22        Objection process for Financial Penalty Notices 2
+
+(1)       A Person who receives a Financial Penalty Notice may raise an objection to the Fine
+          with the Registration Authority by submitting a Statement of Representations in the
+          form prescribed by the Registration Authority, within 30 Days of the issuance of the
+          Financial Penalty Notice.
+
+(2)       Provided that no action has been taken by the Registration Authority under section
+          23 (Review process for Statement of Representations), a Person may withdraw its
+          Statement of Representations filed under subsection (1) by written notice to the
+          Registration Authority. In such instances, the terms of the issued Financial Penalty
+          Notice shall continue to apply.
+(3)       A Person shall not be entitled to submit a Statement of Representations if the due
+          date for payment of the Fine as set out in the Financial Penalty Notice has already
+          passed or the payment of the Fine has already been paid.
+
+
+2 Amended 24 April 2026
+
+
+
+                                                                                                18
+(4)   In order to be valid, a Statement of Representations must state at least one of the
+      following grounds of objection, specifying the particulars and evidence for that
+      ground—
+      (a)   the Person did not commit the Tier 1 Contravention;
+      (b)   the Registration Authority acted in error in imposing the Fine;
+      (c)   a significant event beyond the Person's control made it impossible to comply
+            with the provision of the relevant Commercial Legislation; and/or
+      (d)   the circumstances surrounding the Tier 1 Contravention warrant leniency from
+            the Registration Authority.
+23    Review process for Statement of Representations
+
+(1)   After receipt of a Statement of Representations, the Registration Authority shall
+      inform the Person in writing if it intends to revoke, reduce or uphold the Fine.
+
+(2)   If the Registration Authority reduces or upholds the Fine, a new Financial Penalty
+      Notice shall be sent to the Person informing the Person of the Registration Authority's
+      decision:
+      (a)   which may not be the subject of a further Statement of Representations; and
+      (b)   subject to subsection (3), the Person must pay the Fine within 14 Days of the
+            issuance of the new Financial Penalty Notice.
+(3)   If within 30 Days from the date of issuance of the Financial Penalty Notice under
+      section 21(1) a new Financial Penalty Notice is issued under subsection (2), the
+      Person must pay the Fine no later than the date which is the latter of-
+      (a)   14 Days of the date of issuance of a new Financial Penalty Notice under
+            subsection (2); and
+      (b)   30 Days of the issuance of the Financial Penalty Notice under section 21(1).
+(4)   If the Registration Authority revokes a Fine, in accordance with subsection (1), or
+      otherwise, the Registration Authority must issue a Discontinuance Notice.
+(5)   A Discontinuance Notice under this Part 6 must be given in writing and shall set out—
+      (a)   the Financial Penalty Notice to which it relates, including the date of issue and
+            any reference number; and
+      (b)   the relevant Fine which is to be revoked.
+
+
+
+
+                                                                                          19
+                          PART 7: PROCEDURE FOR TIER 2 CONTRAVENTIONS
+24        Warning Notices 3
+
+(1)       If the Registration Authority alleges that a Person has committed a Tier 2
+          Contravention, including as a result of the outcome of an Investigation, it may issue
+          a Warning Notice.
+
+(2)       Prior to issuing a Warning Notice, the Registration Authority may decide to appoint
+          one or more independent Decision Makers to assess the circumstances and decide
+          whether or not a Warning Notice will be issued to the relevant Person in respect of
+          the alleged Tier 2 Contravention.
+(3)       Notwithstanding the standard Fine applicable to the relevant Tier 2 Contravention,
+          the Registration Authority may apply any of the enforcement powers set out in Part
+          8 or referred to in the relevant Commercial Legislation, in addition to or instead of a
+          standard Fine.
+(4)       A Warning Notice issued more than 6 years after the date on which the Registration
+          Authority became aware, or ought reasonably to have become aware, of the relevant
+          Tier 2 Contravention shall be invalid.
+25        Content of a Warning Notice
+
+(1)       A Warning Notice must be made in writing and shall set out–
+
+          (a)   the provision of the relevant Commercial Legislation under which the Tier 2
+                Contravention is alleged to have been committed;
+          (b)   particulars of the Tier 2 Contravention;
+          (c)   the enforcement action which the Registration Authority proposes to take;
+          (d)   in relation to the disqualification of Persons under Part 8, section 42, the
+                proposed period of disqualification;
+          (e)   a reasonable deadline (which must be at least 14 Days from the date of issuing
+                the Warning Notice) for submission of a Statement of Representations by the
+                Person to challenge the proposed enforcement action; and
+          (f)   whether or not section 26 applies.
+26        Access to material
+
+(1)       If the Registration Authority issues a Person a Warning Notice, it must –
+
+          (a)   allow that Person access to the material on which it relied upon taking the
+                decision which gave rise to the obligation to issue the Warning Notice; and
+          (b)   allow that Person access to any other material held, received or reviewed by
+                the Registration Authority in connection with the matter (where such material
+                was not relied upon by the Registration Authority in determining and reaching
+                its decision).
+
+
+
+
+3 Amended 24 April 2026
+
+
+
+                                                                                              20
+(2)   Notwithstanding subsection (1) the Registration Authority is not required to grant the
+      Person issued with a Warning Notice access to material under subsection (1) if the
+      material–
+      (a)   relates to a matter involving a person other than the Person issued with the
+            Warning Notice; and
+      (b)   was taken into account by the Registration Authority in that Person’s matter
+            only for the purposes of comparison with other matters.
+(3)   The Registration Authority may refuse the Person issued with a Warning Notice
+      access to particular material which it would otherwise allow that Person access to if,
+      in its opinion, allowing that Person access to the material-
+      (a)   would not be in the public interest; and/or
+      (b)   would potentially prejudice a person other than the Person issued with the
+            Warning Notice which would be caused by the material's disclosure.
+(4)   If the Registration Authority does not allow the Person issued with a Warning Notice
+      access to material because it is excluded material consisting of a Protected Item, it
+      must give that Person written notice of –
+      (a)   the existence of the Protected Item; and
+      (b)   the Registration Authority’s decision not to allow them access to it.
+(5)   If the Registration Authority refuses under subsection (3) to allow the Person issued
+      with a Warning Notice access to material, it must give them written notice of the
+      reasons for the refusal.
+27    Responding to a Warning Notice
+
+(1)   A Person who receives a Warning Notice may respond in writing, by submitting a
+      Statement of Representations. A Person may make oral representations, but may
+      only do so after giving notice that it seeks to make such oral representations to the
+      Registration Authority.
+
+(2)   A Statement of Representations submitted in response to a Warning Notice may,
+      without limitation, —
+      (a)   specify the grounds of such objection to include-
+            (i)     the Person did not commit the Tier 2 Contravention;
+            (ii)    the Registration Authority acted in error in determining the proposed
+                    sanctions;
+            (iii)   a significant event beyond the Person's control made it impossible to
+                    comply with the provision of the relevant Commercial Legislation; and/or
+            (iv)    the circumstances of the case warrant leniency from the Registration
+                    Authority; and
+      (b)   specify the Person’s request for the Registration Authority to (without
+            limitation)-
+            (i)     discontinue or vary the enforcement action;
+            (ii)    reduce the level of Fine; or
+
+                                                                                         21
+            (iii)   include proposals for remedial undertakings that it can offer in order to
+                    reduce the proposed enforcement action.
+(3)   The Registration Authority shall have the discretion to extend the time period for
+      receiving the Statement of Representations from the Person beyond the period
+      specified in the Warning Notice.
+(4)   The Registration Authority must decide within a reasonable timeframe following
+      receipt of the representations, to issue either a Decision Notice or Discontinuance
+      Notice on the recipient, or to enter into settlement discussions in accordance with
+      section 31.
+(5)   A Person has no rights to make representations to the Registration Authority in
+      relation to any findings of fact by the ADGM Courts.
+28    Decision Notices
+
+(1)   The Registration Authority may issue a Decision Notice in relation to the proposed
+      enforcement action set out in a Warning Notice either –
+
+      (a)   once the deadline for receiving a Statement of Representations from a Person
+            has passed; or
+      (b)   if a Statement of Representations is submitted by a Person under section 27,
+            within a reasonable period after receiving such Statement of Representations.
+(2)   A Decision Notice must be made in writing and shall set out –
+      (a)   if preceded by a Warning Notice, the Warning Notice to which the Decision
+            Notice relates, including the date of issue and any reference number;
+      (b)   the provision of the relevant Commercial Legislation under which the Tier 2
+            Contravention is decided to have been committed;
+      (c)   particulars of the Tier 2 Contravention;
+      (d)   the enforcement action decided to be taken;
+      (e)   reasons for the enforcement action decided including the measures
+            considered in determining the appropriate level of Fine or other chosen
+            enforcement actions;
+      (f)   if the enforcement action varies from that set out in a preceding Warning Notice
+            following any Statement of Representation submitted by the recipient, the
+            reasons for such variation;
+      (g)   the due date for payment of any Fine (which may not be less than 30 Days
+            from the date on which the Decision Notice is issued);
+      (h)   the deadline for and right of the Person to refer the matter to the ADGM Courts
+            for Judicial Review under Part 9; and
+      (i)   that the Decision Notice shall be deemed final and may be published if the
+            Person does not refer the matter to the ADGM Courts for Judicial Review under
+            Part 9 in accordance with subsection (h).
+
+
+
+
+                                                                                          22
+29    Discontinuance Notices
+
+(1)   The Registration Authority must issue a Discontinuance Notice under this section 29
+      if –
+
+      (a)   it has issued a Warning Notice and decides not to take the enforcement action
+            proposed in that Warning Notice (other than in accordance with section
+            28(2)(f); or
+      (b)   it has issued a Decision Notice and decides not to take any part of the
+            enforcement action to which that Decision Notice relates.
+(2)   A Discontinuance Notice must be given in writing and shall set out —
+      (a)   the Warning Notice or Decision Notice to which it relates, including the date of
+            issue and any reference number; and
+      (b)   the relevant enforcement action which is to be discontinued or varied.
+30    Consent Process
+
+(1)   A Person may, at any time after receiving a Warning Notice but before receiving a
+      Decision Notice, give notice in writing to consent to —
+
+      (a)   admission of liability for the Tier 2 Contravention;
+      (b)   the application of the proposed enforcement action; and
+      (c)   the waiving of that Person's right to make any further representations or
+            objections to the Registration Authority or to the ADGM Courts in relation to the
+            enforcement action, except as otherwise provided by law.
+(2)   If the relevant Person provides its consent in such format as is specified by the
+      Registration Authority and on such terms as are acceptable to the Registration
+      Authority at its discretion, the Registration Authority shall issue a Decision Notice on
+      the consented terms.
+(3)   A Decision Notice issued under subsection (2) must be made in writing and shall set
+      out–
+      (a)   an acknowledgement of the consent by the Person;
+      (b)   the enforcement action to be taken;
+      (c)   the date on which the enforcement action will take effect; and
+      (d)   if the Registration Authority imposes a Fine, the amount of the Fine and the
+            manner in which, and the period within which, the Fine is to be paid (which may
+            not be less than 30 Days from the date on which the Decision Notice is issued).
+(4)   Any Person who agrees to the consent process under this section 30 waives the right
+      to make any representations or objections to the Registration Authority or to the
+      ADGM Courts in relation to the decision, except as otherwise provided by law.
+31    Settlement Process
+
+(1)   The Registration Authority may, at any time before or after issuing a Warning Notice
+      or Decision Notice, enter into settlement discussions with the relevant Person on
+      such terms as the Registration Authority at its discretion considers appropriate.
+
+
+                                                                                           23
+(2)   Settlement may take place on the basis there has been an admission of wrongdoing
+      by the Person, and on such terms as the Registration Authority at its discretion
+      considers appropriate.
+(3)   The Registration Authority may appoint a Decision Maker to exercise its decision-
+      making powers and discretions under this section 31.
+(4)   The Registration Authority may withdraw from settlement discussions entered into
+      under subsection (1) and continue the process for a Tier 2 Contravention provided
+      the Registration Authority is satisfied that—
+      (a)   it is not likely that the terms of the Settlement Agreement will be agreed within
+            a reasonable time period;
+      (b)   the Person has provided false, misleading or incomplete information in relation
+            to the settlement discussions;
+      (c)   there is a material change in circumstances that affects the settlement
+            discussions; or
+      (d)   it is necessary to do so to further any of the objectives set out in Part 1 or to
+            protect the integrity of the Abu Dhabi Global Market or the United Arab
+            Emirates.
+(5)   For settlement to be applicable, a Settlement Agreement between the Registration
+      Authority and the relevant Person must be agreed in writing and shall be legally
+      binding.
+(6)   The Registration Authority may apply to the ADGM Courts for an order to enforce
+      the Settlement Agreement or any part of it.
+32    Enforceable Undertakings
+
+(1)   The Registration Authority may, at any time, whether or not a Warning Notice or
+      Decision Notice is issued appoint a Decision Maker to exercise its decision-making
+      powers and discretions under this section 32.
+
+(2)   The Registration Authority may accept Enforceable Undertakings from the relevant
+      Person on such terms as the Registration Authority at its discretion considers
+      appropriate in the pursuit of its statutory objectives as set out in Part 1, section 2.
+(3)   The Person may withdraw or vary the Enforceable Undertakings at any time, but only
+      with the prior written consent of the Registration Authority.
+(4)   The Registration Authority may, if it considers it appropriate or desirable, publish
+      details of any such Enforceable Undertakings in such manner as the Registration
+      Authority determines.
+(5)   If the Registration Authority considers that any Person who has given such an
+      undertaking has not complied with any of its terms, the Registration Authority may
+      take such further action as it considers appropriate, including without limitation,
+      imposing any other sanction and taking any other action available to the Registration
+      Authority under the Commercial Legislation and applying to the ADGM Courts for an
+      order or other relief to enforce or provide a remedy in respect of any such non-
+      compliance.
+
+
+
+
+                                                                                          24
+33    Publication of Notices
+
+(1)   Neither the Registration Authority nor a Person to whom it is given or copied may
+      publish a Warning Notice or any details concerning it, without the written consent of
+      the other.
+
+(2)   The Registration Authority may at its discretion publish any Decision Notice or
+      Discontinuance Notice. In doing so, the Registration Authority may, but other than
+      as set out in subsection (5) shall not be required to, redact the name of any individual
+      named in such notice. The Registration Authority shall not be required to make any
+      redaction of an individual's identifiable information in any such publication if a finding
+      is made against such individual or a finding is made against the Person as a result
+      in whole or in part of any action or omission of that individual.
+(3)   A Person to whom a Decision Notice, or Discontinuance Notice is given or copied
+      may not publish the notice or any details concerning it, unless the Registration
+      Authority has already published the notice or those details or consents in writing to
+      such publication.
+(4)   The Registration Authority may publish statistical data, anonymised information or
+      market or thematic findings about any Warning Notice, Decision Notice, or
+      Discontinuance Notice or such notices in general, as it considers appropriate.
+(5)   The Registration Authority may not publish information under this section if, in its
+      opinion, publication of the information would be—
+      (a)   detrimental to any person who would be named or with respect to whom the
+            action was taken (or was proposed to be taken);
+      (b)   detrimental to the interests of participants of the Abu Dhabi Global Market; or
+      (c)   detrimental to the interests of the Abu Dhabi Global Market or the United Arab
+            Emirates.
+(6)   Information is to be published under this section in such manner as the Registration
+      Authority considers appropriate and may function as public censure of the relevant
+      Person.
+(7)   A Person, other than the Registration Authority, who contravenes subsections (1) or
+      (3) shall be liable to a Fine not exceeding Level 4 on the Fines Scale.
+34    Third party rights
+
+(1)   If any of the reasons contained in a Warning Notice relates to a matter which -
+
+      (a)   identifies a person ("the third party") other than the Person to whom the notice
+            is given; and
+      (b)   is prejudicial to the third party,
+      a copy of the Warning Notice must be given to the third party.
+(2)   Subsection (1) does not require a copy to be given to the third party if the Registration
+      Authority has given the third party a separate Warning Notice in relation to the same
+      matter.
+(3)   The Warning Notice copied to a third party under subsection (1) must specify a
+      reasonable period (which may not be less than 14 Days) within which the third party
+      may make representations to the Registration Authority relating to information,
+
+                                                                                             25
+       interests and statements in the Warning Notice concerning, related to or made by
+       the third party only.
+(4)    If any of the reasons contained in a Decision Notice to which this section applies
+       relates to a matter which -
+       (a)   identifies a person ("the third party") other than the Person to whom the
+             Decision Notice is given; and
+       (b)   in the opinion of the Registration Authority, is prejudicial to the third party,
+       a copy of the Decision Notice must be given to the third party.
+(5)    If the Decision Notice was preceded by a Warning Notice, a copy of the Decision
+       Notice must (unless it has been given under subsection (4)) be given to each person
+       to whom the Warning Notice was copied.
+(6)    Subsection (4) does not require a copy to be given to the third party if the Registration
+       Authority has given the third party a separate Decision Notice in relation to the same
+       matter.
+(7)    Neither subsection (1) nor subsection (4) requires a copy of a notice to be given to a
+       third party if the Registration Authority considers it detrimental to the Person under
+       Investigation, any other person or the Abu Dhabi Global Market to do so.
+(8)    Subsections (9) to (11) apply if the third party to whom a Decision Notice is given
+       has a right to refer the matter to the ADGM Court.
+(9)    A third party to whom a copy of the notice is given under this section may refer to the
+       ADGM Court-
+       (a)   so far as it is based on a reason of the kind mentioned in subsection (3); or
+       (b)   any opinion expressed in the notice by the Registration Authority in relation to
+             them.
+(10)   The copy must be accompanied by a statement of the third party's right to make a
+       reference under subsection (9) and of the procedure on such a reference.
+(11)   A third party who alleges that a copy of the notice should have been given to them,
+       but was not, may apply to the ADGM Courts for an order that the ADGM Courts sees
+       fit so far as the application is based on-
+       (a)   a reason of the kind mentioned in subsection (3); or
+       (b)   any opinion expressed in the notice by the Registration Authority in relation to
+             the person.
+(12)   Section 26 applies to a third party as it applies to the Person to whom the notice to
+       which this section applies was given, in so far as the material to which access must
+       be given under that section relates to the matter which identifies the third party.
+(13)   A copy of a notice given to a third party under this section shall be accompanied by
+       a description of the effect of section 26 as it applies to them.
+(14)   Any person to whom a Warning Notice or Decision Notice was copied under this
+       section must be given a copy of a Discontinuance Notice applicable to the
+       proceedings to which the Warning Notice or Decision Notice related.
+
+
+
+
+                                                                                                26
+                              PART 8: ENFORCEMENT POWERS
+35    Exercising of enforcement powers
+
+(1)   If the Registration Authority considers that a Person has committed a Tier 2
+      Contravention of any Commercial Legislation, it may impose on the Person any
+      enforcement actions set out in this Part 8 as well as any applicable enforcement
+      power set out in the relevant Commercial Legislation.
+
+(2)   The powers set out in sections 36 and 37 may also be exercised in accordance with
+      the procedure for the Registration Authority exercising its Supervisory Powers as set
+      out in Part 4 by the issuance of a Supervisory Notice.
+(3)   The powers set out in sections 38, 39 and 40 may also be exercised in accordance
+      with the procedure for the Registration Authority’s CEO exercising its Exceptional
+      Power as set out in Part 5 by the issuance of an Exceptional Notice.
+36    Imposition of requirements
+
+(1)   Where a Person applies for a Licence or the variation of a Licence, the Registration
+      Authority may exercise its power to impose requirements under this section in
+      relation to a Licensed Person on its own initiative, if it appears to the Registration
+      Authority that –
+
+      (a)   the Licensed Person is failing, or is likely to fail, to satisfy the conditions of
+            Licence applicable to him;
+      (b)   the Licensed Person has failed, during a period of at least 12 months, to carry
+            on a Controlled Activity to which the Licence relates; and/or
+      (c)   it is desirable to exercise the power in the interests of the Abu Dhabi Global
+            Market.
+(2)   The Registration Authority has the power under this section to —
+      (a)   impose a new requirement;
+      (b)   vary a requirement imposed by the Registration Authority under this section;
+            or
+      (c)   cancel such a requirement.
+(3)   The Registration Authority may refuse an application of a Person under subsection
+      (1), if it appears to the Registration Authority that it is desirable to do so in the
+      interests of the Abu Dhabi Global Market.
+37    Variation of a Licence
+
+(1)   The Registration Authority may exercise its power under this section to vary a licence
+      in relation to a Licensed Person on its own initiative, if it appears to the Registration
+      Authority that –
+
+      (a)   the Licensed Person is failing, or is likely to fail, to satisfy the conditions of
+            Licence applicable to him;
+      (b)   the Licensed Person has failed, during a period of at least 12 months, to carry
+            on a Controlled Activity to which the Licence relates; and/or
+
+
+                                                                                            27
+      (c)   it is desirable to exercise the power in the interests of the Abu Dhabi Global
+            Market.
+(2)   The Registration Authority has the power under this section to vary the Licence of a
+      Licensed Person by —
+      (a)   adding a Controlled Activity to those to which the Licence relates;
+      (b)   removing a Controlled Activity from those to which the Licence relates;
+      (c)   varying the description of a Controlled Activity to which the Licence relates;
+            and/or
+      (d)   imposing certain conditions on the Licence;
+(3)   The power of the Registration Authority to vary a Licence under this section extends
+      to including in the Licence as varied any provision that could be included as if a new
+      Licence were being granted.
+38    Licence Suspension or Restriction
+
+(1)   The Registration Authority may —
+
+      (a)   suspend, for such period as it considers appropriate, any Licence which the
+            person has to carry on a Controlled Activity; and/or
+      (b)   impose, for such period as it considers appropriate, such limitations or other
+            restrictions in relation to the carrying on of one or more or all Controlled
+            Activities by the Licensed Person as it considers appropriate.
+(2)   The period for which a suspension or restriction is to have effect may not exceed 12
+      months.
+(3)   A suspension may relate only to the carrying on of an activity in specified
+      circumstances.
+(4)   A restriction may, in particular, be imposed so as to require the person concerned to
+      take, or refrain from taking, specified action.
+(5)   The Registration Authority may —
+      (a)   withdraw a suspension or restriction by way of a Discontinuance Notice; or
+      (b)   vary a suspension or restriction by way of a further Decision Notice.
+(6)   The powers under this section 38 may but need not be exercised so as to have effect
+      in relation to all the Controlled Activities that a Licensed Person carries on. The
+      powers under this section may include a partial or complete restriction on an activity
+      of any kind, either in the Abu Dhabi Global Markets or by the Licensed Person.
+39    Cancellation of a Licence
+
+(1)   The Registration Authority may exercise its power in relation to a Licensed Person
+      to cancel the Licence if it appears to the Registration Authority that –
+
+      (a)   the Licensed Person is failing, or is likely to fail, to satisfy the conditions of
+            Licence applicable to him;
+      (b)   the Licensed Person has failed, during a period of at least 12 months, to carry
+            on a controlled activity to which the Licence relates; and/or
+
+                                                                                           28
+      (c)   it is desirable to exercise the power in the interests of the Abu Dhabi Global
+            Market.
+40    Prohibition Orders
+
+(1)   The Registration Authority may issue an order prohibiting a Person from providing or
+      otherwise being involved in the provision of any activities, including but not limited to
+      Controlled Activities, in the Abu Dhabi Global Market as may be specified in the order
+      and subject to such conditions as may be specified in the order.
+
+(2)   The Registration Authority may issue a Prohibition Order —
+      (a)   where there is a reasonable likelihood that a Person will contravene a
+            requirement that applies to it under the legislation of the Abu Dhabi Global
+            Market;
+      (b)   where there is reasonable likelihood that the Registration Authority will not
+            meet its objectives as set out in Part 1; or
+      (c)   on receipt of information evidencing that a Person is involved in financial crime,
+      And
+      where there is a material loss or the risk of a material loss or any adverse effect on—
+            (i)     Abu Dhabi Global Market, including any adverse effect on the reputation
+                    of Abu Dhabi Global Market;
+            (ii)    Customers of a person; or
+            (iii)   Any other person.
+(3)   The Registration Authority may, if it considers appropriate or desirable, publish
+      details of a Prohibition Order in such manner as the Registration Authority
+      determines.
+41    Strike Off
+
+(1)   The Registration Authority may strike a Person’s name off a Register if the
+      Registration Authority has reasonable cause to believe that —
+
+      (a)   any information contained in the application for the registration of the Person,
+            or in any application for restoration of the Person to the Register, is misleading,
+            false or deceptive in a material particular; or
+      (b)   any statement made to the Registration Authority in connection with such an
+            application is misleading, false or deceptive in a material particular.
+(2)   In subsection (1) the reference to an application includes any documents delivered
+      to the Registration Authority in connection with the application.
+(3)   In addition to the procedural requirements for a Tier 2 Contravention set out in Part
+      7, the Registration Authority may not exercise the power in subsection (1) unless —
+      (a)   the Registration Authority has published a notice on its website that, at the end
+            of the period of two (2) months beginning with the date of the notice, the name
+            of the Person mentioned in the notice will, unless cause is shown to the
+            contrary, be struck off the Register and if applicable, the Person will be
+            dissolved; and
+
+                                                                                            29
+          (b)   the period mentioned in paragraph (a) of this subsection has expired.
+(4)       Once the period set out in subsection (3) has expired, the Registration Authority must
+          publish a notice on the website of the Person's name having been struck off the
+          Register.
+(5)       On the publication of the notice set out in subsection (4), if applicable, the Person is
+          dissolved.
+(6)       However—
+          (a)   the liability (if any) of every director, managing officer or member of the
+                company continues and may be enforced as if the company had not been
+                dissolved; and
+          (b)   nothing in this section affects the power of the ADGM Courts to wind up a
+                company the name of which has been struck off the Register.
+(7)       In the event that the Person who is struck off is a Licensed Person, all relevant
+          Licenses held by the Person will be automatically and immediately cancelled.
+(8)       This section 41 applies in addition to and without prejudice to the separate process
+          under the Companies Regulations.
+42        Disqualification of Persons
+
+(1)       The Registration Authority may issue a Disqualification Order to a Person for a Tier
+          2 Contravention provided the relevant Commercial Legislation allows for such
+          disqualification.
+
+(2)       The Warning Notice shall set out the proposed period of disqualification.
+(3)       Any Decision Notice issued to the relevant Person shall set out the decided period
+          of disqualification.
+43        Censure statements
+
+(1)       If the Registration Authority considers that a Person has contravened a relevant
+          requirement under these Regulations or any other Commercial Legislation, it may
+          issue a private or public censure in relation to such Contravention.
+
+(2)       A censure statement must describe in such detail as the Registration Authority may
+          determine the nature of the Contravention and may include such details as to any
+          remedial action that the Person should consider taking to avoid any repetition of such
+          Contravention or any other Contravention taking place, as the Registration Authority
+          may see fit to specify.
+(3)       A public censure statement must be published in such manner as the Registration
+          Authority determines and a copy of the censure statement must be sent by the
+          Registration Authority to the Person.
+44        Fines 4
+
+(1)       The Registration Authority may impose a Fine as set out in Schedule 1.
+
+(2)       The Registration Authority may impose a Fine through the issuance of a Decision
+          Notice, of up to one level higher than the standard applicable to the relevant category
+4 Amended 24 April 2026
+
+
+
+                                                                                               30
+      of Tier 2 Contravention, if the relevant Person has committed the same Tier 2
+      Contravention, within 12 months from the issuance of the previous Decision Notice.
+(3)   If all or any of the amount of a Fine payable under these Regulations is outstanding 30
+      Days after notice of that Fine has been issued, the Registration Authority may recover
+      the outstanding amount as a debt due to it, subject to any direction of the ADGM Courts.
+(4)   The Registration Authority may apply to the ADGM Courts for the payment of a Fine to
+      be recovered from assets restrained or otherwise restricted by the ADGM Courts in an
+      injunction.
+45    Annulment of Fines
+
+(1)   The Registration Authority may, annul a Fine imposed under these Regulations or
+      imposed under any other Commercial Legislation if—
+
+      (a)   it is satisfied that the Fine was invalidly imposed or was issued in error;
+      (b)   following receipt of a written request with evidence by a Person who has
+            received a Fine or charged under these Regulations, the Registration
+            Authority, in its’ sole discretion, is satisfied that there were exceptional
+            circumstances that made it impossible for the Person to comply with the
+            relevant Commercial Legislation pursuant to which the Fine was imposed; or
+      (c)   for any other reason that the Registration Authority considers appropriate in
+            order to meet its objectives under Part 1.
+(2)   The Registration Authority shall have the discretion to determine what constitutes an
+      exceptional circumstance for the purposes of subsection (1)(b) on a case-by-case
+      basis.
+(3)   The Registration Authority may publish details of any annulled Fines, including the
+      reasons for the annulment, in accordance with these Regulations and in such
+      manner as the Registration Authority deems appropriate.
+46    Statement of Policy
+
+(1)   The Registration Authority must prepare and issue a policy with respect to the
+      imposition of enforcement actions under this Part 8.
+
+(2)   The Registration Authority's policy in determining enforcement actions, must include
+      having regard to —
+      (a)   the seriousness of the Tier 2 Contravention in question in relation to the nature
+            of the relevant requirement or provision of the relevant Commercial Legislation
+            contravened;
+      (b)   the extent to which that Tier 2 Contravention was deliberate or reckless; and
+      (c)   whether the person against whom action is to be taken is an individual.
+(3)   The Registration Authority may at any time alter or replace a policy issued by it under
+      this section.
+(4)   If a policy issued under this section is altered or replaced by the Registration
+      Authority, the Registration Authority must issue the altered or replacement policy.
+(5)   The Registration Authority must, without delay, give the Board of Directors a copy of
+      any policy which it publishes under this section.
+
+                                                                                           31
+(6)   A policy issued under this section by the Registration Authority must be published by
+      the Registration Authority in the way appearing to the Registration Authority to be
+      best calculated to bring it to the attention of the public.
+(7)   The Registration Authority’s failure in a particular case to follow its procedure as set
+      out in the latest published policy does not affect the validity of a notice issued in
+      respect of any enforcement action taken under the Commercial Legislation.
+(8)   Subsection (7) does not prevent the ADGM Courts from taking into account any such
+      failure in considering a matter referred to it.
+(9)   In exercising, or deciding whether to exercise, its power under this Part 8 in the case
+      of any particular Contravention, the Registration Authority must have regard to the
+      Commercial Legislation in force at the time when the Contravention in question
+      occurred and in such instances, the enforcement procedure set out in Part 4, Part 5
+      or Part 7 shall apply (as applicable).
+
+
+
+
+                                                                                           32
+                                  PART 9: JUDICIAL REVIEW
+47    Scope of Judicial Review
+
+(1)   Without prejudice to any legal rights under Abu Dhabi Global Market legislation, a
+      Person may apply for Judicial Review –
+
+      (a)   in relation to a decision in a notice relating to a Tier 1 Contravention –
+            (i)    where that Person does not submit a Statement of Representations in
+                   relation to the Financial Penalty Notice, within 30 Days of the end of the
+                   time period for submitting a Statement of Representations under Part 6,
+                   section 22 in relation to the relevant Financial Penalty Notice; or
+            (ii)   where that Person submits a Statement of Representations in relation to
+                   the Financial Penalty Notice, within 30 Days of receiving the decision
+                   from the Registration Authority under Part 6, section 23; and
+      (b)   in relation to a decision in a notice relating to a Tier 2 Contravention –
+            (i)    within 30 Days of receiving a Decision Notice under Part 7, section 28 in
+                   relation to that Tier 2 Contravention; or
+            (ii)   where that Person is a Licensed Person and where the Registration
+                   Authority exercises its supervisory powers under Part 4 or the
+                   Registration Authority’s CEO exercises his exceptional powers under
+                   Part 5, within 30 Days of receiving a Supervisory Notice or an
+                   Exceptional Notice, as the case may be; or
+      (c)   within such other time period as the ADGM Courts may specify.
+
+
+
+
+                                                                                          33
+                              PART 10: NOTICE INFORMATION
+48    Service of notices under these Administrative Regulations
+
+(1)   A document, notice or other required information is validly sent or served on the
+      Registration Authority if it is delivered in electronic form in the manner specified by
+      the Registration Authority.
+
+(2)   A document is delivered to a Person by any means that the Registration Authority
+      deems fit, including electronic or physical form, if it is sent to the registered email
+      address of that Person or the registered address of that Person.
+(3)   A document, notice or other required information shall be deemed to have been
+      delivered at time that the email is recorded as 'sent' by the Registration Authority by
+      the Registration Authority's email server or a delivery receipt is received.
+
+
+
+
+                                                                                          34
+                                PART 11: FINAL PROVISIONS
+49    Short title and commencement
+
+(1)   These Regulations shall be referred to as the Administrative Regulations.
+
+(2)   These Regulations shall enter into force on the date of their publication.
+(3)   For any ongoing enforcement actions that commenced prior to the publication of
+      these Regulations, the enforcement procedure set out in the relevant Commercial
+      Legislation in force at that time shall apply.
+
+
+
+
+                                                                                   35
+                                     PART 12: DEFINITIONS
+50        Definitions 5
+
+In these Regulations, unless otherwise defined–
+
+"ADGM Courts"               means the first instance courts and courts of appeal of the Abu
+                            Dhabi Global Market established by Article 10 of the ADGM
+                            Founding Law and governed by Article 13 of that law;
+
+“ADGM Founding Law”         means the Law No. (4) of 2013 Concerning Abu Dhabi Global
+                            Market;
+
+"Board of Directors"        means the board of directors of the Abu Dhabi Global Market;
+
+"Business"                  includes any part of a business even if it does not consist of
+                            carrying on Controlled Activities;
+
+"CEO"                       means the chief executive officer of the Registration Authority;
+
+"Commercial Legislation"    means these Regulations, the Application of English Law
+                            Regulations, Beneficial Ownership and Control Regulations,
+                            Commercial Licensing Regulations, Commercial Permits
+                            Regulations, Companies Regulations, Consumer Protection
+                            Regulations, Distributed Ledger Technology Foundations
+                            Regulations,    Employment       Regulations,    Foundations
+                            Regulations, Healthcare Regulations, Hotel and Tourism
+                            Regulations,    Insolvency      Regulations,    Interpretation
+                            Regulations, Limited Liability Partnerships Regulations, Off-
+                            Plan and Real Property Professionals Regulations, Off-Plan
+                            Development Regulations, Real Property Regulations,
+                            Registration of Future Interests Regulations, Strata Title
+                            Regulations, Takeover Regulations, Trusts Regulations and the
+                            Whistleblower Protection Regulations, and includes any of its
+                            subordinate legislation that is enacted which relate to the
+                            conduct of commercial activities in the Abu Dhabi Global
+                            Market;
+
+"Contravention"             has the meaning ascribed to it in Part 2, section 3;
+
+“Controller” or “control”   has the meaning ascribed to it under the Beneficial Owner and
+                            Control Regulations;
+
+"Controlled Activity"       means any activity specified as a controlled activity in Rules
+                            made by the Board of Directors under the Commercial Licensing
+                            Regulations;
+
+ "Day"                      means a calendar day and should be interpreted to include
+                            every day on the calendar, inclusive of weekends and public
+                            holidays;
+
+"Decision Maker"            means an independent decision maker appointed in accordance
+                            with the Commercial Legislation and the ADGM Founding Law;
+
+
+5 Amended 24 April 2026
+
+
+
+                                                                                          36
+"Decision Notice"            means a notice issued under Part 7, section 28;
+
+"Discontinuance Notice"      means a notice issued under Part 7, section 29;
+
+"Disqualification Order"     means an order against a Person in respect of a Tier 2
+                             Contravention issued in accordance with the relevant
+                             Commercial Legislation;
+
+“Enforceable Undertakings” means a binding and enforceable written undertaking provided
+                           by a Person on the Person’s letterhead to the Registration
+                           Authority;
+
+“Exceptional Notice”         means a notice issued by the Registration Authority, acting
+                             through its CEO, under Part 5, section 20;
+
+"Financial Penalty Notice"   means a notice of a Fine issued under Part 6;
+
+"Fine"                       means a monetary fine issued under these Regulations in
+                             accordance with the Fines Scale;
+
+“Fines Scale”                means the standard fines scale set out at set out at Schedule 1
+                             of these Regulations which may be updated by the Board of
+                             Directors from time to time;
+
+"Investigation"              means an investigation under Part 3;
+
+"Investigators"              means one or more competent persons appointed by the
+                             Registration Authority, who may include but is not limited to a
+                             member of the Registration Authority’s staff, to conduct
+                             Investigations under Part 3;
+
+"Judicial Review"            means a review of a decision under these Regulations by the
+                             ADGM Courts in accordance with the ADGM Courts, Civil
+                             Evidence, Judgments, Enforcement and Judicial Appointments
+                             Regulations 2015;
+
+"Licence"                    means a commercial licence granted by the Registration
+                             Authority to conduct Controlled Activities;
+
+"Licensed Person"            means a person who has been Licensed to conduct Controlled
+                             Activities by the Registration Authority, and includes a person
+                             who was at any time a Licensed Person but who has ceased to
+                             be a Licensed Person;
+
+“Matter Concerned”           has the meaning ascribed to it in Part 3, section 7;
+
+"Officer"                    means an officer of the Registration Authority and includes a
+                             member of the Registration Authority's staff or a representative
+                             of the Registration Authority;
+
+"Person"                     means a Licensed Person or any other natural or legal person
+                             subject to the Commercial Legislation;
+
+"Prohibition Order"          means an Order issued under Part 8, section 40;
+
+“Protected Item”             has the meaning ascribed to it under Part 3, section 12(2);
+
+                                                                                           37
+"Register"                 includes any records kept by the Registration Authority under
+                           any enactment;
+
+"Registration Authority"   means the Abu Dhabi Global Market Registration Authority
+                           established by Article 10 of the ADGM Founding Law and
+                           governed by Article 11 of that law;
+
+“Regulations”              means these Administrative Regulations;
+
+“Relevant Authority”       means any competent authority (who may, or may not, have a
+                           nexus to the Abu Dhabi Global Market and the United Arab
+                           Emirates) including but not limited to any governmental or quasi-
+                           governmental agencies or instrumentalities charged with
+                           implementing laws, regulations, rules, policies or any other
+                           applicable legislation whose subject matter falls within its
+                           authority;
+
+"Seized Document"          means a document seized under an Investigation or under a
+                           warrant in accordance with Part 3, section 14;
+
+"Settlement Agreement"     means an agreement entered into under Part 6, section 31;
+
+"Skilled Person"           means a person appearing to the Registration Authority to have
+                           the necessary skills to-
+
+                           (a)   make a report on the Matter Concerned in accordance with
+                                 Part 3, section 7(1)(i); or
+
+                           (b)   collect or update the information in question in accordance
+                                 with Part 3, section 7(1)(ii);
+
+“Statement of Representations” means a statement submitted by a Person in response to
+                            either a Financial Penalty Notice, a Warning Notice, a
+                            Supervisory Notice or an Exceptional Notice;
+
+“Supervisory Notice”        means a notice issued by the Registration Authority under Part
+                            4, section 19;
+
+"Tier 1 Contravention"      has the meaning ascribed to it in Part 2, section 4;
+
+"Tier 2 Contravention"      has the meaning ascribed to it in Part 2, section 5; and
+
+"Warning Notice"            means a notice issued under Part 7, section 24.
+
+
+
+
+                                                                                         38
+                               SCHEDULE 1: FINES SCALE 6
+
+
+
+
+           Fines Scale Level     Tier of Contravention      Amount of Fine (in US
+                                                           Dollars) (not exceeding)
+
+
+                      1                                              1,000
+                                          1
+
+                      2                                              2,000
+
+
+
+                      3                                              10,000
+
+
+
+                      4                                              50,000
+                                          2
+
+                      5                                              100,000
+
+
+
+                      6                                              250,000
+
+
+
+                      7                                              500,000
+
+
+
+                      8                                              1,000,000
+
+
+
+                      9                                              54,000,000
+
+
+
+
+6 Amended 24 April 2026
+
+
+
+                                                                               39
+

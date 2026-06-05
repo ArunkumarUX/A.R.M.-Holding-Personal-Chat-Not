@@ -39,19 +39,21 @@ type Props = {
   ar?: boolean;
   onClick: () => void;
   maxAvatars?: number;
+  /** Inline row for chat footer — no stacked domain pill */
+  compact?: boolean;
 };
 
-export function SourceCitationChip({ sources, ar, onClick, maxAvatars = 3 }: Props) {
+export function SourceCitationChip({ sources, ar, onClick, maxAvatars = 3, compact = false }: Props) {
   const count = sources.length;
   if (count === 0) return null;
 
   const stack = sourcesForStack(sources, maxAvatars);
   const overflow = Math.max(0, count - stack.length);
   const primaryDomain = sourceDomainLabel(sources[0]);
-  const showDomainPill = primaryDomain && count > 1;
+  const showDomainPill = !compact && primaryDomain && count > 1;
 
   return (
-    <div className="chat-source-citation-wrap">
+    <div className={`chat-source-citation-wrap${compact ? ' chat-source-citation-wrap--compact' : ''}`}>
       {showDomainPill && (
         <span className="chat-source-citation__domain-pill">
           {primaryDomain}
@@ -75,7 +77,11 @@ export function SourceCitationChip({ sources, ar, onClick, maxAvatars = 3 }: Pro
           ))}
         </span>
         <span className="chat-source-citation__label">
-          {ar ? `${count} مصدر` : `${count} source${count === 1 ? '' : 's'}`}
+          {compact && primaryDomain && count === 1
+            ? primaryDomain
+            : ar
+              ? `${count} مصدر`
+              : `${count} source${count === 1 ? '' : 's'}`}
         </span>
       </button>
     </div>

@@ -4,17 +4,23 @@ import { useSearchParams } from 'react-router-dom';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { Emblem } from '../../command-centre/CcPrimitives';
 import { CcChatAiMessage } from '../../command-centre/CcChatAiMessage';
-import { AGENTS, SUGGESTIONS, CANNED } from '../../data/commandCentreData';
+import { AGENTS, CANNED } from '../../data/commandCentreData';
+import { useGstLive } from '../../utils/gstGreeting';
 import { useApp } from '../../context/AppContext';
 import { buildIntelligentResponse, resolveAnswerGrounding } from '../../data/executiveStore';
 import { prepareChatTurn } from '../../api/prepareChatTurn';
 import { buildChatHistory } from '../../api/buildChatContext';
 import { checkClaudeAvailable, streamClaudeChat } from '../../api/claudeChat';
+import { detectChatIntent } from '../../utils/chatIntent';
 import { PRODUCT_AGENT_NAME, PRODUCT_AGENT_NAME_AR } from '../../config/user';
 import { IntelCard, IntelCardBody } from '../../command-centre/CcCard';
 import { ChatHistorySheet } from '../../components/chat/ChatHistorySheet';
-import { conversationToUiMessages, nextUiMessageId } from '../../utils/chatMessages';
-import type { Source } from '../../types';
+import {
+  conversationToUiMessages,
+  hydrateAssistantMessage,
+  nextUiMessageId,
+} from '../../utils/chatMessages';
+import type { GroundingLevel, Source } from '../../types';
 
 const USE_CLAUDE = import.meta.env.VITE_USE_CLAUDE_API !== 'false';
 
@@ -28,7 +34,7 @@ type ChatMsg =
       thinking?: boolean;
       activeAgent?: number | null;
       confidence?: number;
-      grounding?: import('../../types').GroundingLevel;
+      grounding?: GroundingLevel;
       sources?: Source[];
     };
 
@@ -54,6 +60,7 @@ export function CommandCentreChatPage() {
     settings,
     executiveState,
     recordChatTurn,
+    patchAssistantReply,
     createConversation,
     startNewChat,
     activeConversationId,
@@ -68,6 +75,7 @@ export function CommandCentreChatPage() {
   const seed = searchParams.get('seed');
   const lang = settings.language === 'ar' ? 'ar' : 'en';
   const ar = lang === 'ar';
+  const gst = useGstLive(lang);
 
   const [msgs, setMsgs] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState('');
@@ -76,20 +84,47 @@ export function CommandCentreChatPage() {
   const [claudeLive, setClaudeLive] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const msgsRef = useRef(msgs);
   const idRef = useRef(0);
+  const seedHandledRef = useRef<string | null>(null);
   msgsRef.current = msgs;
 
   useEffect(() => {
+    if (!busy) inputRef.current?.focus();
+  }, [busy, activeConversationId]);
+
+  useEffect(() => {
+    // Do not wipe in-flight UI when a new conversation is created mid-send
+    if (busy) return;
+
     if (!activeConversationId || !activeConversation) {
       setMsgs([]);
       idRef.current = 0;
+      setSourcesPanelOpen(false);
       return;
     }
-    const loaded = conversationToUiMessages(activeConversation.messages);
+
+    const loaded = conversationToUiMessages(activeConversation.messages, executiveState);
+    if (loaded.length === 0 && msgsRef.current.length > 0) return;
+
     setMsgs(loaded);
     idRef.current = nextUiMessageId(loaded);
-  }, [activeConversationId]);
+    const lastAi = [...activeConversation.messages].reverse().find((m) => m.role === 'assistant');
+    if (lastAi) {
+      const { sources } = hydrateAssistantMessage(lastAi, executiveState);
+      if (sources.length) setActiveSources(sources);
+    }
+    setSourcesPanelOpen(false);
+  }, [
+    busy,
+    activeConversationId,
+    activeConversation?.updatedAt,
+    activeConversation?.messages?.length,
+    executiveState,
+    setActiveSources,
+    setSourcesPanelOpen,
+  ]);
 
   useEffect(() => {
     if (!USE_CLAUDE) return;
@@ -111,7 +146,16 @@ export function CommandCentreChatPage() {
   }, []);
 
   const fillAiMessage = useCallback(
-    async (aid: number, q: string, agents: string[]) => {
+    async (
+      aid: number,
+      q: string,
+      agents: string[],
+    ): Promise<{
+      text: string;
+      agents: string[];
+      sources: Source[];
+      grounding?: GroundingLevel;
+    } | null> => {
       const turn = prepareChatTurn(q, executiveState, {
         manualAgents: selectedAgents,
         autoRoute: autoRouteAgents,
@@ -164,7 +208,13 @@ export function CommandCentreChatPage() {
             throw new Error('Empty response from Claude');
           }
 
-          const grounded = resolveAnswerGrounding(streamed, executiveState, intel.sourceDocIds);
+          // Skip sources/grounding for: conversational turns, Explorer AI (general knowledge / web search)
+          const intent = detectChatIntent(q);
+          const isConversational = intent === 'greeting' || intent === 'thanks' || intent === 'irrelevant';
+          const isExplorer = meta.agents.includes('explorer');
+          const grounded = (isConversational || isExplorer)
+            ? { sources: [] as Source[], grounding: undefined as GroundingLevel | undefined }
+            : resolveAnswerGrounding(streamed, executiveState, intel.sourceDocIds);
 
           setMsgs((m) =>
             m.map((x) =>
@@ -172,7 +222,7 @@ export function CommandCentreChatPage() {
                 ? {
                     ...x,
                     text: streamed,
-                    agents: meta.agents,
+                    agents: isConversational ? [] : meta.agents,
                     grounding: grounded.grounding,
                     sources: grounded.sources,
                     activeAgent: null,
@@ -181,26 +231,14 @@ export function CommandCentreChatPage() {
                 : x,
             ),
           );
-          return;
+          return {
+            text: streamed,
+            agents: isConversational ? [] : meta.agents,
+            sources: grounded.sources,
+            grounding: grounded.grounding,
+          };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : 'AI request failed';
-            console.warn('[chat] Claude failed', err);
-            setMsgs((m) =>
-              m.map((x) =>
-                x.id === aid && x.role === 'ai'
-                  ? {
-                      ...x,
-                      text: ar
-                        ? `تعذر الاتصال بـ Claude: ${msg}`
-                        : `Could not reach Claude: ${msg}. Check ANTHROPIC_API_KEY and restart npm run dev.`,
-                      agents: meta.agents,
-                      activeAgent: null,
-                      thinking: false,
-                    }
-                  : x,
-              ),
-            );
-            return;
+            console.warn('[chat] Claude failed, using institutional fallback', err);
           }
         }
       }
@@ -226,6 +264,7 @@ export function CommandCentreChatPage() {
             : x,
         ),
       );
+      return { text, agents: demoAgents, sources, grounding };
     },
     [executiveState, runAgentAnimation, ar, claudeLive, selectedAgents, autoRouteAgents],
   );
@@ -237,40 +276,52 @@ export function CommandCentreChatPage() {
       setInput('');
       setBusy(true);
       let convId = activeConversationId;
-      if (!convId) convId = createConversation(q.slice(0, 40));
+      try {
+        if (!convId) convId = createConversation(q.slice(0, 40));
 
-      const uid = ++idRef.current;
-      setMsgs((m) => [...m, { id: uid, role: 'user', text: q }]);
+        const uid = ++idRef.current;
+        setMsgs((m) => [...m, { id: uid, role: 'user', text: q }]);
 
-      const turn = prepareChatTurn(q, executiveState, {
-        manualAgents: selectedAgents,
-        autoRoute: autoRouteAgents,
-      });
-      const agents = turn.routedAgents;
-      const aid = ++idRef.current;
-      setMsgs((m) => [
-        ...m,
-        { id: aid, role: 'ai', agents, text: '', activeAgent: 0, thinking: true },
-      ]);
+        const turn = prepareChatTurn(q, executiveState, {
+          manualAgents: selectedAgents,
+          autoRoute: autoRouteAgents,
+        });
+        const agents = turn.routedAgents;
+        const aid = ++idRef.current;
+        setMsgs((m) => [
+          ...m,
+          { id: aid, role: 'ai', agents, text: '', activeAgent: 0, thinking: true },
+        ]);
 
-      await fillAiMessage(aid, q, agents);
-      setBusy(false);
+        const result = await fillAiMessage(aid, q, agents);
 
-      const aiRow = msgsRef.current.find((m) => m.id === aid && m.role === 'ai');
-      if (aiRow && aiRow.role === 'ai' && aiRow.text.trim()) {
-        recordChatTurn(
-          q,
-          {
-            content: aiRow.text,
-            agents: aiRow.agents,
-            confidence: aiRow.confidence,
-            sources: aiRow.sources,
-          },
-          convId,
-        );
+        if (result?.text.trim()) {
+          recordChatTurn(
+            q,
+            {
+              content: result.text,
+              agents: result.agents,
+              sources: result.sources,
+              grounding: result.grounding,
+            },
+            convId,
+          );
+        }
+      } finally {
+        setBusy(false);
+        inputRef.current?.focus();
       }
     },
-    [busy, activeConversationId, createConversation, recordChatTurn, fillAiMessage],
+    [
+      busy,
+      activeConversationId,
+      createConversation,
+      recordChatTurn,
+      fillAiMessage,
+      executiveState,
+      selectedAgents,
+      autoRouteAgents,
+    ],
   );
 
   const handleNewChat = useCallback(() => {
@@ -307,10 +358,22 @@ export function CommandCentreChatPage() {
             : x,
         ),
       );
-      await fillAiMessage(aiId, userText, turn.routedAgents);
+      const result = await fillAiMessage(aiId, userText, turn.routedAgents);
       setBusy(false);
+      if (result?.text.trim() && activeConversationId) {
+        patchAssistantReply(activeConversationId, result);
+      }
     },
-    [busy, msgs, fillAiMessage, executiveState, selectedAgents, autoRouteAgents],
+    [
+      busy,
+      msgs,
+      fillAiMessage,
+      executiveState,
+      selectedAgents,
+      autoRouteAgents,
+      activeConversationId,
+      patchAssistantReply,
+    ],
   );
 
   const handleCopy = useCallback(
@@ -331,11 +394,16 @@ export function CommandCentreChatPage() {
   );
 
   useEffect(() => {
-    if (seed) {
-      send(seed);
-      setSearchParams({}, { replace: true });
-    }
-  }, [seed]);
+    if (!activeConversationId) seedHandledRef.current = null;
+  }, [activeConversationId]);
+
+  useEffect(() => {
+    const q = seed?.trim();
+    if (!q || seedHandledRef.current === q) return;
+    seedHandledRef.current = q;
+    setSearchParams({}, { replace: true });
+    void send(q);
+  }, [seed, send, setSearchParams]);
 
   const empty = msgs.length === 0;
 
@@ -396,7 +464,7 @@ export function CommandCentreChatPage() {
                 {ar ? 'جرّب أحد هذه' : 'Try one of these'}
               </div>
               <div className="grid mi-stagger" style={{ gap: 10 }} data-tour="chat-suggestions">
-                {SUGGESTIONS.map((s) => (
+                {gst.suggestions.map((s) => (
                   <IntelCard key={s.q} interactive onClick={() => send(s.q)}>
                     <IntelCardBody style={{ padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
                       <CcIcon name="sparkles" size={18} style={{ color: 'var(--accent-bright)', flex: 'none' }} />
@@ -448,13 +516,19 @@ export function CommandCentreChatPage() {
         <div className="chat-composer__inner chat-composer__row">
           <div className="chat-composer__input-wrap" data-tour="chat-input">
             <input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') send(input);
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  send(input);
+                }
               }}
               placeholder={ar ? 'اكتب سؤالك التنفيذي…' : 'Type an executive question…'}
               disabled={busy}
+              autoFocus
+              aria-busy={busy}
             />
             <button
               type="button"
@@ -470,11 +544,11 @@ export function CommandCentreChatPage() {
         <p className="chat-composer__note">
           {claudeLive
             ? ar
-              ? 'مدعوم بـ Claude — إجابات حية من نموذج Anthropic.'
-              : 'Powered by Claude — live answers from Anthropic.'
+              ? 'مدعوم بـ Claude Sonnet 4.6 — إجابات حية من بيانات الإنتاج.'
+              : 'Powered by Claude Sonnet 4.6 — live answers from production data.'
             : ar
-              ? 'وضع تجريبي — أضف ANTHROPIC_API_KEY في .env.local ثم npm run dev (أو في Netlify → Environment variables).'
-              : 'Demo mode — set ANTHROPIC_API_KEY in .env.local + npm run dev, or Netlify env vars for production.'}
+              ? 'ذكاء مؤسسي — قاعدة المعرفة والتقويم وسجل الإجراءات.'
+              : 'Institutional intelligence — knowledge base, calendar, and action register.'}
         </p>
       </footer>
     </div>

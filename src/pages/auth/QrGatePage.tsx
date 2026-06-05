@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { AdgmLogo } from '../../components/brand/AdgmLogo';
 import { createAuthSession, getSessionStatus } from '../../auth/authApi';
 import { CHAT_PATH, HOME_PATH, WELCOME_PATH } from '../../config/auth';
+import { PRODUCT_NAME } from '../../config/user';
 import {
   hasVerifiedToken,
   isFullyAuthenticated,
@@ -37,7 +38,9 @@ export function QrGatePage() {
       setSessionId(id);
     } catch {
       setError(
-        'Could not start secure session. Check your connection and refresh. For local dev, run: npm run dev',
+        import.meta.env.DEV
+          ? 'Could not start secure session. Check your connection and refresh. For local dev, run: npm run dev'
+          : 'Could not start secure session. Check your connection and refresh, or try again in a moment.',
       );
       setSessionId(null);
     } finally {
@@ -110,7 +113,7 @@ export function QrGatePage() {
       </header>
 
       <main className="auth-gate__main">
-        <h1 className="auth-gate__title">Personal AI for Rajiv Sehgal</h1>
+        <h1 className="auth-gate__title">{PRODUCT_NAME}</h1>
         <p className="auth-gate__subtitle">Secure access · ADGM</p>
 
         <div className="auth-gate__qr-wrap" aria-label="QR code for mobile verification">
@@ -142,8 +145,8 @@ export function QrGatePage() {
           </p>
         )}
 
-        <p className="auth-gate__dev-pin" aria-label="Demo PIN hint">
-          Demo PIN: <strong>9898</strong>
+        <p className="auth-gate__dev-pin" aria-label="Access PIN">
+          Access PIN: <strong>9898</strong>
         </p>
 
         {sessionId && verifyUrl && (

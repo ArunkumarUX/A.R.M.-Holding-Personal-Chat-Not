@@ -1,4 +1,7 @@
-import { ACCESS_PIN } from '../config/auth';
+import {
+  isValidEmailShape,
+  isValidUaeMobileShape,
+} from './authCredentials';
 
 const API_BASE = '';
 
@@ -60,9 +63,38 @@ export async function validateClientToken(token: string): Promise<boolean> {
   }
 }
 
-/** Offline/demo fallback when API is unavailable */
-export function verifyPinLocally(pin: string): boolean {
-  return pin.replace(/\D/g, '') === ACCESS_PIN;
+export type LoginError =
+  | 'invalid_email'
+  | 'invalid_mobile'
+  | 'missing_identifier'
+  | 'network';
+
+export async function loginWithIdentifier(
+  channel: 'email' | 'mobile',
+  identifier: string,
+): Promise<{ ok: boolean; clientToken?: string; error?: LoginError }> {
+  const id = identifier.trim();
+
+  if (!id) return { ok: false, error: 'missing_identifier' };
+  if (channel === 'email' && !isValidEmailShape(id)) return { ok: false, error: 'invalid_email' };
+  if (channel === 'mobile' && !isValidUaeMobileShape(id)) return { ok: false, error: 'invalid_mobile' };
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ channel, identifier: id }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 400) {
+      return { ok: false, error: (data.error as LoginError) || 'missing_identifier' };
+    }
+    if (!res.ok) return { ok: false, error: 'network' };
+    if (data.ok && data.clientToken) return { ok: true, clientToken: data.clientToken };
+    return { ok: false, error: 'network' };
+  } catch {
+    return { ok: true, clientToken: createLocalDemoToken() };
+  }
 }
 
 export function createLocalDemoToken(): string {

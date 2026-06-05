@@ -159,7 +159,7 @@ ${useBcc ? '' : 'Default: ADGM navy/Clearsky, Gilroy/Aptos, Claude Design exhibi
 UNIQUE CONTENT PER USER REQUEST (critical)
 ═══════════════════════════════
 - Every deck MUST reflect the user's exact topic, audience, slide count, and constraints in the latest message.
-- NEVER reuse a fixed template storyline (e.g. generic "three decisions", "digital-asset licensing", "D33" bullets) unless the user explicitly asked for that subject.
+- NEVER reuse a fixed template storyline (e.g. generic "three decisions", "digital-asset licensing", "Falcon Economy" bullets) unless the user explicitly asked for that subject.
 - Pull titles, bullets, stats, and speaker notes from the user's words and any Command Centre context — select only facts relevant to their topic.
 - Vary slide layouts and narrative arc by deck type (investor vs board vs regulatory vs strategy).
 - If the user asks for a new deck, return action "create" with a completely new deck object (new titles and body on every slide).

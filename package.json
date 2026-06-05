@@ -1,5 +1,5 @@
 {
-  "name": "personal-ai-chat",
+  "name": "personal-ai-chat-adgm",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,10 +14,13 @@
     "verify:slideai": "node scripts/verify-slideai-local.mjs",
     "ppt-master:setup": "bash scripts/setup-ppt-master.sh",
     "open-design:setup": "bash scripts/setup-open-design.sh",
-    "claude-design:setup": "bash scripts/setup-claude-design-ai.sh"
+    "claude-design:setup": "bash scripts/setup-claude-design-ai.sh",
+    "kb:falcon": "node scripts/build-institutional-kb.mjs",
+    "kb:build": "node scripts/build-institutional-kb.mjs"
   },
   "dependencies": {
     "@netlify/blobs": "^10.7.9",
+    "@vercel/blob": "^2.4.0",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "pptxgenjs": "^4.0.1",

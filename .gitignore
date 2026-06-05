@@ -39,3 +39,5 @@ tools/open-design/
 tools/ppt-master/
 tools/ppt-master/**/exports/
 tools/ppt-master/**/backup/
+.vercel
+.env*

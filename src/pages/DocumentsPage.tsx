@@ -72,7 +72,7 @@ export function DocumentsPage() {
           >
             <Upload className="h-8 w-8 text-adgm-primary mb-2" />
             <span className="text-sm font-medium text-adgm-navy">Upload PDF or DOCX</span>
-            <span className="text-xs text-adgm-mist mt-1">Max 25 MB · Demo mode</span>
+            <span className="text-xs text-adgm-mist mt-1">Max 25 MB · Secure upload</span>
             <input
               type="file"
               accept=".pdf,.doc,.docx"

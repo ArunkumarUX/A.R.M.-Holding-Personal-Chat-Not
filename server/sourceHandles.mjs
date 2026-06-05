@@ -6,6 +6,16 @@ const KB_NUM = {
   d3: 'KB-003',
   d4: 'KB-004',
   d5: 'KB-005',
+  d6: 'KB-006',
+  d7: 'KB-007',
+  d8: 'KB-008',
+  d9: 'KB-009',
+  d10: 'KB-010',
+  d11: 'KB-011',
+  d12: 'KB-012',
+  d13: 'KB-013',
+  d14: 'KB-014',
+  d15: 'KB-015',
 };
 
 function kbHandle(docId, index = 0) {
@@ -65,7 +75,7 @@ export function buildGroundedRecordsFromContext(ctx) {
     records.push({
       handle: cal,
       kind: 'internal',
-      system: 'Calendar (Microsoft Graph demo)',
+      system: 'Calendar (Microsoft Graph)',
       label: m.title,
       snippet: `${time} · ${m.attendees} · ${m.location} · prep ${m.prepStatus}`,
       asOf: time.slice(0, 10) || lastSync.slice(0, 10),
@@ -93,14 +103,38 @@ export function buildGroundedRecordsFromContext(ctx) {
   });
 
   if (market) {
+    const bloombergLive = Boolean(ctx?.bloombergLive || ctx?.bloombergFetchedAt);
     const mktH = ctx?.marketHandle || mktHandle(lastSync);
+    const mktDate = market.asOf?.slice(0, 10) || lastSync.slice(0, 10);
     records.push({
       handle: mktH,
       kind: 'external',
-      system: 'Market snapshot (Bloomberg / Refinitiv demo feed)',
+      system: bloombergLive
+        ? 'Market snapshot (Bloomberg live via Apify + GST refresh)'
+        : 'Market snapshot (GST scenario rotation — not a live terminal feed)',
       label: 'GCC & digital-assets market',
-      snippet: `GCC ${market.gccEquities} · digital assets ${market.digitalAssetsWoW} · ${market.competitorNote} · top sector ${market.topSector}`,
-      asOf: lastSync.slice(0, 10),
+      snippet: [
+        `GCC ${market.gccEquities}`,
+        `digital assets ${market.digitalAssetsWoW}`,
+        market.bloombergLead ? `Bloomberg lead: ${market.bloombergLead}` : market.competitorNote,
+        `top sector ${market.topSector}`,
+        market.asOf ? `as of ${market.asOf}` : '',
+      ]
+        .filter(Boolean)
+        .join(' · '),
+      asOf: mktDate,
+    });
+    (ctx?.bloombergArticles || []).slice(0, 5).forEach((article, i) => {
+      const headline = typeof article?.headline === 'string' ? article.headline.trim() : '';
+      if (!headline) return;
+      records.push({
+        handle: `BBG-${String(i + 1).padStart(2, '0')}`,
+        kind: 'external',
+        system: 'Bloomberg (Apify category wire)',
+        label: headline.slice(0, 120),
+        snippet: `${headline}${article.url ? ` · ${article.url}` : ''}`,
+        asOf: (article.publishedAt || mktDate).slice(0, 10),
+      });
     });
   }
 

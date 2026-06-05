@@ -44,5 +44,5 @@ export function vizMetrics(lines: { label: string; bar?: string; note?: string }
 }
 
 export function agentTag(agents: string[]): string {
-  return `\n*Agents: ${agents.join(' · ')} · Data: live demo store*`;
+  return `\n*Agents: ${agents.join(' · ')} · Sources: approved institutional records*`;
 }

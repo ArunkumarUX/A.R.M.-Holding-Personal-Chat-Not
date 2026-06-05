@@ -3,19 +3,116 @@
  */
 
 import { ANSWER_FORMAT_RULES } from './answerFormatRules.mjs';
+import {
+  CSO_GLOBAL_SYSTEM_PROMPT,
+  CSO_ORCHESTRATOR_PROMPT,
+  CSO_SOURCE_CONFIDENCE_RULES,
+  buildOutputContractBlock,
+  buildSpecialistPromptBlocks,
+} from './csoPromptPack.mjs';
+import {
+  falconExcerptsToGroundedRecords,
+  formatFalconExcerptBlock,
+  isFalconKbQuery,
+  retrieveFalconExcerpts,
+} from './kb/falconKb.mjs';
 import { buildGroundedRecordsFromContext, formatGroundedContextBlock } from './sourceHandles.mjs';
+import { formatGstClock, greetingForGstTime } from './gstGreeting.mjs';
+import { smartSearch, braveSearchBroad, freeRssSearch, formatSearchResultsBlock, shouldWebSearch } from './webSearch.mjs';
 
 export function getAnthropicConfig() {
   return {
     apiKey: process.env.ANTHROPIC_API_KEY || '',
-    model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514',
+    model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
   };
 }
 
+
 export function buildSystemPrompt(ctx, language) {
   const ar = language === 'ar';
-  const groundedRecords = buildGroundedRecordsFromContext(ctx);
-  const groundedBlock = formatGroundedContextBlock(groundedRecords);
+  const firstName = ctx?.executiveFirstName ?? 'Rajiv';
+  const gstGreeting = ctx?.gstGreeting ?? greetingForGstTime('en');
+
+  // ── GREETING: return a minimal prompt — no grounded records, no briefing context ──
+  if (ctx?.conversationalMode === 'greeting') {
+    return `You are the CSO Personal AI Assistant for ${firstName}.
+Your ONLY task right now is to reply with EXACTLY this single sentence — nothing more, nothing less:
+${gstGreeting}, ${firstName}. I am your Personal AI Agent. How can I help you today?
+Do NOT add any other text. Do NOT summarise calendar or actions. Do NOT ask follow-up questions. Output that one sentence and stop.`;
+  }
+
+  // ── GENERAL KNOWLEDGE FALLBACK: answer like a capable AI assistant ──
+  if (ctx?.conversationalMode === 'irrelevant') {
+    return `You are the Personal AI Assistant for ${firstName} at ${ctx?.organisation || 'ADGM'}.
+The user has asked a general knowledge question outside the specialist CSO scope, but you are still a highly capable AI — answer helpfully and accurately from your training knowledge, exactly as a knowledgeable assistant would.
+- Be concise, clear and friendly.
+- Stay in your persona as the Personal AI Assistant.
+- Do NOT say "outside my scope" or refuse to answer.
+- If the answer may be time-sensitive or the user would benefit from latest info, add a brief note: "(Verify for the most current data.)"
+- You may briefly offer to also help with strategy, market intel, policy or executive comms if relevant.`;
+  }
+
+  // ── THANKS: return a minimal prompt ──
+  if (ctx?.conversationalMode === 'thanks') {
+    return `You are the CSO Personal AI Assistant for ${firstName}. Reply with one warm, brief sentence thanking them and offering to help further. Nothing else.`;
+  }
+
+  const userQ = ctx?.userQuestion?.trim() ?? '';
+
+  // ── EXPLORER AI: clean conversational prompt — web results injected if available ──
+  // Bypasses ALL CSO executive formatting, follow-ups, and source disclaimers.
+  const isExplorerAgent =
+    Array.isArray(ctx?.agentDelegation) &&
+    ctx.agentDelegation.some((a) => a?.id === 'explorer');
+
+  if (isExplorerAgent && !ctx?.briefingFormat) {
+    const langNote = ar
+      ? 'Respond in clear Modern Standard Arabic.'
+      : 'Respond in clear, friendly English.';
+    const webBlock = ctx?.webSearchBlock ? `\n\n${ctx.webSearchBlock}` : '';
+    const hasWebResults = Boolean(ctx?.webSearchBlock);
+    return `You are the Personal AI Assistant for ${firstName}. You have live web search capability — you CAN check the internet and retrieve current information.
+${langNote}
+
+IMPORTANT — NEVER say "I can't browse the internet" or "I don't have access to the web." You DO have web search. If results are injected below, use them. If not, answer from training knowledge.
+
+If the user's message is a vague web search request (e.g. "can you check the internet", "search online", "look it up") with NO specific topic mentioned, reply with exactly:
+"Sure! What would you like me to look up? Just tell me the topic or question and I'll search it for you."
+Do NOT add anything else in that case.
+
+For all other questions:
+- Answer directly and concisely — like a knowledgeable assistant, not a strategy advisor.
+- Do NOT use executive sections: no "Executive Takeaway", "Source Basis", "Strategic Implication", or any CSO structure.
+- Do NOT add follow-up suggestions or ADGM-related prompts at the end.
+- Do NOT add a "Source: General knowledge" label — just answer.
+- If web search results are injected below, use them as the primary source and cite inline as [WEB-01] with URL.
+- If a fact could be outdated, weave a brief "(verify for latest)" naturally into a sentence — not as a separate section.
+${hasWebResults ? '' : '(No web results this turn — answer from training knowledge.)'}${webBlock}`;
+  }
+
+  const falconExcerpts =
+    ctx?.falconExcerpts?.length > 0
+      ? ctx.falconExcerpts
+      : userQ && isFalconKbQuery(userQ)
+        ? retrieveFalconExcerpts(userQ)
+        : [];
+
+  let groundedRecords =
+    Array.isArray(ctx?.groundedRecords) && ctx.groundedRecords.length > 0
+      ? [...ctx.groundedRecords]
+      : buildGroundedRecordsFromContext(ctx);
+
+  if (falconExcerpts.length) {
+    const existing = new Set(groundedRecords.map((r) => r.handle));
+    for (const rec of falconExcerptsToGroundedRecords(falconExcerpts)) {
+      if (!existing.has(rec.handle)) groundedRecords.push(rec);
+    }
+  }
+
+  const hasGrounding = groundedRecords.length > 0;
+  const groundedBlock =
+    formatGroundedContextBlock(groundedRecords) +
+    (falconExcerpts.length ? formatFalconExcerptBlock(falconExcerpts) : '');
 
   const isBriefing = Boolean(ctx?.briefingFormat);
   const formatLabel = ctx?.briefingFormat || 'executive briefing';
@@ -31,35 +128,56 @@ export function buildSystemPrompt(ctx, language) {
           .join('\n')
       : '- **Chief of Staff AI** (Orchestrator): routes and synthesises';
 
-  const userQ = ctx?.userQuestion?.trim()
+  const userQuestionBlock = ctx?.userQuestion?.trim()
     ? `\nCURRENT USER QUESTION (answer ONLY this — do not change topic):\n"${ctx.userQuestion.trim()}"\n`
     : '';
 
   const primary = ctx?.agentDelegation?.[0]?.name ?? 'Chief of Staff AI';
-  const firstName = ctx?.executiveFirstName ?? 'Rajiv';
-  const convoBlock =
-    ctx?.conversationalMode === 'greeting'
-      ? `\nCONVERSATIONAL MODE: Personal check-in — greet ${firstName} by first name, summarize today's calendar/actions/markets warmly (~120 words). No capability lists.\n`
-      : ctx?.conversationalMode === 'thanks'
-        ? `\nCONVERSATIONAL MODE: Brief warm thank-you to ${firstName}.\n`
-        : '';
+  const agentIds = (ctx?.agentDelegation ?? []).map((a) => a.id).filter(Boolean);
+  const specialistBlock = buildSpecialistPromptBlocks(agentIds);
+  const contractBlock = buildOutputContractBlock(ctx?.userQuestion ?? '');
+  const gstClock = ctx?.gstTimeLabel ?? `${formatGstClock()} GST`;
 
-  return `You are a senior McKinsey strategy manager serving as the Personal AI Agent for ${ctx?.executiveName || 'Rajiv Sehgal'}, Chief Strategy Officer at Abu Dhabi Global Market (ADGM). The executive may open with "You are a senior McKinsey strategy manager" — treat that as confirmation of this persona for the turn.
+  const now = new Date();
+  const currentDate = now.toLocaleDateString('en-GB', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Dubai',
+  });
+  const currentTime = now.toLocaleTimeString('en-GB', {
+    hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Dubai',
+  });
 
-You coordinate five specialist perspectives: Policy, Strategy, Chief of Staff, Relationship, and Communications. Synthesise ONE concise answer grounded in the institutional context below.
+  return `${CSO_GLOBAL_SYSTEM_PROMPT}
+
+TODAY: ${currentDate} · ${currentTime} GST
+Executive: ${ctx?.executiveName || 'Rajiv Sehgal'}, Chief Strategy Officer, ${ctx?.organisation || 'Abu Dhabi Global Market (ADGM)'}.
+
+${CSO_ORCHESTRATOR_PROMPT}
+
+${CSO_SOURCE_CONFIDENCE_RULES}
 
 ${isBriefing ? `You are generating a **${formatLabel}** briefing (not casual chat). Scan in under 2 minutes. No generic closings.` : ''}
 
 ${ANSWER_FORMAT_RULES}
+
+═══════════════════════════════════════════════════════
+OUTPUT FORMAT — MANDATORY (follow EXACTLY, no exceptions)
+═══════════════════════════════════════════════════════
+You MUST use the EXACT bold section headings listed below, in the EXACT order shown.
+Do NOT rename sections. Do NOT skip any section. Do NOT merge sections. Do NOT add new sections.
+Complete every section fully before moving to the next.
+
+${contractBlock}
 
 ═══════════════════════════════
 DELEGATED SPECIALISTS THIS TURN
 ═══════════════════════════════
 Primary lead: **${primary}**
 ${delegation}
-${convoBlock}${userQ}
+
+${specialistBlock}
+${userQuestionBlock}
 Language: ${ar ? 'Modern Standard Arabic unless the user writes in English.' : 'Clear English for a non-expert reader unless the user writes in Arabic.'}
-${isBriefing ? 'Output only the briefing body.' : 'End with Sources + Grounding lines, then a **Follow-up** section: exactly 2 bullet questions.'}
+${isBriefing ? 'Output only the briefing body.' : 'End with Sources + Grounding lines, then a **Follow-up** section: exactly 2–3 specific action-oriented bullets.'}
 
 ═══════════════════════════════
 GROUNDED SOURCE RECORDS (cite ONLY these handles)
@@ -67,16 +185,65 @@ GROUNDED SOURCE RECORDS (cite ONLY these handles)
 
 ${groundedBlock}
 
-Live demo metrics (cite KB/MKT handles when quoting these — do not invent):
+${ctx?.webSearchBlock ? ctx.webSearchBlock : ''}
+
+SOURCE CITATION FORMAT (mandatory for every response):
+When citing a KB source, always include the real URL from the excerpt header. Format:
+  [KB-006] Falcon Economy Strategy 2025–2045 | added.gov.ae | /kb/20240923_FalconEconomy-Eng.pdf
+  [KB-008] ADGM Law No. 1547 | adgm.com/rules-and-regulations | /kb/adgm-1547-3267-v3-14.pdf
+At the end of every response, the "Sources Used" section must list each cited handle with its real URL so stakeholders can verify. Example format:
+  - [KB-006] Falcon Economy Strategy 2025–2045 → added.gov.ae (PDF available)
+  - [KB-008] ADGM Law No. 1547 v3.14 → adgm.com/rules-and-regulations (PDF available)
+  - [MKT-...] Market data → Yahoo Finance / CoinGecko (live)
+
+DATA INTEGRITY — THREE-TIER ANSWERING (mandatory):
+
+TIER 1 — INTERNAL KB / GROUNDED RECORDS (highest priority):
+${hasGrounding
+  ? '✅ Grounded records ARE injected this turn. Cite handles inline (KB-, MKT-, CAL-, ACT-, CRM-, BBG-). Do NOT invent licence growth %, Falcon scores, market prices, or ADGM legal clauses. For market figures: add "as of [date], Source: Yahoo Finance / CoinGecko".'
+  : '⚠️  No internal records injected this turn — proceed to Tier 2 or Tier 3.'}
+
+TIER 2 — LIVE WEB SEARCH RESULTS (if injected above):
+${ctx?.webSearchBlock
+  ? '✅ Web search results ARE available above. Use them to answer. Cite as [WEB-01], [WEB-02] etc. Always include the URL. Label as "Source: [publication name] (live web)".'
+  : '⚠️  No web search results this turn — proceed to Tier 3 if needed.'}
+
+TIER 3 — GENERAL KNOWLEDGE (when Tiers 1 and 2 have no relevant data):
+If the question has no match in grounded records AND no web search results, answer FREELY and HELPFULLY from your training knowledge — exactly like a capable AI assistant would. Do NOT say "not in approved source material." Do NOT say "I don't have enough source material." Do NOT refuse. Just answer directly and accurately. Label knowledge-only answers with "Source: General knowledge (verify for time-sensitive facts)."
+
+══════════════════════════════════════════
+CRITICAL OVERRIDE — GENERAL KNOWLEDGE RULE
+══════════════════════════════════════════
+The source rules and "do not invent" rules in this prompt apply ONLY to ADGM-specific internal facts:
+  - Internal KPIs, targets, or performance numbers
+  - Official ADGM/FSRA positions or decisions
+  - Private meeting details or stakeholder commitments
+  - Unpublished internal documents or strategies
+
+They do NOT apply to general world knowledge. For any question about:
+  - Geography, places, landmarks, directions (e.g. "where is the Gold Souk in Dubai")
+  - History, science, culture, general business concepts
+  - Public facts about countries, companies, people, events
+  - How-to questions, definitions, explanations
+→ Answer immediately and helpfully from training knowledge. Do NOT treat these as "missing source material." This is mandatory.
+
+If you know the answer from general knowledge, give it. Only flag missing data for facts that are genuinely ADGM-internal and cannot be known without an approved source.
+
+${ctx?.bloombergLive
+  ? '- Bloomberg headlines (BBG- handles) are LIVE — cite freely.'
+  : ctx?.marketSnapshot?.isLive
+    ? `- Market data (MKT-) is LIVE from Yahoo Finance / CoinGecko as of ${ctx?.marketSnapshot?.asOf ?? 'today'}. Always add "as of [date], Source: Yahoo Finance / CoinGecko".`
+    : '- No live market data is connected this turn. Do NOT cite MKT- handles or quote specific market figures unless they appear in the grounded records above. If asked about live prices, say: "Live market data is not connected — please verify current figures via a financial terminal."'}
+
+Institutional metrics (cite matching handle if used):
 - Queries this week: ${ctx?.metrics?.queriesThisWeek ?? '—'}
 - Documents in KB: ${ctx?.metrics?.documentsInKb ?? '—'}
 - Departments green: ${ctx?.metrics?.departmentsOnTrack ?? '—'} / 9
 - Open actions: ${ctx?.metrics?.openActions ?? '—'}
-- D33 alignment (demo): 82/100 — tie to relevant KB doc if cited
-- Licence growth YoY (demo): +12% — tie to relevant KB doc if cited
+- Falcon / ADGM Law questions: use KB-006–KB-015 excerpts if available; otherwise answer from general knowledge.
 
-Department headlines (demo ERP):
-${deptLine || '(see grounded records above)'}`;
+Department headlines (ERP):
+${deptLine || '(none injected — answer from general knowledge if asked)'}`;
 }
 
 /**
@@ -92,6 +259,43 @@ export async function streamChat(payload, writeEvent) {
   if (!message?.trim()) {
     throw new Error('message is required');
   }
+
+  // Detect if Explorer AI agent is active (general knowledge / out-of-scope queries)
+  const isExplorerQuery =
+    Array.isArray(context?.agentDelegation) &&
+    context.agentDelegation.some((a) => a?.id === 'explorer');
+
+  // Run web search:
+  // - Explorer agent: always run broad (unscoped) search for any question
+  // - Other agents: run scoped CSO search only when query signals live data need
+  let webSearchBlock = '';
+  try {
+    if (isExplorerQuery) {
+      // Broad search — no domain scoping, answers any topic
+      const apiKey = process.env.BRAVE_SEARCH_API_KEY?.trim();
+      const results = apiKey
+        ? await braveSearchBroad(message, 5)
+        : await freeRssSearch(message, 5);
+      if (results?.length) {
+        webSearchBlock = formatSearchResultsBlock(results, message);
+        console.log(`[explorerSearch] ${results.length} results for: "${message.slice(0, 60)}"`);
+      }
+    } else if (shouldWebSearch(message)) {
+      const results = await smartSearch(message, 5);
+      if (results?.length) {
+        webSearchBlock = formatSearchResultsBlock(results, message);
+        console.log(`[webSearch] ${results.length} results for: "${message.slice(0, 60)}"`);
+      }
+    }
+  } catch (err) {
+    console.warn('[webSearch] skipped:', err?.message);
+  }
+
+  // Build system prompt — inject web search results if available
+  const systemPrompt = buildSystemPrompt(
+    { ...context, webSearchBlock: webSearchBlock || undefined },
+    language,
+  );
 
   const messages = [
     ...history
@@ -114,7 +318,7 @@ export async function streamChat(payload, writeEvent) {
       model,
       max_tokens: 4096,
       stream: true,
-      system: buildSystemPrompt(context, language),
+      system: systemPrompt,
       messages,
     }),
   });

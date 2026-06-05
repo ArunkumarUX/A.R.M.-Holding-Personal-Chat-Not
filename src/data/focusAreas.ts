@@ -136,7 +136,7 @@ export const CORE_FOCUS_AREAS: FocusArea[] = [
     agents: ['policy', 'strategy', 'cos'],
     workflowIds: [],
     prompts: [
-      'What strategic decisions did ADGM make in 2024 and how do they track against D33?',
+      'What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?',
       'Find precedents on digital assets policy decisions in our knowledge base',
       'Summarise the FSRA virtual assets framework for a new board member',
       'Search internal documents for Italy financial engagement milestones',
@@ -225,7 +225,7 @@ export function matchFocusArea(query: string): FocusAreaId | null {
   if (
     q.includes('knowledge') ||
     q.includes('precedent') ||
-    q.includes('d33') ||
+    q.includes('falcon') ||
     q.includes('institutional') ||
     (q.includes('search') && q.includes('document'))
   ) {

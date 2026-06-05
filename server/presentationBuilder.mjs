@@ -63,7 +63,7 @@ function demoClarifications() {
   return {
     questions: [
       'Who is the primary audience — board, FSRA, or external investors?',
-      'Should the deck emphasise D33 alignment and Abu Dhabi positioning?',
+      'Should the deck emphasise Falcon Economy alignment and Abu Dhabi positioning?',
       'Do you need bilingual (Arabic + English) speaker notes on any slides?',
     ],
   };
@@ -83,7 +83,7 @@ function demoOutline(prompt) {
       { type: 'key-insights', title: 'Key insights', summary: 'GCC and regulatory signals' },
       { type: 'strategy-recommendation', title: 'Strategic recommendation', summary: 'One clear path' },
       { type: 'framework-model', title: 'Decision framework', summary: 'MECE options' },
-      { type: 'data-metrics', title: 'Metrics that matter', summary: 'D33 & licence KPIs' },
+      { type: 'data-metrics', title: 'Metrics that matter', summary: 'Falcon Economy & licence KPIs' },
       { type: 'visual-infographic', title: 'Market snapshot', summary: 'Visual competitive lens' },
       { type: 'action-roadmap', title: '90-day roadmap', summary: 'Owners and dates' },
       { type: 'conclusion-next-steps', title: 'Next steps', summary: 'Ask of leadership' },
@@ -102,7 +102,7 @@ function demoSlides(outline) {
       title: o.title,
       bullets: [
         'Lead with one crisp insight',
-        'Support with demo institutional data where available',
+        'Support with approved institutional data where available',
         'Mark inferred points as analysis',
       ],
       visualHint: o.type === 'data-metrics' ? 'Score bar + 3-row metric table' : 'Icon-led layout, minimal text',
@@ -110,7 +110,7 @@ function demoSlides(outline) {
       metrics:
         o.type === 'data-metrics'
           ? [
-              { label: 'D33 alignment', value: '82/100' },
+              { label: 'Falcon Economy alignment', value: '82/100' },
               { label: 'Licence growth YoY', value: '+12%' },
             ]
           : undefined,

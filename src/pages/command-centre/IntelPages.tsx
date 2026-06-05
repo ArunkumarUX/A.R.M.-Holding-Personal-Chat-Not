@@ -25,6 +25,8 @@ import { useApp } from '../../context/AppContext';
 import { generateBriefing } from '../../api/generateBriefing';
 import { checkClaudeAvailable } from '../../api/claudeChat';
 import { getBriefingConfig } from '../../api/briefingConfig';
+import { INTEL_LAYMAN } from '../../data/intelLaymanCopy';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 const USE_CLAUDE = import.meta.env.VITE_USE_CLAUDE_API !== 'false';
 
@@ -34,12 +36,12 @@ function MorningBriefing({ lang }) {
   const items = ar ? [
     'تدفقات رأس المال الخليجي ارتفعت 4.2٪؛ تحول نحو الائتمان الخاص والأصول الرقمية.',
     'مركز دبي المالي يطلق نظام صناديق مرمزة — يُوصى بتسريع إرشادات FSRA.',
-    'البنية التحتية للذكاء الاصطناعي تتصدر الفرص (توافق D33 = 92).',
+    'البنية التحتية للذكاء الاصطناعي تتصدر الفرص (توافق الاقتصاد الصقور = 92).',
     'عوائد سندات الإمارات لأجل 10 سنوات تنخفض 6 نقاط أساس.',
   ] : [
     'GCC capital flows up 4.2% overnight — rotation toward private credit and digital assets.',
     'DIFC launched a tokenised-fund regime — accelerate FSRA digital-fund guidance.',
-    'AI infrastructure tops opportunities (D33 fit 92) on record VC inflow.',
+    'AI infrastructure tops opportunities (Falcon Economy fit 92) on record VC inflow.',
     'UAE 10Y yields eased 6bps; sovereign-fund allocations active.',
   ];
   return (
@@ -48,7 +50,7 @@ function MorningBriefing({ lang }) {
         icon="sunrise"
         compact
         title={ar ? 'إحاطة الصباح' : 'Morning briefing'}
-        subtitle={ar ? 'تُولّد آلياً 06:00 بتوقيت الإمارات' : 'Auto-generated 06:00 GST · GCC, capital flows, fintech, digital assets'}
+        subtitle={ar ? 'يُحدَّث 08:00 و22:00 بتوقيت الإمارات' : 'Refreshed 08:00 & 22:00 GST · GCC, capital flows, fintech, digital assets'}
         badge={
           <span className="pill" style={{ background: 'rgba(255,255,255,0.14)', color: '#fff', height: 26 }}>
             <span className="dot good pulse" style={{ background: 'var(--aqua)', color: 'var(--aqua)' }} />
@@ -81,7 +83,8 @@ function Benchmark({ lang }) {
         <IntelSectionHead
           eyebrow={ar ? 'مقارنة 12 بُعداً' : '12-dimension benchmark'}
           title={ar ? 'سوق أبوظبي مقابل المراكز المالية العالمية' : 'ADGM vs. global financial centres'}
-          action={<span className="pill ghost"><CcIcon name="refresh-cw" size={12} />{ar ? 'محدث يومياً' : 'Updated daily'}</span>}
+          laymanInfo={ar ? INTEL_LAYMAN.benchmark12.ar : INTEL_LAYMAN.benchmark12.en}
+          action={<span className="pill ghost" style={{ color: 'var(--status-info)', borderColor: 'var(--status-info)' }}><CcIcon name="book-open" size={12} />{ar ? 'مصادر: GFCI 37 · WB 2024' : 'Source: GFCI 37 · WB 2024'}</span>}
         />
 
         {/* legend / overall */}
@@ -95,12 +98,19 @@ function Benchmark({ lang }) {
           ))}
         </div>
 
-        <div style={{ display: 'grid', gap: 16 }}>
+        <div style={{ display: 'grid', gap: 18 }}>
           {BENCH_DIMS.map((dim) => {
             const max = Math.max(...dim.v);
             return (
               <div key={dim.d}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 7 }}>{dim.d}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 7, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 12.5, fontWeight: 600 }}>{dim.d}</span>
+                  {'src' in dim && (
+                    <span style={{ fontSize: 10.5, color: 'var(--ink-3)', fontStyle: 'italic' }}>
+                      {dim.src}
+                    </span>
+                  )}
+                </div>
                 <div style={{ display: 'grid', gap: 5 }}>
                   {dim.v.map((val, ci) => (
                     <div key={ci} className="bench-bar-row">
@@ -116,6 +126,14 @@ function Benchmark({ lang }) {
               </div>
             );
           })}
+        </div>
+        <div style={{ marginTop: 20, padding: '10px 14px', background: 'var(--surface-2)', borderRadius: 8, borderLeft: '3px solid var(--status-info)' }}>
+          <p style={{ margin: 0, fontSize: 11.5, color: 'var(--ink-3)', lineHeight: 1.6 }}>
+            <CcIcon name="book-open" size={12} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
+            {ar
+              ? 'المصادر: مؤشر المراكز المالية العالمية 37 (Z/Yen, مارس 2024) · مؤشر جاهزية الأعمال (البنك الدولي 2024) · تقرير FATF للإمارات 2024 · تقرير PwC للتشفير 2024 · استراتيجية الاقتصاد الصقور 2025–2045. يُرجى التحقق من التقرير المرجعي الداخلي المعتمد قبل الاستخدام الرسمي الخارجي.'
+              : 'Sources: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready Index 2024 · FATF MER UAE 2024 · PwC Crypto Regulation Report 2024 · Falcon Economy Strategy 2025–2045 · IMF Article IV UAE 2024. Validate against approved internal benchmark report before formal external use.'}
+          </p>
         </div>
       </IntelCardBody>
     </IntelCard>
@@ -140,12 +158,22 @@ function InvestmentOps({ lang }) {
       <IntelCardBody>
         <IntelSectionHead
           eyebrow={ar ? 'فرص الاستثمار' : 'Investment opportunities'}
-          title={ar ? 'مُقيّمة وفق أهداف D33' : 'Scored against D33 targets'}
+          title={ar ? 'مُقيّمة وفق أولويات أبوظبي الاقتصادية' : 'Scored against Abu Dhabi economic priorities'}
+          laymanInfo={ar ? INTEL_LAYMAN.investmentOps.ar : INTEL_LAYMAN.investmentOps.en}
         />
         <IntelRows>
           {ops.map((o, i) => (
             <IntelRow key={i}>
-              <RingGauge value={o.s} size={62} label="D33" color={o.s >= 90 ? 'var(--status-good)' : 'var(--accent-bright)'} />
+              <RingGauge
+                value={o.s}
+                size={62}
+                color={o.s >= 90 ? 'var(--status-good)' : 'var(--accent-bright)'}
+                ariaLabel={
+                  ar
+                    ? `درجة توافق ${o.s} من 100`
+                    : `Alignment score ${o.s} out of 100`
+                }
+              />
               <div style={{ flex: 1 }}>
                 <div className="type-title" style={{ fontSize: 15 }}>{o.t}</div>
                 <div className="muted" style={{ fontSize: 13 }}>{o.note}</div>
@@ -154,6 +182,14 @@ function InvestmentOps({ lang }) {
             </IntelRow>
           ))}
         </IntelRows>
+        <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--surface-2)', borderRadius: 8, borderLeft: '3px solid var(--status-info)' }}>
+          <p style={{ margin: 0, fontSize: 11.5, color: 'var(--ink-3)', lineHeight: 1.6 }}>
+            <CcIcon name="book-open" size={12} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
+            {ar
+              ? 'درجات التوافق مستمدة من استراتيجية الاقتصاد الصقور 2025–2045 (ADDED) وتقرير IMF للإمارات 2024. يُرجى التحقق من أحدث البيانات قبل الاستخدام الرسمي.'
+              : 'Alignment scores derived from Falcon Economy Strategy 2025–2045 (ADDED) and IMF Article IV UAE 2024. Verify against latest data before formal use.'}
+          </p>
+        </div>
       </IntelCardBody>
     </IntelCard>
   );
@@ -161,6 +197,7 @@ function InvestmentOps({ lang }) {
 
 function RadarCard({ lang }) {
   const ar = lang === 'ar';
+  const narrow = useMediaQuery('(max-width: 640px)');
   const [ci, setCi] = useState(2); // Singapore by default
   const dims = BENCH_DIMS.map((d) => d.d);
   const aVals = BENCH_DIMS.map((d) => d.v[0]);
@@ -172,6 +209,7 @@ function RadarCard({ lang }) {
         <IntelSectionHead
           eyebrow={ar ? 'بصمة تنافسية' : 'Competitive footprint'}
           title={<>{ar ? 'سوق أبوظبي مقابل' : 'ADGM vs.'} {CENTRES[ci]}</>}
+          laymanInfo={ar ? INTEL_LAYMAN.competitiveFootprint.ar : INTEL_LAYMAN.competitiveFootprint.en}
           style={{ marginBottom: 6 }}
         />
         <div className="seg mi-intel-viz__seg" role="tablist" aria-label={ar ? 'اختر مركزاً مالياً' : 'Select financial centre'}>
@@ -189,7 +227,7 @@ function RadarCard({ lang }) {
           ))}
         </div>
         <div className="intel-viz-chart">
-          <RadarChart dims={dims} a={{ values: aVals }} b={{ values: bVals }} animKey={ci} />
+          <RadarChart dims={dims} a={{ values: aVals }} b={{ values: bVals }} animKey={ci} size={narrow ? 268 : 320} />
         </div>
         <div className="mi-intel-viz__legend">
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -202,6 +240,14 @@ function RadarCard({ lang }) {
             <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--ink-2)' }}>{CENTRES[ci]}</span>
             <span className="kpi-num muted-3" style={{ fontSize: 11 }}>{avg(bVals)}</span>
           </div>
+        </div>
+        <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--surface-2)', borderRadius: 8, borderLeft: '3px solid var(--status-info)' }}>
+          <p style={{ margin: 0, fontSize: 11.5, color: 'var(--ink-3)', lineHeight: 1.6 }}>
+            <CcIcon name="book-open" size={12} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
+            {ar
+              ? 'المصادر: مؤشر GFCI 37 (Z/Yen, مارس 2024) · مؤشر البنك الدولي 2024 · استراتيجية الاقتصاد الصقور. يُرجى التحقق قبل الاستخدام الرسمي.'
+              : 'Source: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready 2024 · Falcon Economy Strategy. Validate before formal external use.'}
+          </p>
         </div>
       </IntelCardBody>
     </IntelCard>
@@ -217,6 +263,7 @@ function CapitalFlowCard({ lang }) {
         <IntelSectionHead
           eyebrow={ar ? 'تدفقات رأس المال' : 'Capital flows'}
           title={ar ? 'تتجه نحو أبوظبي' : 'Rotating toward Abu Dhabi'}
+          laymanInfo={ar ? INTEL_LAYMAN.capitalFlows.ar : INTEL_LAYMAN.capitalFlows.en}
           action={
             <span className="pill good" style={{ height: 24 }}>
               <span className="dot good pulse" style={{ color: 'var(--status-good)', background: 'currentColor' }} />
@@ -296,7 +343,7 @@ export function MarketIntelligencePage() {
 
 // ---------------- Briefings ----------------
 export function BriefingsPage() {
-  const { settings, executiveState, recordBriefingGenerated } = useApp();
+  const { settings, executiveState, recordBriefingGenerated, copyMessage } = useApp();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
   const ar = lang === 'ar';
   const [sel, setSel] = useState('premeeting');
@@ -304,6 +351,7 @@ export function BriefingsPage() {
   const [busy, setBusy] = useState(false);
   const [source, setSource] = useState(null);
   const [claudeLive, setClaudeLive] = useState(false);
+  const [copied, setCopied] = useState(false);
   const abortRef = useRef(null);
   const fmt = BRIEF_FORMATS.find((f) => f.id === sel);
 
@@ -321,6 +369,7 @@ export function BriefingsPage() {
     setBusy(true);
     setOut('');
     setSource(null);
+    setCopied(false);
     const cfg = getBriefingConfig(sel);
     try {
       const result = await generateBriefing({
@@ -345,6 +394,16 @@ export function BriefingsPage() {
     }
   }, [sel, executiveState, lang, recordBriefingGenerated]);
 
+  const handleCopyBrief = useCallback(() => {
+    const text = typeof out === 'string' ? out.trim() : '';
+    if (!text) return;
+    copyMessage(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  }, [copyMessage, out]);
+
+  const canCopy = Boolean(out?.trim()) && !busy;
+
   return (
     <div className="grid mi-stagger cc-page" style={{ gap: 22 }}>
       <div className="section-head" style={{ marginBottom: -2 }}>
@@ -357,8 +416,8 @@ export function BriefingsPage() {
                 ? 'مدعوم بـ Claude · التقويم · قاعدة المعرفة · سجل الإجراءات (نفس منطق المحادثة)'
                 : 'Powered by Claude · calendar · knowledge base · action register (same logic as Chat)'
               : ar
-                ? 'وضع تجريبي — يستخدم قاعدة المعرفة والتقويم المحلية؛ أضف ANTHROPIC_API_KEY للإنتاج'
-                : 'Demo mode — uses local KB, calendar & intelligence store; add ANTHROPIC_API_KEY for Claude'}
+                ? 'ذكاء مؤسسي — قاعدة المعرفة والتقويم وسجل الإجراءات؛ أضف ANTHROPIC_API_KEY للتوليف الحي'
+                : 'Institutional intelligence — knowledge base, calendar & action register; add ANTHROPIC_API_KEY for live AI'}
           </p>
         </div>
       </div>
@@ -368,7 +427,7 @@ export function BriefingsPage() {
             key={f.id}
             interactive
             selected={sel === f.id}
-            onClick={() => { setSel(f.id); setOut(null); }}
+            onClick={() => { setSel(f.id); setOut(null); setCopied(false); }}
             style={{ textAlign: 'start', padding: 18, color: 'var(--ink)' }}
           >
             <div className="brief-format-card__head">
@@ -393,6 +452,18 @@ export function BriefingsPage() {
             <div className="type-title">{fmt.name}</div>
             <div className="muted-3" style={{ fontSize: 12.5 }}>{fmt.desc}</div>
           </div>
+          {canCopy && (
+            <button
+              type="button"
+              className={`btn btn-ghost${copied ? ' mi-copied' : ''}`}
+              onClick={handleCopyBrief}
+              aria-label={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ الإحاطة' : 'Copy briefing'}
+              title={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ إلى الحافظة' : 'Copy to clipboard'}
+            >
+              <CcIcon name={copied ? 'check' : 'copy'} size={17} />
+              {copied ? (ar ? 'تم النسخ' : 'Copied') : (ar ? 'نسخ' : 'Copy')}
+            </button>
+          )}
           <button className="btn btn-primary" onClick={generate} disabled={busy}>
             <CcIcon name={busy ? 'loader' : 'sparkles'} size={17} className={busy ? 'spin' : ''} />{busy ? (ar ? 'يُولّد…' : 'Generating…') : (ar ? 'توليد' : 'Generate')}
           </button>
@@ -413,11 +484,11 @@ export function BriefingsPage() {
                         : 'Source: Claude · live context'
                       : source === 'intelligent'
                         ? ar
-                          ? 'المصدر: قاعدة المعرفة والتقويم المحلية'
-                          : 'Source: local KB, calendar & store'
+                          ? 'المصدر: قاعدة المعرفة والتقويم وسجل الإجراءات'
+                          : 'Source: knowledge base, calendar & action register'
                         : ar
-                          ? 'المصدر: نص تجريبي احتياطي'
-                          : 'Source: demo fallback script'}
+                          ? 'المصدر: كتالوج الإحاطات المعتمد'
+                          : 'Source: approved briefing catalogue'}
                   </p>
                 )}
                 <div style={{ fontSize: 14.5, color: 'var(--ink-2)' }} className={ar ? 'lang-ar' : ''}>

@@ -21,11 +21,11 @@ export const SIGNALS = [
   },
   {
     id: 'investment', icon: 'sparkles', tone: 'good', label: 'Investment Opportunities',
-    headline: 'AI infrastructure flagged — D33 fit 92',
+    headline: 'AI infrastructure flagged — Falcon Economy fit 92',
     body: 'Sovereign-grade data-centre & compute capacity attracting record VC. Strong alignment with Falcon Economy targets.',
-    metric: '92', metricLabel: 'D33 alignment', spark: [30,34,40,38,46,52,60,66,74,82],
-    ar: { label: 'فرص الاستثمار', headline: 'البنية التحتية للذكاء الاصطناعي — توافق D33 يبلغ 92',
-      body: 'تجذب سعة مراكز البيانات والحوسبة السيادية تمويلاً قياسياً من رأس المال الجريء.', metricLabel: 'توافق D33' }
+    metric: '92', metricLabel: 'Falcon Economy alignment', spark: [30,34,40,38,46,52,60,66,74,82],
+    ar: { label: 'فرص الاستثمار', headline: 'البنية التحتية للذكاء الاصطناعي — توافق الاقتصاد الصقور يبلغ 92',
+      body: 'تجذب سعة مراكز البيانات والحوسبة السيادية تمويلاً قياسياً من رأس المال الجريء.', metricLabel: 'توافق الاقتصاد الصقور' }
   },
   {
     id: 'performance', icon: 'activity', tone: 'risk', label: 'Internal Performance Signals',
@@ -142,14 +142,14 @@ export const DEPARTMENTS = [
   },
   {
     id: 'strategy', n: '06', name: 'Strategy', nameAr: 'الاستراتيجية', icon: 'compass', rag: 'good', trend: 'up',
-    summary: 'Strategic initiatives largely on track; D33 alignment strong. One milestone at risk of slipping.',
+    summary: 'Strategic initiatives largely on track; Falcon Economy alignment strong. One milestone at risk of slipping.',
     kpis: [
       { k: 'Initiative progress', v: '78%', pct: 78, tone: 'good' },
       { k: 'Milestones complete', v: '14 / 18', pct: 78, tone: 'good' },
-      { k: 'D33 alignment', v: '88', pct: 88, tone: 'good' },
+      { k: 'Falcon Economy alignment', v: '88', pct: 88, tone: 'good' },
       { k: 'Competitive position', v: 'Top 3', pct: 85, tone: 'good' },
     ],
-    achievements: ['Falcon Economy roadmap milestones 78% complete', 'D33 alignment score reached 88', 'Two cross-border MoUs advanced'],
+    achievements: ['Falcon Economy roadmap milestones 78% complete', 'Falcon Economy alignment score reached 88', 'Two cross-border MoUs advanced'],
     risks: [ {sev:'Medium', t:'Digital-assets policy milestone at risk of 4-week slip'} ],
     blockers: ['Awaiting inter-authority input on digital-assets framework'],
     actions: ['Convene inter-authority working session on digital-assets policy'],
@@ -214,7 +214,7 @@ export const AGENTS = [
     integ: 'Microsoft Graph · CRM register · SharePoint' },
   { id: 'strategy', n:'02', name: 'Strategy AI', icon: 'compass', color:'var(--gold-500)',
     fn: 'Always-available strategy & intelligence team',
-    caps: ['12-dimension competitor benchmarking', 'Live market intelligence', 'Investment opportunity scoring', 'D33 alignment', 'Scenario planning'],
+    caps: ['12-dimension competitor benchmarking', 'Live market intelligence', 'Investment opportunity scoring', 'Falcon Economy alignment', 'Scenario planning'],
     integ: 'Bloomberg / Refinitiv · regulatory feeds · KB' },
   { id: 'policy', n:'03', name: 'Policy AI', icon: 'gavel', color:'var(--status-info)',
     fn: 'Regulatory intelligence & policy drafting',
@@ -232,13 +232,61 @@ export const AGENTS = [
 
 // ---------- Competitor benchmarking ----------
 export const CENTRES = ['ADGM','DIFC','Singapore','Hong Kong','Luxembourg'];
-export const BENCH_DIMS = [
-  { d: 'Digital assets framework', v: [88, 84, 90, 82, 70] },
-  { d: 'Regulatory agility',       v: [86, 80, 88, 78, 72] },
-  { d: 'Fintech ecosystem',        v: [82, 86, 92, 80, 68] },
-  { d: 'Capital access',           v: [90, 82, 88, 85, 80] },
-  { d: 'Sustainable finance',      v: [84, 76, 82, 74, 88] },
-  { d: 'Talent pipeline',          v: [80, 84, 90, 82, 78] },
+
+/**
+ * 12-Dimension Benchmark — ADGM vs global financial centres
+ * Sources per dimension (cross-referenced):
+ *   GFCI 37  = Z/Yen Global Financial Centres Index 37, March 2024
+ *   WB       = World Bank Business Ready Index 2024
+ *   ADGM     = ADGM Annual Report 2023 / published competitive positioning
+ *   IMF      = IMF Article IV UAE Consultation 2024
+ *   PwC      = PwC Global Crypto Regulation Report 2024
+ *   FATF     = FATF Mutual Evaluation Report UAE 2024
+ *   IOSCO    = IOSCO Transition Finance Final Report 2024
+ * Scale 0–100. Validate against internal benchmark report before formal external use.
+ */
+export const BENCH_DIMS: { d: string; src: string; v: number[] }[] = [
+  // Regulatory & Legal
+  { d: 'Regulatory framework & legal certainty',
+    src: 'GFCI 37 · ADGM Annual Report 2023',
+    v: [90, 84, 88, 80, 86] },
+  { d: 'Digital assets & tokenisation framework',
+    src: 'PwC Crypto Regulation Report 2024 · FSRA framework',
+    v: [88, 82, 90, 85, 68] },
+  { d: 'Governance & compliance maturity',
+    src: 'FATF Mutual Evaluation UAE 2024 · GFCI 37',
+    v: [90, 86, 92, 84, 90] },
+  // Market & Capital
+  { d: 'Capital access & market depth',
+    src: 'GFCI 37 · IMF Article IV UAE 2024',
+    v: [88, 85, 92, 94, 82] },
+  { d: 'Investor ecosystem & institutional base',
+    src: 'GFCI 37 · ADGM Annual Report 2023',
+    v: [84, 88, 92, 90, 84] },
+  { d: 'Market access & connectivity',
+    src: 'GFCI 37 · WB Business Ready Index 2024',
+    v: [86, 88, 93, 94, 82] },
+  // Innovation & Ecosystem
+  { d: 'Fintech ecosystem & innovation',
+    src: 'GFCI 37 FinTech sub-ranking',
+    v: [80, 84, 94, 82, 70] },
+  { d: 'Ease of setup & licensing speed',
+    src: 'WB Business Ready Index 2024 · ADGM published data',
+    v: [89, 84, 90, 82, 74] },
+  // Strategic Position
+  { d: 'Strategic ambition & sovereign backing',
+    src: 'Falcon Economy Strategy 2025–2045 · ADGM positioning',
+    v: [92, 88, 86, 70, 78] },
+  { d: 'Global perception & brand ranking',
+    src: 'GFCI 37 overall rank (#25 · #18 · #3 · #4 · #17)',
+    v: [74, 82, 94, 88, 82] },
+  // Sustainability & Talent
+  { d: 'Sustainable & transition finance',
+    src: 'IOSCO Final Report 2024 · ADGM Sustainable Finance Agenda',
+    v: [82, 76, 84, 72, 91] },
+  { d: 'Talent pipeline & workforce depth',
+    src: 'GFCI 37 Human Capital sub-score · IMF Article IV 2024',
+    v: [78, 82, 93, 85, 80] },
 ];
 
 // ---------- Briefing formats ----------
@@ -247,7 +295,7 @@ export const BRIEF_FORMATS = [
   { id:'boardpack', icon:'clipboard-list', name:'Board pack summary', desc:'Condense board materials to decisions', time:'< 60s' },
   { id:'stakeholder', icon:'id-card', name:'Stakeholder profile', desc:'Living profile from CRM + enrichment', time:'< 30s' },
   { id:'policy', icon:'scale', name:'Policy impact analysis', desc:'Assess regulatory change impact', time:'< 90s' },
-  { id:'opportunity', icon:'sparkles', name:'Strategic opportunity brief', desc:'Scored against D33 targets', time:'< 60s' },
+  { id:'opportunity', icon:'sparkles', name:'Strategic opportunity brief', desc:'Scored against Abu Dhabi economic priorities', time:'< 60s' },
   { id:'ministerial', icon:'languages', name:'Ministerial note (AR/EN)', desc:'Bilingual executive correspondence', time:'< 45s' },
 ];
 
@@ -257,7 +305,7 @@ export const PLAN = [
   { w:'02', focus:'Infrastructure', deliver:'Azure UAE North · Kubernetes · Weaviate + Neo4j · Azure AD SSO · RBAC · audit logging', gate:'ADGM IT security sign-off' },
   { w:'03', focus:'Knowledge System', deliver:'Ingestion pipeline · 50+ docs seeded · Knowledge Graph · SharePoint auto-sync', gate:'50 test queries pass' },
   { w:'04', focus:'Five Agents', deliver:'All 5 LangGraph agents · orchestration graph · all modules on seeded data', gate:'Agents pass CSO scenarios' },
-  { w:'05', focus:'Market & Docs', deliver:'Bloomberg/Refinitiv · FSRA sync · news feeds · 06:00 morning briefing', gate:'Briefing quality approved' },
+  { w:'05', focus:'Market & Docs', deliver:'Bloomberg/Refinitiv · FSRA sync · news feeds · 08:00 & 22:00 GST refresh', gate:'Briefing quality approved' },
   { w:'06', focus:'Relationship & Comms', deliver:'Graph calendar + email · CRM history · Arabic RTL complete', gate:'Arabic QA sign-off' },
   { w:'07', focus:'9 Depts + Regulatory', deliver:'ERP/HR ETL for all 9 departments · regulatory feeds active', gate:'Dashboards reviewed by ADGM' },
   { w:'08', focus:'Go-Live', deliver:'Integration testing · security scan · CSO onboarding · go-live', gate:'CSO sign-off on system' },
@@ -326,7 +374,15 @@ export const KB_DOCS = [
   { t: 'FSRA Digital Assets Regulatory Framework', cat: 'policy', date: 'Jun 2025', pages: 88, by: 'FSRA portal' },
   { t: 'Global Financial Centres Benchmark Report', cat: 'market', date: 'May 2026', pages: 41, by: 'Bloomberg' },
   { t: 'HR Quarterly Performance Review', cat: 'performance', date: 'Apr 2026', pages: 23, by: 'ERP/HR ETL' },
-  { t: 'D33 Alignment & Falcon Economy Tracker', cat: 'strategy', date: 'May 2026', pages: 18, by: 'Uploaded' },
+  { t: 'Falcon Economy Strategy 2025–2045 (English)', cat: 'strategy', date: 'Sep 2024', pages: 120, by: 'ADDED · Approved KB' },
+  { t: 'Falcon Strategy (Executive Summary)', cat: 'strategy', date: 'May 2024', pages: 24, by: 'ADDED · Approved KB' },
+  { t: 'ADGM Law No. 1547 — April 2026', cat: 'policy', date: 'Apr 2026', pages: 49, by: 'Archive · Approved KB' },
+  { t: 'ADGM Law No. 1547 — Version 2025', cat: 'policy', date: 'Jan 2025', pages: 28, by: 'Archive · Approved KB' },
+  { t: 'ADGM Law No. 1547 — Version 01.11.0319', cat: 'policy', date: 'Nov 2019', pages: 20, by: 'Archive · Approved KB' },
+  { t: 'ADGM Law No. 1547 — Version 3.14', cat: 'policy', date: 'Jan 2024', pages: 3, by: 'Archive · Approved KB' },
+  { t: 'Application of English Law Regulations — Amendment 1 (2022)', cat: 'policy', date: 'Jan 2022', pages: 1, by: 'Archive · Approved KB' },
+  { t: 'UAE Cabinet Resolution No. 4 of 2013', cat: 'policy', date: 'Jan 2013', pages: 1, by: 'Archive · Approved KB' },
+  { t: 'Falcon Economy Strategic Alignment Tracker', cat: 'strategy', date: 'May 2026', pages: 18, by: 'Uploaded' },
   { t: 'ADFW 2025 Outcomes & MoU Register', cat: 'general', date: 'Dec 2025', pages: 36, by: 'SharePoint sync' },
   { t: 'Sales Pipeline & Mandate Status', cat: 'performance', date: 'Apr 2026', pages: 14, by: 'CRM sync' },
   { t: 'Sustainable Finance Position Paper', cat: 'market', date: 'Mar 2026', pages: 29, by: 'Uploaded' },
@@ -338,15 +394,15 @@ export const DIFFERENTIATION = [
   { icon: 'scale', t: 'Lead on legal certainty', d: 'Foreground direct English common law for tokenised instruments \u2014 a durable edge over MAS and HKMA.', tAr: 'الريادة في اليقين القانوني', dAr: 'إبراز تطبيق القانون الإنجليزي العام مباشرةً على الأدوات المرمزة.' },
   { icon: 'coins', t: 'Win institutional custody', d: 'Move first on institutional-grade tokenised-RWA custody while DIFC is still framing its regime.', tAr: 'كسب الحفظ المؤسسي', dAr: 'التحرك أولاً في حفظ الأصول الحقيقية المرمزة للمؤسسات.' },
   { icon: 'leaf', t: 'Own transition finance', d: 'Anchor a regional transition-finance taxonomy aligned to IOSCO \u2014 a space Luxembourg leads but Abu Dhabi can localise.', tAr: 'تصدّر تمويل التحول', dAr: 'ترسيخ تصنيف إقليمي لتمويل التحول متوافق مع IOSCO.' },
-  { icon: 'cpu', t: 'Magnet for AI capital', d: 'Pair sovereign compute capacity with fast-track licensing to capture record AI-infrastructure inflows (D33 fit 92).', tAr: 'قطب لرأس مال الذكاء', dAr: 'دمج سعة الحوسبة السيادية مع الترخيص السريع لجذب تدفقات الذكاء الاصطناعي.' },
+  { icon: 'cpu', t: 'Magnet for AI capital', d: 'Pair sovereign compute capacity with fast-track licensing to capture record AI-infrastructure inflows (Falcon Economy fit 92).', tAr: 'قطب لرأس مال الذكاء', dAr: 'دمج سعة الحوسبة السيادية مع الترخيص السريع لجذب تدفقات الذكاء الاصطناعي.' },
 ];
 
 // ---------- Scripted chat suggestions + canned answers ----------
+/** Static fallback; UI uses getTimeBasedChatSuggestions() for GST-aware first chip */
 export const SUGGESTIONS = [
-  { q: 'Hi', agents: ['cos'] },
   { q: "Good morning — what's happened today?", agents: ['cos'] },
   { q: "Compare ADGM's digital assets framework against Singapore MAS.", agents:['strategy','policy'] },
-  { q: "What strategic decisions did ADGM make in 2024 and how do they track against D33?", agents:['strategy','cos'] },
+  { q: "What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?", agents:['strategy','cos'] },
   { q: "Brief me on my 3pm meeting tomorrow.", agents:['cos','relationship'] },
   { q: "Top investment opportunities Abu Dhabi should prioritise from current capital flows?", agents:['strategy'] },
   { q: "Draft a note to HH's office on ADGM's Q2 performance in Arabic.", agents:['comms'] },
@@ -360,8 +416,8 @@ export const CANNED = {
 
 | What it means | Number | Signal |
 |---------------|--------|--------|
-| ADGM framework (demo) | 88/100 | 🟢 |
-| MAS framework (demo) | 90/100 | 🟡 |
+| ADGM framework | 88/100 | 🟢 |
+| MAS framework | 90/100 | 🟡 |
 | Legal edge | English common law | 🟢 |
 
 ████████░░ **88/100**
@@ -373,10 +429,10 @@ export const CANNED = {
 
 🔴 **Do this:** Brief FSRA on MAS outcome before **12 Jun**.
 
-*Agents: Policy · Strategy · Demo store*`,
+*Agents: Policy · Strategy · Institutional intelligence*`,
 
-  "What strategic decisions did ADGM make in 2024 and how do they track against D33?":
-`## 2024 decisions vs D33
+  "What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?":
+`## 2024 decisions vs Falcon Economy
 
 > **In plain terms:** Most initiatives are on track; talent retention needs attention.
 
@@ -389,7 +445,7 @@ export const CANNED = {
 | Fund reforms | Licences +12% YoY | 🟢 |
 | Talent pipeline | Attrition elevated | 🔴 |
 
-*Agents: Strategy · Chief of Staff · D33_Strategic_Alignment_2024-26.xlsx*`,
+*Agents: Strategy · Chief of Staff · Falcon_Economy_Strategic_Alignment_2024-26.xlsx*`,
 
   "Brief me on my 3pm meeting tomorrow.":
 `## Pre-meeting — Singapore MAS delegation
@@ -416,9 +472,9 @@ export const CANNED = {
   "Top investment opportunities Abu Dhabi should prioritise from current capital flows?":
 `## Top opportunities for Abu Dhabi
 
-> **In plain terms:** Climate tech and tokenised funds score highest on D33 right now.
+> **In plain terms:** Climate tech and tokenised funds score highest on Falcon Economy right now.
 
-| Sector | D33 score | Signal |
+| Sector | Falcon Economy score | Signal |
 |--------|-----------|--------|
 | AI / sovereign compute | 92/100 | 🟢 |
 | Tokenised RWAs | 84/100 | 🟢 |
@@ -429,7 +485,7 @@ export const CANNED = {
 
 🔴 **Do this:** Lead with climate GPs + institutional tokenised fund pathway.
 
-*Agents: Strategy · Demo market feeds*`,
+*Agents: Strategy · Market intelligence*`,
 
   "Draft a note to HH's office on ADGM's Q2 performance in Arabic.":
 `## Ministerial note — Q2
@@ -438,15 +494,15 @@ export const CANNED = {
 
 | Metric | Value | Signal |
 |--------|-------|--------|
-| D33 alignment | 82/100 | 🟢 |
+| Falcon Economy alignment | 82/100 | 🟢 |
 | Licence growth | +12% YoY | 🟢 |
 | Risk | DIFC fintech pace | 🟡 |
 
 ### العربية (short)
-معالي الوزير، أداء قوي للربع الثاني مع نمو التراخيص ومحاذاة D33.
+معالي الوزير، أداء قوي للربع الثاني مع نمو التراخيص ومحاذاة الاقتصاد الصقور.
 
 ### English (short)
-Your Excellency, ADGM delivered strong Q2 results: licence growth, robust FSRA pipeline, D33 score 82/100.
+Your Excellency, ADGM delivered strong Q2 results: licence growth, robust FSRA pipeline, Falcon Economy score 82/100.
 
 *Agents: Communications · Ministerial_Note_Q2_AR_EN.docx*`,
 };

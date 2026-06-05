@@ -84,7 +84,8 @@ function SourceCard({
 }
 
 export function SourcePanel() {
-  const { sourcesPanelOpen, setSourcesPanelOpen, activeSources, copyMessage } = useApp();
+  const { sourcesPanelOpen, setSourcesPanelOpen, activeSources, copyMessage, settings } = useApp();
+  const ar = settings.language === 'ar';
   const navigate = useNavigate();
 
   const kbSources = activeSources.filter((s) => s.sourceType === 'knowledge');
@@ -121,20 +122,22 @@ export function SourcePanel() {
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
             role="complementary"
-            aria-label="Sources"
+            aria-label={ar ? 'المصادر' : 'Sources'}
           >
             <div className="cc-sources-panel__header">
               <div>
-                <h2 className="cc-sources-panel__heading">Sources</h2>
+                <h2 className="cc-sources-panel__heading">{ar ? 'المصادر' : 'Sources'}</h2>
                 <p className="cc-sources-panel__sub">
-                  {activeSources.length} reference{activeSources.length === 1 ? '' : 's'}
+                  {ar
+                    ? `${activeSources.length} مرجع`
+                    : `${activeSources.length} reference${activeSources.length === 1 ? '' : 's'}`}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setSourcesPanelOpen(false)}
                 className="cc-sources-panel__close"
-                aria-label="Close sources"
+                aria-label={ar ? 'إغلاق المصادر' : 'Close sources'}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -143,7 +146,7 @@ export function SourcePanel() {
             <div className="cc-sources-panel__body">
               {kbSources.length > 0 && (
                 <section>
-                  <h3 className="cc-sources-panel__section">Knowledge base</h3>
+                  <h3 className="cc-sources-panel__section">{ar ? 'قاعدة المعرفة' : 'Knowledge base'}</h3>
                   <div className="cc-sources-panel__list">
                     {kbSources.map((src) => (
                       <SourceCard key={src.id} src={src} onCopy={copyMessage} onOpen={handleOpen} />
@@ -154,7 +157,15 @@ export function SourcePanel() {
 
               {externalSources.length > 0 && (
                 <section>
-                  <h3 className="cc-sources-panel__section">External links</h3>
+                  <h3 className="cc-sources-panel__section">
+                    {kbSources.length === 0
+                      ? ar
+                        ? 'تغذيات السوق والتنظيم'
+                        : 'Market & regulatory feeds'
+                      : ar
+                        ? 'روابط خارجية'
+                        : 'External links'}
+                  </h3>
                   <div className="cc-sources-panel__list">
                     {externalSources.map((src) => (
                       <SourceCard key={src.id} src={src} onCopy={copyMessage} onOpen={handleOpen} />
@@ -164,7 +175,11 @@ export function SourcePanel() {
               )}
 
               {activeSources.length === 0 && (
-                <p className="cc-sources-panel__empty">No linked sources for this answer.</p>
+                <p className="cc-sources-panel__empty">
+                  {ar
+                    ? 'لا مصادر لهذه الإجابة. افتح محادثة سابقة واضغط شارة المصادر تحت الرسالة.'
+                    : 'No sources for this answer. Open a past thread and tap the source chip under the AI message.'}
+                </p>
               )}
             </div>
           </motion.aside>

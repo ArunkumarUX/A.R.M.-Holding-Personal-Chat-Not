@@ -98,7 +98,7 @@ ${metricTable(
     ['HK / Luxembourg', 'No change', signalEmoji('good')],
   ],
 )}
-**D33 alignment (demo)**
+**Falcon Economy alignment**
 ${scoreBar(82)}
 ${agentTag(['Strategy AI', 'Policy AI'])}`,
       };
@@ -124,7 +124,7 @@ ${agentTag(['Strategy AI', 'Policy AI'])}`,
 
 ### Financial & strategic highlights
 - Licence growth +12% YoY · FSRA pipeline robust
-- D33 alignment score **82/100**
+- Falcon Economy alignment score **82/100**
 - Competitive pressure: DIFC fintech authorisations — proactive positioning advised
 
 ### Risks for board attention
@@ -220,7 +220,7 @@ Principle-based VASP taxonomy · institutional custody requirements · retail pe
 - CSO voice learning applied from prior approved notes
 
 ### Sample (English excerpt — Q2 HH note)
-Your Excellency, ADGM reports strong Q2 momentum across authorisations and D33 alignment (82/100). Key risks: competitive fintech positioning; talent retention in critical roles.
+Your Excellency, ADGM reports strong Q2 momentum across authorisations and Falcon Economy alignment (82/100). Key risks: competitive fintech positioning; talent retention in critical roles.
 
 *Full bilingual draft in Documents library · Communications AI*`,
       };
@@ -259,7 +259,7 @@ Request a full stakeholder brief naming the organisation for attendee history, s
 **Corpus:** ${state.metrics.documentsInKb}+ indexed documents · Knowledge Graph active
 
 ### Results for your query
-- **D33_Strategic_Alignment_2024-26.xlsx** — alignment score 82; digital assets on track; Italy complete
+- **Falcon_Economy_Strategic_Alignment_2024-26.xlsx** — alignment score 82; digital assets on track; Italy complete
 - **Q2_Board_Pack_Draft_v3.pdf** — three board decisions; risk section on DIFC competition
 - **FSRA_Virtual_Assets_Framework_2026.pdf** — licensing taxonomy; benchmark for MAS comparison
 
@@ -284,6 +284,6 @@ function ALL_FOCUS_PROMPTS_FALLBACK(): string[] {
   return [
     'Give me my daily executive briefing for global financial markets and ADGM',
     'Brief me on my next meeting',
-    'Search our knowledge base for D33 strategic decisions',
+    'Search our knowledge base for Falcon Economy strategic decisions',
   ];
 }

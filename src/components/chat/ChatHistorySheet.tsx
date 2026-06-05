@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { useApp } from '../../context/AppContext';
-import { formatChatRelativeTime } from '../../utils/chatMessages';
+import { conversationSourceCount, formatChatRelativeTime } from '../../utils/chatMessages';
 
 function groupByTime(conversations, ar) {
   const now = new Date();
@@ -41,6 +41,7 @@ export function ChatHistorySheet({
     pinConversation,
     searchQuery,
     setSearchQuery,
+    executiveState,
   } = useApp();
 
   const [menuId, setMenuId] = useState<string | null>(null);
@@ -90,6 +91,7 @@ export function ChatHistorySheet({
         unpin: 'إلغاء التثبيت',
         delete: 'حذف',
         close: 'إغلاق',
+        sources: 'مصادر',
       }
     : {
         title: 'Past conversations',
@@ -101,6 +103,7 @@ export function ChatHistorySheet({
         unpin: 'Unpin',
         delete: 'Delete',
         close: 'Close',
+        sources: 'sources',
       };
 
   const filtered = useMemo(() => {
@@ -195,6 +198,7 @@ export function ChatHistorySheet({
                 <div className="chat-history-sheet__cards">
                   {group.items.map((c) => {
                     const active = c.id === activeConversationId;
+                    const srcN = conversationSourceCount(c.messages, executiveState);
                     return (
                       <article
                         key={c.id}
@@ -220,6 +224,13 @@ export function ChatHistorySheet({
                             <span className="muted-3" style={{ fontSize: 11 }}>
                               {formatChatRelativeTime(c.updatedAt, ar)}
                               {c.messages.length > 0 ? ` · ${c.messages.length} msgs` : ''}
+                              {srcN > 0 ? (
+                                <span className="chat-history-card__sources">
+                                  {' · '}
+                                  <CcIcon name="link-2" size={11} />
+                                  {srcN} {t.sources}
+                                </span>
+                              ) : null}
                             </span>
                           </div>
                         </button>

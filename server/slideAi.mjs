@@ -13,7 +13,7 @@ export function getSlideAiConfig(mode = 'create') {
     process.env.SLIDEAI_ANTHROPIC_MODEL ||
     process.env.ANTHROPIC_MODEL ||
     base.model ||
-    'claude-sonnet-4-20250514';
+    'claude-sonnet-4-6';
 
   return {
     apiKey: base.apiKey,

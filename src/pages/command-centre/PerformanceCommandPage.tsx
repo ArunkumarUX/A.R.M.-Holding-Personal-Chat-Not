@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // @ts-nocheck
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { Emblem, AnimatedNumber, Sparkline, RingGauge, RagPill } from '../../command-centre/CcPrimitives';
@@ -14,6 +14,14 @@ import { useApp } from '../../context/AppContext';
 import { TREND_ICON } from '../../command-centre/utils';
 import { IntelCard, IntelCardBody, IntelIconBox } from '../../command-centre/CcCard';
 import { CcEscalationPanel } from '../../command-centre/CcEscalationFeed';
+import { PerformanceCompanyFilter } from '../../components/performance/PerformanceCompanyFilter';
+import { KB_COMPANIES } from '../../config/kbCompanies';
+import {
+  countRagStatuses,
+  getPerformanceDepartments,
+  getPerformanceEscalations,
+  type PerfCompanyFilter,
+} from '../../data/performanceViews';
 
 function DeptCard({ d, lang, onOpen }) {
   const ar = lang === 'ar';
@@ -48,38 +56,8 @@ function DeptCard({ d, lang, onOpen }) {
   );
 }
 
-function EscalationBanner({ lang, onOpen }) {
-  const ar = lang === 'ar';
-  const items = [
-    {
-      id: 'esc-hr',
-      deptId: 'hr',
-      icon: 'users',
-      title: ar ? 'دوران >15٪ · وظيفتان حرجتان شاغرتان' : 'Attrition >15% · 2 critical roles unfilled',
-      sev: 'High',
-    },
-    {
-      id: 'esc-procurement',
-      deptId: 'procurement',
-      icon: 'package',
-      title: ar ? 'عقد مركز البيانات ينتهي خلال 24 يوماً' : 'Data-centre contract expires in 24 days',
-      sev: 'High',
-    },
-    {
-      id: 'esc-legal',
-      deptId: 'legal',
-      icon: 'scale',
-      title: ar ? 'إيداع FSRA AML مستحق خلال 11 يوماً' : 'FSRA AML filing due in 11 days',
-      sev: 'High',
-    },
-    {
-      id: 'esc-sales',
-      deptId: 'sales',
-      icon: 'target',
-      title: ar ? 'تفويض صندوق سيادي 90M درهم متوقف' : 'AED 90M sovereign-fund mandate stalled',
-      sev: 'Medium',
-    },
-  ];
+function EscalationBanner({ items, ar, onOpen }) {
+  if (!items.length) return null;
   return (
     <IntelCard className="intel-card--escalation">
       <IntelCardBody className="esc-intel-body">
@@ -196,19 +174,22 @@ function DeptDetail({ d, lang, onBack }) {
   );
 }
 
-function OrgOverview({ lang }) {
+function OrgOverview({ lang, depts }) {
   const ar = lang === 'ar';
+  const rag = countRagStatuses(depts);
+  const total = depts.length;
   const segs = [
-    { value: 4, color: 'var(--status-good)', label: ar ? 'على المسار' : 'On track' },
-    { value: 4, color: 'var(--status-warn)', label: ar ? 'مراقبة' : 'Watch' },
-    { value: 1, color: 'var(--status-risk)', label: ar ? 'إجراء' : 'Action' },
-  ];
+    { value: rag.good, color: 'var(--status-good)', label: ar ? 'على المسار' : 'On track' },
+    { value: rag.warn, color: 'var(--status-warn)', label: ar ? 'مراقبة' : 'Watch' },
+    { value: rag.risk, color: 'var(--status-risk)', label: ar ? 'إجراء' : 'Action' },
+  ].filter((s) => s.value > 0);
+  const donutSegs = segs.length ? segs : [{ value: 1, color: 'var(--ink-4)', label: ar ? 'لا بيانات' : 'No data' }];
   return (
     <IntelCard rise>
       <IntelCardBody>
       <div className="perf-org">
         <div className="perf-org__donut">
-          <Donut segments={segs} centerTop={9} centerBot={ar ? 'إدارات' : 'depts'} />
+          <Donut segments={donutSegs} centerTop={total} centerBot={ar ? 'إدارات' : 'depts'} />
           <div className="perf-org__legend">
             {segs.map((s) => (
               <div key={s.label} className="perf-org__legend-row">
@@ -224,7 +205,7 @@ function OrgOverview({ lang }) {
             <div className="eyebrow">{ar ? 'مؤشر الزخم المؤسسي' : 'Organisational momentum index'}</div>
             <div className="perf-org__kpis">
               {[
-                { v: 88, l: 'D33', s: '' },
+                { v: 88, l: ar ? 'الاقتصاد الصقور' : 'Falcon Economy', s: '' },
                 { v: 12, l: ar ? 'ساعات/أسبوع موفّرة' : 'hrs/wk saved', s: '' },
                 { v: 95, l: ar ? 'تغطية الإحاطات' : 'brief coverage', s: '%' },
               ].map((m) => (
@@ -251,15 +232,39 @@ export function PerformanceCommandPage() {
   const { settings } = useApp();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
   const [selected, setSelected] = useState<string | null>(null);
+  const [company, setCompany] = useState<PerfCompanyFilter>('all');
   const ar = lang === 'ar';
-  const d = DEPARTMENTS.find((x) => x.id === selected);
+
+  const departments = useMemo(() => getPerformanceDepartments(company), [company]);
+  const counts = useMemo(() => countRagStatuses(departments), [departments]);
+  const escalations = useMemo(() => getPerformanceEscalations(ar, company), [ar, company]);
+  const companyMeta = company === 'all' ? null : KB_COMPANIES.find((c) => c.id === company);
+
+  useEffect(() => {
+    if (selected && !departments.some((x) => x.id === selected)) setSelected(null);
+  }, [selected, departments]);
+
+  const clearCompanyFilter = useCallback(() => setCompany('all'), []);
+
+  const scopeEyebrow =
+    company === 'all'
+      ? ar
+        ? 'إدارة الأداء · كل الإدارات'
+        : 'Performance management · all departments'
+      : ar
+        ? `إدارة الأداء · ${companyMeta?.labelAr ?? ''}`
+        : `Performance management · ${companyMeta?.label ?? ''}`;
+
+  const d = selected
+    ? departments.find((x) => x.id === selected) ?? DEPARTMENTS.find((x) => x.id === selected)
+    : null;
   if (d) return <DeptDetail d={d} lang={lang} onBack={() => setSelected(null)} />;
-  const counts = DEPARTMENTS.reduce((a, x) => { a[x.rag]++; return a; }, { good: 0, warn: 0, risk: 0 });
+
   return (
     <div className="grid mi-stagger cc-page perf-page" style={{ gap: 22 }}>
       <div className="section-head" style={{ marginBottom: 0 }}>
         <div>
-          <div className="eyebrow">{ar ? 'إدارة الأداء · كل الإدارات' : 'Performance management · all departments'}</div>
+          <div className="eyebrow">{scopeEyebrow}</div>
           <h2 style={{ fontSize: 24, marginTop: 4 }}>{ar ? 'فريقك بالكامل، مباشر، في عرض واحد' : 'Your whole team, live, in one view'}</h2>
         </div>
         <div className="section-head__actions" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -268,10 +273,21 @@ export function PerformanceCommandPage() {
           <span className="pill risk">{counts.risk} {ar ? 'إجراء' : 'action'}</span>
         </div>
       </div>
-      <EscalationBanner lang={lang} onOpen={setSelected} />
-      <OrgOverview lang={lang} />
+
+      <PerformanceCompanyFilter
+        company={company}
+        ar={ar}
+        hasFilter={company !== 'all'}
+        onCompanyChange={setCompany}
+        onClear={clearCompanyFilter}
+      />
+
+      <EscalationBanner items={escalations} ar={ar} onOpen={setSelected} />
+      <OrgOverview lang={lang} depts={departments} />
       <div className="grid mi-stagger perf-dept-grid">
-        {DEPARTMENTS.map((dd) => <DeptCard key={dd.id} d={dd} lang={lang} onOpen={setSelected} />)}
+        {departments.map((dd) => (
+          <DeptCard key={dd.id} d={dd} lang={lang} onOpen={setSelected} />
+        ))}
       </div>
     </div>
   );

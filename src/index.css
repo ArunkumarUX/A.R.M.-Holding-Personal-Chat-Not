@@ -66,7 +66,10 @@ body,
 /* Command centre shell fills viewport */
 .command-centre-app.app {
   height: 100vh;
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
