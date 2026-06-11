@@ -496,7 +496,7 @@ Issues, gaps, political sensitivities, or watch-outs.
 
 **Follow-up Actions**
 Likely next steps after the meeting.
-
+`.trim(),
 
   stakeholder: `
 **Output contract: Stakeholder / relationship brief**
@@ -521,7 +521,7 @@ Relationship risks, sensitivities, or areas requiring care.
 
 **Recommended Follow-up**
 Practical next steps.
-
+`.trim(),
 
   communication: `
 **Output contract: Executive communication / memo**
