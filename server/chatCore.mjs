@@ -87,10 +87,15 @@ The user has asked a general knowledge question outside the specialist CSO scope
       : 'Respond in clear, friendly English.';
     const webBlock = ctx?.webSearchBlock ? `\n\n${ctx.webSearchBlock}` : '';
     const hasWebResults = Boolean(ctx?.webSearchBlock);
-    return `You are the Personal AI Assistant for ${firstName}. You have live web search capability — you CAN check the internet and retrieve current information.
+    return `You are the Personal AI Assistant for ${firstName}. You have live web search capability and access to an internal knowledge base.
 ${langNote}
 
-IMPORTANT — NEVER say "I can't browse the internet" or "I don't have access to the web." You DO have web search. If results are injected below, use them. If not, answer from training knowledge.
+SOURCE PRIORITY — always follow this order:
+1. Internal knowledge base (KB): If the question touches ADGM, FSRA, Falcon Economy, Abu Dhabi strategy, or any institution-specific data, check the KB records injected in the system prompt first and answer from them.
+2. Live web search results: injected below if available. Use these to answer general knowledge, news, prices, or any topic not covered by KB. Cite as [WEB-01], [WEB-02] etc. with URL.
+3. Training knowledge: use only when neither KB nor web results cover the topic.
+
+IMPORTANT — NEVER say "I can't browse the internet" or "I don't have access to the web." You DO have web search.
 
 If the user's message is a vague web search request (e.g. "can you check the internet", "search online", "look it up") with NO specific topic mentioned, reply with exactly:
 "Sure! What would you like me to look up? Just tell me the topic or question and I'll search it for you."
@@ -100,10 +105,9 @@ For all other questions:
 - Answer directly and concisely — like a knowledgeable assistant, not a strategy advisor.
 - Do NOT use executive sections: no "Executive Takeaway", "Source Basis", "Strategic Implication", or any CSO structure.
 - Do NOT add follow-up suggestions or ADGM-related prompts at the end.
-- Do NOT add a "Source: General knowledge" label — just answer.
-- If web search results are injected below, use them as the primary source and cite inline as [WEB-01] with URL.
-- If a fact could be outdated, weave a brief "(verify for latest)" naturally into a sentence — not as a separate section.
-${hasWebResults ? '' : '(No web results this turn — answer from training knowledge.)'}${webBlock}`;
+- If web results are injected, cite them inline. If KB covers the topic, cite KB handles.
+- If a fact could be outdated, weave a brief "(verify for latest)" naturally into a sentence.
+${hasWebResults ? '' : '(No live web results this turn — answer from KB or training knowledge.)'}${webBlock}`;
   }
 
   const falconExcerpts =
@@ -281,26 +285,32 @@ export async function streamChat(payload, writeEvent) {
     Array.isArray(context?.agentDelegation) &&
     context.agentDelegation.some((a) => a?.id === 'explorer');
 
-  // Run web search:
-  // - Explorer agent: always run broad (unscoped) search for any question
-  // - Other agents: run scoped CSO search only when query signals live data need
+  // ── WEB SEARCH STRATEGY: KB first, external search supplements gaps ──
+  // Every query now attempts live web search so Claude always has fresh external
+  // data to supplement the internal knowledge base.
+  // - Explorer (general / outside-ADGM): broad unscoped search for any topic.
+  // - CSO agents (ADGM-specific): scoped search on approved financial/regulatory sources.
+  // Internal KB / grounded records are injected via the system prompt separately;
+  // Claude is instructed to prefer KB for ADGM-internal facts and use web for the rest.
   let webSearchBlock = '';
   try {
     if (isExplorerQuery) {
       // Broad search — no domain scoping, answers any topic
-      const apiKey = process.env.BRAVE_SEARCH_API_KEY?.trim();
-      const results = apiKey
-        ? await braveSearchBroad(message, 5)
-        : await freeRssSearch(message, 5);
+      const braveKey = process.env.BRAVE_SEARCH_API_KEY?.trim();
+      const results = braveKey
+        ? await braveSearchBroad(message, 6)
+        : await freeRssSearch(message, 6);
       if (results?.length) {
         webSearchBlock = formatSearchResultsBlock(results, message);
         console.log(`[explorerSearch] ${results.length} results for: "${message.slice(0, 60)}"`);
       }
-    } else if (shouldWebSearch(message)) {
+    } else {
+      // CSO query — always search even if shouldWebSearch is false;
+      // scoped to ADGM-relevant financial/regulatory sources
       const results = await smartSearch(message, 5);
       if (results?.length) {
         webSearchBlock = formatSearchResultsBlock(results, message);
-        console.log(`[webSearch] ${results.length} results for: "${message.slice(0, 60)}"`);
+        console.log(`[csoWebSearch] ${results.length} results for: "${message.slice(0, 60)}"`);
       }
     }
   } catch (err) {

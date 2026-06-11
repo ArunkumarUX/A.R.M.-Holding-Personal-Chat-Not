@@ -105,7 +105,12 @@ function uniqueAgents(list: AgentType[]): AgentType[] {
 
 /**
  * Returns true when the user explicitly asks to search the internet,
- * or the question is clearly general knowledge (no ADGM/CSO keywords).
+ * or the question has NO specific ADGM/CSO context.
+ *
+ * KEY RULE: Any question without specific ADGM/CSO/FSRA context → Explorer AI.
+ * Generic words like "regulation", "policy", "compliance", "benchmark" alone do NOT
+ * indicate a CSO query — they also appear in unrelated general knowledge questions.
+ * Only highly specific ADGM/CSO terms route to specialist agents.
  */
 function isExplorerQuery(q: string): boolean {
   // Explicit internet/search intent — always Explorer regardless of other keywords
@@ -113,10 +118,42 @@ function isExplorerQuery(q: string): boolean {
     /\b(check the internet|search the internet|search online|search the web|look (it|this) up online|find (it|this) online|google|look up|search for|find (on|from) the (web|internet)|what does (google|the internet) say)\b/.test(q)
   ) return true;
 
-  // No ADGM/CSO-specific keywords present → Explorer
-  const hasCsoKeywords =
-    /\b(adgm|fsra|falcon economy|abu dhabi global market|chief strategy|cso|briefing|board pack|action register|department kpi|performance review|market snapshot|mubadala|meeting prep|regulat|policy|compliance|stakeholder|market intel|competitor|benchmark|capital flow|financial cent(re|er)|jurisdiction|falcon|difc|gcc mena|sovereign fund)\b/.test(q);
-  return !hasCsoKeywords;
+  // ADGM/CSO-specific entity names — unique to this assistant's domain
+  const hasAdgmEntity =
+    /\b(adgm|fsra|falcon economy|falcon strategy|abu dhabi global market|chief strategy|cso\b|board pack|action register|department kpi|market snapshot|mubadala|difc|gcc.?mena|sovereign fund)\b/.test(q);
+  if (hasAdgmEntity) return false;
+
+  // Generic regulatory/policy terms only count as CSO context when paired with a specific entity
+  const hasCsoRegContext =
+    /\b(adgm|fsra|abu dhabi).{0,40}(regulat|policy|polic|compliance|framework|law)\b/.test(q) ||
+    /\b(regulat|policy|polic|compliance|framework|law).{0,40}(adgm|fsra|abu dhabi)\b/.test(q);
+  if (hasCsoRegContext) return false;
+
+  // Benchmark/comparison only CSO when comparing financial centres or ADGM/FSRA
+  const hasCsoBenchmark =
+    /\b(benchmark|compare|comparison|versus|\bvs\b).{0,50}(adgm|fsra|financial cent(re|er)|difc|jurisdiction)\b/.test(q) ||
+    /\b(adgm|fsra|financial cent(re|er)).{0,50}(benchmark|compare|comparison)\b/.test(q);
+  if (hasCsoBenchmark) return false;
+
+  // Digital/virtual assets only CSO when tied to a regulatory/market context
+  const hasCsoDigitalAssets =
+    /\b(digital asset|virtual asset|tokenisa|stablecoin).{0,40}(regulat|framework|adgm|fsra|uae|gcc|abu dhabi)\b/.test(q) ||
+    /\b(adgm|fsra|uae|gcc|abu dhabi).{0,40}(digital asset|virtual asset|tokenisa|stablecoin)\b/.test(q);
+  if (hasCsoDigitalAssets) return false;
+
+  // Abu Dhabi + financial sector context → CSO (but not Abu Dhabi alone)
+  const hasAbuDhabiFinance =
+    /\babu dhabi\b.{0,60}\b(financial cent(re|er)|economic strategy|market position|capital market|investment attract|financial market|adgm|fsra)\b/.test(q) ||
+    /\b(financial cent(re|er)|economic strategy|market position(ing)?)\b.{0,60}\babu dhabi\b/.test(q);
+  if (hasAbuDhabiFinance) return false;
+
+  // CSO-task patterns — briefing, meeting prep, board brief
+  const hasCsoTask =
+    /\b(brief me|board brief|board pack|premeeting|pre.?meeting|meeting prep|daily briefing|executive briefing)\b/.test(q);
+  if (hasCsoTask) return false;
+
+  // Everything else → Explorer AI
+  return true;
 }
 
 /** Orchestrator routing — CSO Agent Prompt Pack §2 */
