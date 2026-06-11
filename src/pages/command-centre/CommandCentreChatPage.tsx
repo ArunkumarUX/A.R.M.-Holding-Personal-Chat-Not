@@ -26,6 +26,7 @@ import {
   nextUiMessageId,
 } from '../../utils/chatMessages';
 import type { GroundingLevel, Source } from '../../types';
+import { stripAnswerSourceFooter } from '../../utils/sourceHandles';
 
 // Always use Claude — the VITE_USE_CLAUDE_API env var is ignored.
 // (Previously it defaulted to false if unset on Vercel, silently blocking all AI responses.)
@@ -244,13 +245,14 @@ export function CommandCentreChatPage() {
           const grounded = (isConversational || isExplorer)
             ? { sources: [] as Source[], grounding: undefined as GroundingLevel | undefined }
             : resolveAnswerGrounding(streamed, executiveState, intel.sourceDocIds);
+          const cleaned = stripAnswerSourceFooter(streamed);
 
           setMsgs((m) =>
             m.map((x) =>
               x.id === aid && x.role === 'ai'
                 ? {
                     ...x,
-                    text: streamed,
+                    text: cleaned,
                     agents: isConversational ? [] : meta.agents,
                     grounding: grounded.grounding,
                     sources: grounded.sources,
@@ -261,7 +263,7 @@ export function CommandCentreChatPage() {
             ),
           );
           return {
-            text: streamed,
+            text: cleaned,
             agents: isConversational ? [] : meta.agents,
             sources: grounded.sources,
             grounding: grounded.grounding,

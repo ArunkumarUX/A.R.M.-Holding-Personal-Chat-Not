@@ -37,6 +37,7 @@ import { prepareChatTurn } from '../api/prepareChatTurn';
 import { streamClaudeChat } from '../api/claudeChat';
 import { detectChatIntent } from '../utils/chatIntent';
 import { offlineNoticeKind, shouldFallbackToOfflineKb } from '../utils/claudeErrors';
+import { stripAnswerSourceFooter } from '../utils/sourceHandles';
 
 const USE_CLAUDE = true; // always use Claude; env var previously blocked responses on Vercel
 import type {
@@ -525,6 +526,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           const grounded = (isConversational || isExplorer)
             ? { sources: [] as Source[], grounding: undefined as GroundingLevel | undefined }
             : resolveAnswerGrounding(streamed, executiveState, intel.sourceDocIds);
+          const cleaned = stripAnswerSourceFooter(streamed);
           setActiveSources(grounded.sources);
           persistExecutive((s) => ({
             ...s,
@@ -536,7 +538,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                       m.id === placeholderId
                         ? {
                             ...m,
-                            content: streamed,
+                            content: cleaned,
                             agents: isConversational ? [] : turn.routedAgents,
                             grounding: grounded.grounding,
                             sources: grounded.sources,

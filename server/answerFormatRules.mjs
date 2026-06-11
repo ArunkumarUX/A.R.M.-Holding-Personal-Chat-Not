@@ -16,7 +16,7 @@ export const GROUNDING_RULES = `
 3. Judgement under **Strategic interpretation** or **Analysis ([Agent])** — never as bare facts.
 4. If a specific fact is not in sources, note that for that fact only — still answer the user question from all available records.
 5. Market/time-sensitive claims: "as of [date]" from the record.
-6. End chat answers with \`Sources:\` (handles + labels) and \`Grounding: full | partial\`.
+6. Do NOT append trailing \`Sources:\`, \`Grounding:\`, or \`**Sources Used**\` footers — cite handles inline in the answer body only; the UI renders source chips separately.
 7. Confidence = source match only: "High source match", "Limited source coverage", "Requires external validation" — never "90% accurate".
 
 **Geography & ownership**
@@ -58,5 +58,5 @@ ${GROUNDING_RULES}
 - Comparison table for Policy/Strategy benchmarks (max 4–6 rows; no invented scores)
 - 🔴 **Do this:** one concrete next step with date if in action register
 
-**Briefings:** ## / ### headings, tables, Sources + Grounding; no follow-up section at end.
+**Briefings:** ## / ### headings, tables, inline handle citations only; no trailing Sources/Grounding footer; no follow-up section at end.
 `.trim();

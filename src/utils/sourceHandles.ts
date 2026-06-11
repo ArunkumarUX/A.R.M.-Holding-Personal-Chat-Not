@@ -193,6 +193,36 @@ export function extractCitedHandles(text: string): string[] {
   return [...found];
 }
 
+/** Remove redundant trailing Sources/Grounding footers — UI shows source chips separately. */
+export function stripAnswerSourceFooter(text: string): string {
+  if (!text?.trim()) return text ?? '';
+
+  let out = text.replace(
+    /\n\*\*Sources Used\*\*\s*\n(?:(?:[-*•]|\s*\[[A-Z]{2,3}-).*\n?)*/gi,
+    '\n',
+  );
+
+  const lines = out.split('\n');
+  while (lines.length > 0) {
+    const t = lines[lines.length - 1].trim();
+    if (!t) {
+      lines.pop();
+      continue;
+    }
+    if (/^(?:\*\*)?Sources(?:\s+Used)?(?:\*\*)?\s*:/i.test(t)) {
+      lines.pop();
+      continue;
+    }
+    if (/^Grounding\s*:/i.test(t)) {
+      lines.pop();
+      continue;
+    }
+    break;
+  }
+
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd();
+}
+
 export function parseGroundingLevel(text: string): GroundingLevel | null {
   const m = text.match(/Grounding:\s*(full|partial|inferred)/i);
   if (!m) return null;

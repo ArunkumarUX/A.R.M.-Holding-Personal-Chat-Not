@@ -12,6 +12,7 @@ import { ChatAgentRoster } from './ChatAgentRoster';
 import { ChatApiNotice } from '../components/chat/ChatApiNotice';
 import type { OfflineNoticeKind } from '../types';
 import { stripOfflineFallbackBanner } from '../utils/claudeErrors';
+import { stripAnswerSourceFooter } from '../utils/sourceHandles';
 
 export type CcChatAiMsg = {
   id: number;
@@ -52,8 +53,11 @@ export function CcChatAiMessage({
   const isThinking = m.thinking && !m.text?.trim();
   const showRoster = (m.agents?.length ?? 0) > 0;
   const rendered = useMemo(() => {
-    if (m.offlineNotice) return { notice: m.offlineNotice, text: m.text };
-    return stripOfflineFallbackBanner(m.text);
+    if (m.offlineNotice) {
+      return { notice: m.offlineNotice, text: stripAnswerSourceFooter(m.text) };
+    }
+    const legacy = stripOfflineFallbackBanner(m.text);
+    return { ...legacy, text: stripAnswerSourceFooter(legacy.text) };
   }, [m.offlineNotice, m.text]);
 
   return (

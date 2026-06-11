@@ -292,7 +292,7 @@ ${delegation}
 ${specialistBlock}
 ${userQuestionBlock}
 Language: ${ar ? 'Modern Standard Arabic unless the user writes in English.' : 'Clear English for a non-expert reader unless the user writes in Arabic.'}
-${isBriefing ? 'Output only the briefing body.' : 'End with Sources + Grounding lines, then a **Follow-up** section: exactly 2–3 specific action-oriented bullets.'}
+${isBriefing ? 'Output only the briefing body.' : 'End with a **Follow-up** section: exactly 2–3 specific action-oriented bullets. Do NOT add trailing Sources:, Grounding:, or **Sources Used** footers — cite handles inline only; the UI shows source chips separately.'}
 
 ═══════════════════════════════
 GROUNDED SOURCE RECORDS (cite ONLY these handles)
@@ -303,13 +303,9 @@ ${groundedBlock}
 ${ctx?.webSearchBlock ? ctx.webSearchBlock : ''}
 
 SOURCE CITATION FORMAT (mandatory for every response):
-When citing a KB source, always include the real URL from the excerpt header. Format:
+When citing a KB source inline, include the handle and real URL from the excerpt header where helpful. Example:
   [KB-006] Falcon Economy Strategy 2025–2045 | added.gov.ae | /kb/20240923_FalconEconomy-Eng.pdf
-  [KB-008] ADGM Law No. 1547 | adgm.com/rules-and-regulations | /kb/adgm-1547-3267-v3-14.pdf
-At the end of every response, the "Sources Used" section must list each cited handle with its real URL so stakeholders can verify. Example format:
-  - [KB-006] Falcon Economy Strategy 2025–2045 → added.gov.ae (PDF available)
-  - [KB-008] ADGM Law No. 1547 v3.14 → adgm.com/rules-and-regulations (PDF available)
-  - [MKT-...] Market data → Yahoo Finance / CoinGecko (live)
+Do NOT duplicate citations in a trailing Sources / Grounding / Sources Used footer — the app renders source chips below the answer automatically.
 
 DATA INTEGRITY — TIERED ANSWERING (mandatory, in this order):
 

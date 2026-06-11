@@ -2,6 +2,7 @@ import type { ExecutiveState } from '../data/executiveStore';
 import { resolveAnswerGrounding } from '../data/executiveStore';
 import type { ChatMessage, GroundingLevel, OfflineNoticeKind, Source } from '../types';
 import { stripOfflineFallbackBanner } from './claudeErrors';
+import { stripAnswerSourceFooter } from './sourceHandles';
 
 export type UiChatMsg =
   | { id: number; role: 'user'; text: string }
@@ -52,7 +53,7 @@ export function conversationToUiMessages(
     return {
       id: i + 1,
       role: 'ai',
-      text: legacy.text,
+      text: stripAnswerSourceFooter(legacy.text),
       agents: m.agents,
       confidence: m.confidence,
       grounding,
