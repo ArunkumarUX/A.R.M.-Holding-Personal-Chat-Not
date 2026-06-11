@@ -16,6 +16,7 @@ export type ChatStreamContext = {
   metrics?: Record<string, number | null>;
   departmentHeadlines?: string[];
   language?: 'en' | 'ar';
+  userQuestion?: string;
   briefingFormat?: string;
   marketHandle?: string;
   meetingsDetailed?: {

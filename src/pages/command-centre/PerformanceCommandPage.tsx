@@ -11,6 +11,7 @@ import {
   SUGGESTIONS, CANNED, TICKER, MOMENTUM, FLOWS, REGULATORY, KB_CATS, KB_DOCS, DIFFERENTIATION,
 } from '../../data/commandCentreData';
 import { useApp } from '../../context/AppContext';
+import { computeFalconScore } from '../../utils/falconScore';
 import { TREND_ICON } from '../../command-centre/utils';
 import { IntelCard, IntelCardBody, IntelIconBox } from '../../command-centre/CcCard';
 import { CcEscalationPanel } from '../../command-centre/CcEscalationFeed';
@@ -176,6 +177,8 @@ function DeptDetail({ d, lang, onBack }) {
 
 function OrgOverview({ lang, depts }) {
   const ar = lang === 'ar';
+  const { executiveState } = useApp();
+  const falcon = useMemo(() => computeFalconScore(executiveState), [executiveState]);
   const rag = countRagStatuses(depts);
   const total = depts.length;
   const segs = [
@@ -205,11 +208,11 @@ function OrgOverview({ lang, depts }) {
             <div className="eyebrow">{ar ? 'مؤشر الزخم المؤسسي' : 'Organisational momentum index'}</div>
             <div className="perf-org__kpis">
               {[
-                { v: 88, l: ar ? 'الاقتصاد الصقور' : 'Falcon Economy', s: '' },
-                { v: 12, l: ar ? 'ساعات/أسبوع موفّرة' : 'hrs/wk saved', s: '' },
-                { v: 95, l: ar ? 'تغطية الإحاطات' : 'brief coverage', s: '%' },
+                { v: falcon.score, l: ar ? 'الاقتصاد الصقور' : 'Falcon Economy', s: '', t: ar ? falcon.tooltipAr : falcon.tooltip },
+                { v: 12, l: ar ? 'ساعات/أسبوع موفّرة' : 'hrs/wk saved', s: '', t: undefined },
+                { v: 95, l: ar ? 'تغطية الإحاطات' : 'brief coverage', s: '%', t: undefined },
               ].map((m) => (
-                <div key={m.l} className="perf-org__kpi">
+                <div key={m.l} className="perf-org__kpi" title={m.t}>
                   <div className="kpi-num perf-org__kpi-value">
                     <AnimatedNumber value={m.v} suffix={m.s} />
                   </div>

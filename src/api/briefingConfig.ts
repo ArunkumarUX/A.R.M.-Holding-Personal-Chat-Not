@@ -13,22 +13,21 @@ export type BriefingConfig = {
   fallbackQuery: string;
   cannedKey: keyof typeof CANNED | null;
   agents: string[];
-  buildUserMessage: (state: ExecutiveState, ar: boolean) => string;
+  buildUserMessage: (state: ExecutiveState, ar: boolean, userPaste: string) => string;
 };
 
-function formatMeetingTime(iso: string, ar: boolean) {
-  try {
-    return new Date(iso).toLocaleString(ar ? 'ar-AE' : 'en-GB', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Asia/Dubai',
-    });
-  } catch {
-    return iso;
-  }
+function userPasteBlock(userPaste: string, ar: boolean): string {
+  const trimmed = userPaste.trim();
+  if (!trimmed) return '';
+  return ar
+    ? `**المحتوى الذي لصقه المستخدم (حلّله أولاً):**\n---\n${trimmed}\n---\n\n`
+    : `**User-pasted content (analyse this first):**\n---\n${trimmed}\n---\n\n`;
+}
+
+function kbRules(ar: boolean): string {
+  return ar
+    ? 'قاعدة المعرفة: استشهد بمقاطع قاعدة المعرفة المؤسسية والمستندات المرفوعة (أسماء المستندات والمقابض). لا تخترع أرقاماً أو اقتباسات.'
+    : 'Knowledge base: cite institutional KB excerpts and uploaded documents (document names and handles). Do not invent figures or quotes.';
 }
 
 export function pickNextMeeting(state: ExecutiveState): Meeting {
@@ -58,44 +57,28 @@ export const BRIEFING_CONFIGS: Record<BriefingFormatId, BriefingConfig> = {
     fallbackQuery: 'Brief me on my 3pm meeting tomorrow.',
     cannedKey: 'Brief me on my 3pm meeting tomorrow.',
     agents: ['cos', 'relationship', 'strategy'],
-    buildUserMessage: (state, ar) => {
-      const mtg = pickNextMeeting(state);
-      const when = formatMeetingTime(mtg.time, ar);
+    buildUserMessage: (state, ar, userPaste) => {
       return ar
-        ? `أنشئ إحاطة اجتماع تنفيذية قبل الاجتماع التالي.
+        ? `${userPasteBlock(userPaste, ar)}أنشئ **إحاطة ما قبل الاجتماع** من المحتوى الملصق أعلاه.
 
-**الاجتماع (من التقويم):** ${mtg.title}
-**الوقت:** ${when} (توقيت الإمارات)
-**الحضور:** ${mtg.attendees}
-**المكان:** ${mtg.location}
-**حالة التحضير:** ${mtg.prepStatus}
-
-**سجل الإجراءات المفتوحة:**
-${OPEN_ACTIONS(state)}
-
-**لمحة السوق:** GCC ${state.marketSnapshot.gccEquities} · أصول رقمية ${state.marketSnapshot.digitalAssetsWoW} · منافس: ${state.marketSnapshot.competitorNote}
-
-**قاعدة المعرفة (استشهد عند الاقتضاء):**
+**سياق إضافي (إن وُجد في KB):**
 ${DOC_LIST(state)}
 
-اتبع قالب إحاطة ما قبل الاجتماع الإلزامي (الأقسام 1–9) من تعليمات النظام. استند إلى قاعدة المعرفة أولاً، واستخدم نتائج البحث المباشر للحقائق الخارجية.`
-        : `Generate an executive **pre-meeting brief** for my next calendar meeting.
+**إجراءات مفتوحة:** ${OPEN_ACTIONS(state)}
 
-**Meeting (from calendar):** ${mtg.title}
-**When:** ${when} (UAE time)
-**Attendees:** ${mtg.attendees}
-**Location:** ${mtg.location}
-**Prep status:** ${mtg.prepStatus}
+${kbRules(ar)}
 
-**Open action register:**
-${OPEN_ACTIONS(state)}
+اتبع قالب إحاطة ما قبل الاجتماع (الأقسام 1–9). اربط النقاط بالمحتوى الملصق وقاعدة المعرفة.`
+        : `${userPasteBlock(userPaste, ar)}Generate an executive **pre-meeting brief** from the pasted content above.
 
-**Market snapshot:** GCC ${state.marketSnapshot.gccEquities} · digital assets ${state.marketSnapshot.digitalAssetsWoW} · competitor: ${state.marketSnapshot.competitorNote}
-
-**Knowledge base (cite document names when used):**
+**Supplementary context (KB / store):**
 ${DOC_LIST(state)}
 
-Follow the mandatory pre-meeting brief template (sections 1–9: Meeting Snapshot → 30-Second Brief) from the system prompt. Ground in the knowledge base first; use live web results for external facts; label assumptions.`;
+**Open actions:** ${OPEN_ACTIONS(state)}
+
+${kbRules(ar)}
+
+Follow the mandatory pre-meeting brief template (sections 1–9: Meeting Snapshot → 30-Second Brief). Tie every section to the pasted material and KB sources.`;
     },
   },
 
@@ -104,28 +87,28 @@ Follow the mandatory pre-meeting brief template (sections 1–9: Meeting Snapsho
     fallbackQuery: 'What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?',
     cannedKey: 'What strategic decisions did ADGM make in 2024 and how do they track against Falcon Economy priorities?',
     agents: ['cos', 'strategy'],
-    buildUserMessage: (state, ar) => {
+    buildUserMessage: (state, ar, userPaste) => {
       const boardDocs = state.documents
         .filter((d) => /board|falcon|strategic/i.test(d.name))
         .map((d) => `- ${d.name}: ${d.summary}`)
         .join('\n');
       return ar
-        ? `لخّص حزمة مجلس الإدارة إلى قرارات تنفيذية ومحاذاة الاقتصاد الصقور.
+        ? `${userPasteBlock(userPaste, ar)}لخّص **حزمة مجلس الإدارة** من المحتوى الملصق إلى قرارات ومخاطر.
 
-**مستندات ذات صلة:**
+**مستندات KB ذات صلة:**
 ${boardDocs || DOC_LIST(state)}
 
-**مقاييس حية:** ${state.metrics.departmentsOnTrack}/9 إدارات خضراء · ${state.metrics.openActions} إجراءات مفتوحة.
+${kbRules(ar)}
 
-اتبع قالب ملخص حزمة مجلس الإدارة الإلزامي (الأقسام 1–8) من تعليمات النظام. لا تخترع أرقاماً مالية — اكتب "غير متوفر في المصادر" عند غياب البيانات.`
-        : `Produce a **board pack summary** — condense materials to decisions, not narrative.
+اتبع قالب ملخص حزمة مجلس الإدارة (الأقسام 1–8). اكتب "غير متوفر في المصادر" عند غياب البيانات.`
+        : `${userPasteBlock(userPaste, ar)}Produce a **board pack summary** from the pasted materials — decisions and risks, not narrative.
 
-**Relevant knowledge base:**
+**Relevant KB documents:**
 ${boardDocs || DOC_LIST(state)}
 
-**Live context:** ${state.metrics.departmentsOnTrack}/9 departments green · ${state.metrics.openActions} open actions.
+${kbRules(ar)}
 
-Follow the mandatory board pack summary template (sections 1–8: Board Summary → One-Minute Board Brief) from the system prompt. Ground every figure in KB sources; write "Not in available sources" where data is missing.`;
+Follow the board pack template (sections 1–8). Write "Not in available sources" where data is missing.`;
     },
   },
 
@@ -135,25 +118,24 @@ Follow the mandatory board pack summary template (sections 1–8: Board Summary 
       'Stakeholder profile for Singapore MAS delegation Deputy MD from CRM and meeting history.',
     cannedKey: null,
     agents: ['relationship', 'cos'],
-    buildUserMessage: (state, ar) => {
-      const mtg = state.meetings.find((m) => /mas|singapore/i.test(m.title)) ?? pickNextMeeting(state);
+    buildUserMessage: (state, ar, userPaste) => {
       return ar
-        ? `أنشئ **ملف صاحب مصلحة** للاجتماع: ${mtg.title}.
+        ? `${userPasteBlock(userPaste, ar)}أنشئ **ملف صاحب مصلحة** من الملاحظات/CRM الملصقة.
 
-استخدم التقويم والإجراءات المفتوحة. إن لم تتوفر بيانات CRM تفصيلية، استنتج بشكل معقول من سياق ADGM–MAS.
+**KB ذات صلة:** ${DOC_LIST(state, 6)}
+**إجراءات مفتوحة:** ${OPEN_ACTIONS(state)}
 
-**الاجتماع:** ${mtg.title} · ${formatMeetingTime(mtg.time, ar)}
-**الإجراءات ذات الصلة:** ${OPEN_ACTIONS(state)}
+${kbRules(ar)}
 
-اتبع قالب ملف صاحب المصلحة الإلزامي (الأقسام 1–10) من تعليمات النظام. صنّف الاستنتاجات بوضوح كتفسير.`
-        : `Generate a **stakeholder profile** for: ${mtg.title}.
+اتبع قالب ملف صاحب المصلحة (الأقسام 1–10). صنّف الاستنتاجات كتفسير عند الحاجة.`
+        : `${userPasteBlock(userPaste, ar)}Generate a **stakeholder profile** from the pasted notes / CRM context.
 
-Use calendar and action register. If CRM detail is thin, infer reasonably from ADGM–MAS context and label assumptions.
+**Relevant KB:** ${DOC_LIST(state, 6)}
+**Open actions:** ${OPEN_ACTIONS(state)}
 
-**Meeting:** ${mtg.title} · ${formatMeetingTime(mtg.time, ar)}
-**Related actions:** ${OPEN_ACTIONS(state)}
+${kbRules(ar)}
 
-Follow the mandatory stakeholder intelligence template (sections 1–10: Stakeholder Overview → 30-Second Stakeholder Brief) from the system prompt. Label inferences as interpretation; use web results for public context.`;
+Follow the stakeholder template (sections 1–10). Label inferences as interpretation.`;
     },
   },
 
@@ -162,26 +144,22 @@ Follow the mandatory stakeholder intelligence template (sections 1–10: Stakeho
     fallbackQuery: 'Draft an email for me',
     cannedKey: null,
     agents: ['comms'],
-    buildUserMessage: (state, ar) => {
+    buildUserMessage: (state, ar, userPaste) => {
       return ar
-        ? `صِغ **مسودة بريد إلكتروني** جاهزة للإرسال.
+        ? `${userPasteBlock(userPaste, ar)}صِغ **مسودة رد بريد إلكتروني** جاهزة للإرسال على البريد الملصق أعلاه.
 
-**السياق المتاح:** مستندات مرفوعة · سجل الإجراءات · ملاحظات من قاعدة المعرفة
-${DOC_LIST(state, 4)}
+**KB للسياق المؤسسي:** ${DOC_LIST(state, 4)}
 
-**إجراءات مفتوحة:**
-${OPEN_ACTIONS(state)}
+${kbRules(ar)}
 
-أنشئ مسودة احترافية جاهزة للنسخ — بدون أسئلة متابعة. افترض سياقاً معقولاً إذا لزم.`
-        : `Draft a **ready-to-send email**.
+اتبع قالب الرد البريدي (الأقسام 1–5). لا أسئلة متابعة — مسودة جاهزة للنسخ.`
+        : `${userPasteBlock(userPaste, ar)}Draft a **ready-to-send email reply** to the pasted message above.
 
-**Available context:** uploaded documents · action register · knowledge base notes
-${DOC_LIST(state, 4)}
+**KB for institutional context:** ${DOC_LIST(state, 4)}
 
-**Open actions:**
-${OPEN_ACTIONS(state)}
+${kbRules(ar)}
 
-Follow the mandatory email reply template (sections 1–5: Email Understanding → Follow-Up Actions) from the system prompt. No follow-up questions — use sensible assumptions and state them in one line.`;
+Follow the email reply template (sections 1–5). No follow-up questions — output a copy-ready draft.`;
     },
   },
 };
@@ -193,4 +171,10 @@ export function getBriefingConfig(id: string): BriefingConfig {
 export function getCannedBriefingText(config: BriefingConfig): string | null {
   if (!config.cannedKey) return null;
   return CANNED[config.cannedKey] ?? null;
+}
+
+/** Query string for KB retrieval — pasted text + format hints. */
+export function buildBriefingKbQuery(userPaste: string, config: BriefingConfig): string {
+  const paste = userPaste.trim().slice(0, 3000);
+  return [paste, config.fallbackQuery].filter(Boolean).join('\n\n');
 }

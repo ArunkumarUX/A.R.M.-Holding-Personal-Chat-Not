@@ -43,7 +43,7 @@ const MARKET_ROTATION: ExecutiveState['marketSnapshot'][] = [
     gccEquities: '+0.8%',
     digitalAssetsWoW: '+12%',
     competitorNote: 'DIFC fintech sandbox expansion announced',
-    topSector: 'Climate tech (Falcon Economy score 88)',
+    topSector: 'Climate tech (Falcon Economy priority sector)',
   },
   {
     gccEquities: '+1.1%',

@@ -15,7 +15,7 @@ import { countLiveSignals } from '../../data/prioritySignalHelpers';
 import { useApp } from '../../context/AppContext';
 import { PRODUCT_AGENT_NAME, PRODUCT_AGENT_NAME_AR } from '../../config/user';
 import { EXECUTIVE_QUICK_PROMPTS, useGstLive } from '../../utils/gstGreeting';
-import { AgentContextChips } from '../../components/agents/AgentContextChips';
+import { computeFalconScore } from '../../utils/falconScore';
 import { AdgmInfoPanel } from '../../components/brand/AdgmInfoPanel';
 import { IntelCard, IntelCardBody, IntelIconBox } from '../../command-centre/CcCard';
 import { IntelCardSources } from '../../command-centre/IntelCardSources';
@@ -53,6 +53,8 @@ function GreetingHero({ lang, setView }) {
   const ar = lang === 'ar';
   const gst = useGstLive(lang);
   const { greeting: part, dateStr, timeStr, briefingLabel } = gst;
+  const { executiveState } = useApp();
+  const falcon = useMemo(() => computeFalconScore(executiveState), [executiveState]);
   return (
     <div
       className="card rise greeting-hero"
@@ -86,8 +88,12 @@ function GreetingHero({ lang, setView }) {
           </div>
         </div>
         <div className="greeting-hero__stats">
-          {[{ n: 4, l: ar ? 'سير عمل أساسية' : 'core workflows' }, { n: 9, l: ar ? 'إدارات مباشرة' : 'live departments' }, { n: 88, l: ar ? 'الاقتصاد الصقور' : 'Falcon Economy' }].map((s) => (
-            <div key={s.l} style={{ textAlign: 'center' }}>
+          {[
+            { n: 4, l: ar ? 'سير عمل أساسية' : 'core workflows', t: undefined },
+            { n: 9, l: ar ? 'إدارات مباشرة' : 'live departments', t: undefined },
+            { n: falcon.score, l: ar ? 'الاقتصاد الصقور' : 'Falcon Economy', t: ar ? falcon.tooltipAr : falcon.tooltip },
+          ].map((s) => (
+            <div key={s.l} style={{ textAlign: 'center' }} title={s.t}>
               <div className="kpi-num" style={{ fontSize: 38, color: '#fff' }}><AnimatedNumber value={s.n} /></div>
               <div className="eyebrow" style={{ color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>{s.l}</div>
             </div>
@@ -174,7 +180,7 @@ function deriveAiInsight(depts) {
 
 
 export function ExecutiveHomePage() {
-  const { settings, executiveState, startNewChat, contextAgent, setContextAgent } = useApp();
+  const { settings, executiveState, startNewChat } = useApp();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
   const signals = useMemo(() => deriveCommandCentreSignals(executiveState), [executiveState]);
   const liveSignalCount = useMemo(() => countLiveSignals(executiveState), [executiveState]);
@@ -263,13 +269,6 @@ export function ExecutiveHomePage() {
               </div>
             </div>
           </div>
-          <AgentContextChips
-            value={contextAgent}
-            onChange={setContextAgent}
-            ar={ar}
-            variant="dark"
-            className="card-adgm-dark__agents"
-          />
           <div className="card-adgm-dark__prompts">
             {quick.map((q) => (
               <button key={q} type="button" className="card-adgm-dark__chip" onClick={() => onAsk(q)}>

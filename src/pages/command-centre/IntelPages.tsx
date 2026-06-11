@@ -23,11 +23,38 @@ import {
 } from '../../data/commandCentreData';
 import { useApp } from '../../context/AppContext';
 import { generateBriefing } from '../../api/generateBriefing';
-import { getBriefingConfig } from '../../api/briefingConfig';
 import { INTEL_LAYMAN } from '../../data/intelLaymanCopy';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 
+const BRIEF_PASTE_PLACEHOLDERS: Record<string, { en: string; ar: string }> = {
+  premeeting: {
+    en: 'Paste meeting agenda, calendar invite, email trail, or prep notes here…',
+    ar: 'الصق جدول الأعمال أو دعوة الاجتماع أو سلسلة البريد أو ملاحظات التحضير هنا…',
+  },
+  email: {
+    en: 'Paste the email you received — we will draft a reply grounded in the knowledge base…',
+    ar: 'الصق البريد الوارد — سنصوغ رداً مستنداً إلى قاعدة المعرفة…',
+  },
+  boardpack: {
+    en: 'Paste board pack excerpts, decision papers, or financial highlights…',
+    ar: 'الصق مقاطع حزمة المجلس أو أوراق القرارات أو أبرز الأرقام…',
+  },
+  stakeholder: {
+    en: 'Paste stakeholder notes, CRM export, or meeting background…',
+    ar: 'الصق ملاحظات صاحب المصلحة أو تصدير CRM أو خلفية الاجتماع…',
+  },
+};
 
+function IntelSourceNote({ children, className = '', style = undefined }) {
+  return (
+    <div className={`intel-source-note${className ? ` ${className}` : ''}`} style={style}>
+      <p>
+        <CcIcon name="book-open" size={12} className="intel-source-note__icon" aria-hidden />
+        {children}
+      </p>
+    </div>
+  );
+}
 
 function MorningBriefing({ lang }) {
   const { executiveState } = useApp();
@@ -205,14 +232,11 @@ function Benchmark({ lang }) {
             );
           })}
         </div>
-        <div style={{ marginTop: 20, padding: '10px 14px', background: 'var(--surface-2)', borderRadius: 8, borderLeft: '3px solid var(--status-info)' }}>
-          <p style={{ margin: 0, fontSize: 11.5, color: 'var(--ink-3)', lineHeight: 1.6 }}>
-            <CcIcon name="book-open" size={12} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
-            {ar
-              ? 'المصادر: مؤشر المراكز المالية العالمية 37 (Z/Yen, مارس 2024) · مؤشر جاهزية الأعمال (البنك الدولي 2024) · تقرير FATF للإمارات 2024 · تقرير PwC للتشفير 2024 · استراتيجية الاقتصاد الصقور 2025–2045. يُرجى التحقق من التقرير المرجعي الداخلي المعتمد قبل الاستخدام الرسمي الخارجي.'
-              : 'Sources: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready Index 2024 · FATF MER UAE 2024 · PwC Crypto Regulation Report 2024 · Falcon Economy Strategy 2025–2045 · IMF Article IV UAE 2024. Validate against approved internal benchmark report before formal external use.'}
-          </p>
-        </div>
+        <IntelSourceNote style={{ marginTop: 20 }}>
+          {ar
+            ? 'المصادر: مؤشر المراكز المالية العالمية 37 (Z/Yen, مارس 2024) · مؤشر جاهزية الأعمال (البنك الدولي 2024) · تقرير FATF للإمارات 2024 · تقرير PwC للتشفير 2024 · استراتيجية الاقتصاد الصقور 2025–2045. يُرجى التحقق من التقرير المرجعي الداخلي المعتمد قبل الاستخدام الرسمي الخارجي.'
+            : 'Sources: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready Index 2024 · FATF MER UAE 2024 · PwC Crypto Regulation Report 2024 · Falcon Economy Strategy 2025–2045 · IMF Article IV UAE 2024. Validate against approved internal benchmark report before formal external use.'}
+        </IntelSourceNote>
       </IntelCardBody>
     </IntelCard>
   );
@@ -260,14 +284,11 @@ function InvestmentOps({ lang }) {
             </IntelRow>
           ))}
         </IntelRows>
-        <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--surface-2)', borderRadius: 8, borderLeft: '3px solid var(--status-info)' }}>
-          <p style={{ margin: 0, fontSize: 11.5, color: 'var(--ink-3)', lineHeight: 1.6 }}>
-            <CcIcon name="book-open" size={12} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
-            {ar
-              ? 'درجات التوافق مستمدة من استراتيجية الاقتصاد الصقور 2025–2045 (ADDED) وتقرير IMF للإمارات 2024. يُرجى التحقق من أحدث البيانات قبل الاستخدام الرسمي.'
-              : 'Alignment scores derived from Falcon Economy Strategy 2025–2045 (ADDED) and IMF Article IV UAE 2024. Verify against latest data before formal use.'}
-          </p>
-        </div>
+        <IntelSourceNote>
+          {ar
+            ? 'درجات التوافق مستمدة من استراتيجية الاقتصاد الصقور 2025–2045 (ADDED) وتقرير IMF للإمارات 2024. يُرجى التحقق من أحدث البيانات قبل الاستخدام الرسمي.'
+            : 'Alignment scores derived from Falcon Economy Strategy 2025–2045 (ADDED) and IMF Article IV UAE 2024. Verify against latest data before formal use.'}
+        </IntelSourceNote>
       </IntelCardBody>
     </IntelCard>
   );
@@ -319,14 +340,11 @@ function RadarCard({ lang }) {
             <span className="kpi-num muted-3" style={{ fontSize: 11 }}>{avg(bVals)}</span>
           </div>
         </div>
-        <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--surface-2)', borderRadius: 8, borderLeft: '3px solid var(--status-info)' }}>
-          <p style={{ margin: 0, fontSize: 11.5, color: 'var(--ink-3)', lineHeight: 1.6 }}>
-            <CcIcon name="book-open" size={12} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle' }} />
-            {ar
-              ? 'المصادر: مؤشر GFCI 37 (Z/Yen, مارس 2024) · مؤشر البنك الدولي 2024 · استراتيجية الاقتصاد الصقور. يُرجى التحقق قبل الاستخدام الرسمي.'
-              : 'Source: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready 2024 · Falcon Economy Strategy. Validate before formal external use.'}
-          </p>
-        </div>
+        <IntelSourceNote>
+          {ar
+            ? 'المصادر: مؤشر GFCI 37 (Z/Yen, مارس 2024) · مؤشر البنك الدولي 2024 · استراتيجية الاقتصاد الصقور. يُرجى التحقق قبل الاستخدام الرسمي.'
+            : 'Source: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready 2024 · Falcon Economy Strategy. Validate before formal external use.'}
+        </IntelSourceNote>
       </IntelCardBody>
     </IntelCard>
   );
@@ -383,11 +401,11 @@ function CapitalFlowCard({ lang }) {
           </div>
         </div>
         {isLive && (
-          <p style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 8 }}>
+          <IntelSourceNote>
             {ar
               ? 'المصدر: ADX · DFM · S&P 500 · STI · يورو ستوكس 50 · BSE Sensex · Yahoo Finance'
               : 'Source: ADX · DFM · S&P 500 · STI · Euro Stoxx 50 · BSE Sensex · Yahoo Finance'}
-          </p>
+          </IntelSourceNote>
         )}
       </IntelCardBody>
     </IntelCard>
@@ -446,10 +464,12 @@ export function BriefingsPage() {
   const lang = settings.language === 'ar' ? 'ar' : 'en';
   const ar = lang === 'ar';
   const [sel, setSel] = useState('premeeting');
+  const [userInput, setUserInput] = useState('');
   const [out, setOut] = useState(null);
   const [busy, setBusy] = useState(false);
   const [source, setSource] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [pasteExpanded, setPasteExpanded] = useState(true);
   const abortRef = useRef(null);
   const fmt = BRIEF_FORMATS.find((f) => f.id === sel);
 
@@ -459,16 +479,17 @@ export function BriefingsPage() {
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
+    setPasteExpanded(false);
     setBusy(true);
     setOut('');
     setSource(null);
     setCopied(false);
-    const cfg = getBriefingConfig(sel);
     try {
       const result = await generateBriefing({
         formatId: sel,
         state: executiveState,
         language: lang,
+        userPaste: userInput,
         signal: ac.signal,
         onToken: (chunk) => {
           setOut((prev) => (prev ?? '') + chunk);
@@ -485,7 +506,7 @@ export function BriefingsPage() {
     } finally {
       if (!ac.signal.aborted) setBusy(false);
     }
-  }, [sel, executiveState, lang, recordBriefingGenerated]);
+  }, [sel, executiveState, lang, userInput, recordBriefingGenerated]);
 
   const handleCopyBrief = useCallback(() => {
     const text = typeof out === 'string' ? out.trim() : '';
@@ -496,95 +517,220 @@ export function BriefingsPage() {
   }, [copyMessage, out]);
 
   const canCopy = Boolean(out?.trim()) && !busy;
+  const hasOutput = busy || Boolean(out?.trim());
+  const canGenerate = Boolean(userInput.trim()) && !busy;
+  const pasteCollapsed = busy || !pasteExpanded;
+  const pastePreview = userInput.trim().replace(/\s+/g, ' ').slice(0, 88);
+  const pastePlaceholder = BRIEF_PASTE_PLACEHOLDERS[sel]?.[ar ? 'ar' : 'en'] ?? BRIEF_PASTE_PLACEHOLDERS.premeeting.en;
 
   return (
-    <div className="grid mi-stagger cc-page" style={{ gap: 22 }}>
-      <div className="section-head" style={{ marginBottom: -2 }}>
-        <div>
+    <div className="briefings-page cc-page mi-stagger">
+      <header className="briefings-page__header">
+        <div className="briefings-page__header-copy">
           <div className="eyebrow">{ar ? 'مولّد الإحاطات التنفيذية' : 'Executive briefing generator'}</div>
-          <h2 style={{ fontSize: 24, marginTop: 4 }}>{ar ? 'إحاطات جاهزة للقرار في ثوانٍ' : 'Decision-ready briefings in seconds'}</h2>
-          <p className="muted-3" style={{ margin: '6px 0 0', fontSize: 12.5, maxWidth: 520 }}>
+          <h2>{ar ? 'إحاطات جاهزة للقرار في ثوانٍ' : 'Decision-ready briefings in seconds'}</h2>
+          <p className="briefings-page__lede">
             {ar
-              ? 'الصق جدول أعمال أو بريداً أو ارفع مستنداً — لا حاجة لتكامل التقويم.'
-              : 'Paste an agenda, email, or upload a document — no calendar integration required.'}
+              ? 'الصق جدول أعمال أو بريداً أو مستنداً، ثم ولّد إحاطة مستندة إلى قاعدة المعرفة المؤسسية.'
+              : 'Paste an agenda, email, or document excerpt — then generate a briefing grounded in the institutional knowledge base.'}
           </p>
         </div>
-      </div>
-      <div className="grid cc-brief-formats-grid">
-        {BRIEF_FORMATS.map((f) => (
-          <IntelCard
-            key={f.id}
-            interactive
-            selected={sel === f.id}
-            onClick={() => { setSel(f.id); setOut(null); setCopied(false); }}
-            className="cc-brief-format-card"
-            style={{ textAlign: 'start', padding: '14px 16px', color: 'var(--ink)' }}
-          >
-            <div className="brief-format-card__head">
-              <IntelIconBox
-                icon={f.icon}
-                color={sel === f.id ? '#fff' : 'var(--accent)'}
-                background={sel === f.id ? 'var(--petrol-700)' : 'var(--chip-bg)'}
-                size="sm"
-              />
-              <span className="pill ghost" style={{ marginInlineStart: 'auto', height: 22, fontSize: 10.5, flex: 'none' }}>{f.time}</span>
-            </div>
-            <div className="type-title" style={{ fontSize: 14.5 }}>{f.name}</div>
-            <div className="muted-3" style={{ fontSize: 12, marginTop: 3, lineHeight: 1.4 }}>{f.desc}</div>
-          </IntelCard>
-        ))}
-      </div>
+        <div className="briefings-page__meta">
+          <span className="briefings-page__meta-item">
+            <CcIcon name="clock-3" size={15} />
+            {fmt?.time}
+          </span>
+        </div>
+      </header>
 
-      <IntelCard>
-        <IntelCardBody style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', ...(out || busy ? { borderBottom: '1px solid var(--line)' } : {}) }}>
-          <CcIcon name={fmt.icon} size={20} style={{ color: 'var(--accent)' }} />
-          <div className="cc-flex-grow">
-            <div className="type-title">{fmt.name}</div>
-            <div className="muted-3" style={{ fontSize: 12.5 }}>{fmt.desc}</div>
+      <div className="briefings-page__layout">
+        <aside className="briefings-page__picker" aria-label={ar ? 'أنواع الإحاطات' : 'Briefing formats'}>
+          <p className="briefings-page__picker-label">{ar ? 'نوع الإحاطة' : 'Briefing type'}</p>
+          <div className="briefings-page__formats">
+            {BRIEF_FORMATS.map((f) => {
+              const selected = sel === f.id;
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={`briefings-page__format${selected ? ' briefings-page__format--on' : ''}`}
+                  aria-pressed={selected}
+                  onClick={() => {
+                    setSel(f.id);
+                    setOut(null);
+                    setSource(null);
+                    setCopied(false);
+                    setPasteExpanded(true);
+                  }}
+                >
+                  <span className="briefings-page__format-icon" aria-hidden>
+                    <IntelIconBox
+                      icon={f.icon}
+                      color={selected ? '#fff' : 'var(--accent)'}
+                      background={selected ? 'var(--petrol-700)' : 'var(--chip-bg)'}
+                      size="sm"
+                    />
+                  </span>
+                  <span className="briefings-page__format-body">
+                    <span className="briefings-page__format-row">
+                      <span className="briefings-page__format-name">{f.name}</span>
+                      <span className="briefings-page__format-time">{f.time}</span>
+                    </span>
+                    <span className="briefings-page__format-desc">{f.desc}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          {canCopy && (
-            <button
-              type="button"
-              className={`btn btn-ghost${copied ? ' mi-copied' : ''}`}
-              onClick={handleCopyBrief}
-              aria-label={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ الإحاطة' : 'Copy briefing'}
-              title={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ إلى الحافظة' : 'Copy to clipboard'}
-            >
-              <CcIcon name={copied ? 'check' : 'copy'} size={17} />
-              {copied ? (ar ? 'تم النسخ' : 'Copied') : (ar ? 'نسخ' : 'Copy')}
-            </button>
-          )}
-          <button className="btn btn-primary" onClick={generate} disabled={busy}>
-            <CcIcon name={busy ? 'loader' : 'sparkles'} size={17} className={busy ? 'spin' : ''} />{busy ? (ar ? 'يُولّد…' : 'Generating…') : (ar ? 'توليد' : 'Generate')}
-          </button>
-        </IntelCardBody>
-        {(busy || out) && (
-          <IntelCardBody borderTop>
-            {busy && !out ? (
-              <div style={{ display: 'grid', gap: 11 }}>
-                {[0, 1, 2, 3].map((i) => <div key={i} className="shimmer" style={{ height: 12, borderRadius: 6, width: ['90%', '100%', '70%', '85%'][i] }}></div>)}
+        </aside>
+
+        <section className="briefings-page__workspace" aria-live="polite">
+          <IntelCard className="briefings-page__panel">
+            <IntelCardBody className="briefings-page__toolbar">
+              <div className="briefings-page__toolbar-main">
+                <div className="briefings-page__toolbar-icon" aria-hidden>
+                  <CcIcon name={fmt?.icon ?? 'file-text'} size={17} />
+                </div>
+                <div className="briefings-page__toolbar-copy">
+                  <h3 className="briefings-page__panel-title">{fmt?.name}</h3>
+                  <p className="briefings-page__panel-desc">{fmt?.desc}</p>
+                </div>
               </div>
-            ) : (
-              <>
-                {source && !busy && (
-                  <p className="muted-3" style={{ margin: '0 0 10px', fontSize: 11 }}>
-                    {source === 'claude' || source === 'intelligent'
-                      ? ar
-                        ? 'المصدر: المستندات والسياق الذي قدمته'
-                        : 'Source: documents and context you provided'
-                      : ar
-                        ? 'المصدر: كتالوج الإحاطات المعتمد'
-                        : 'Source: approved briefing catalogue'}
-                  </p>
+            </IntelCardBody>
+
+            <div
+              className={`briefings-page__input-wrap${pasteCollapsed ? ' briefings-page__input-wrap--collapsed' : ''}${busy ? ' briefings-page__input-wrap--disabled' : ''}`}
+              aria-busy={busy}
+            >
+              <button
+                type="button"
+                className="briefings-page__input-toggle"
+                onClick={() => !busy && setPasteExpanded((open) => !open)}
+                disabled={busy}
+                aria-expanded={!pasteCollapsed}
+                aria-controls="briefing-paste-body"
+              >
+                <span className="briefings-page__input-toggle-label">
+                  {ar ? 'الصق المحتوى' : 'Paste your content'}
+                </span>
+                {pasteCollapsed && pastePreview && (
+                  <span className="briefings-page__input-toggle-preview" title={userInput.trim()}>
+                    {pastePreview}
+                    {userInput.trim().length > pastePreview.length ? '…' : ''}
+                  </span>
                 )}
-                <div style={{ fontSize: 14.5, color: 'var(--ink-2)' }} className={ar ? 'lang-ar' : ''}>
+                <CcIcon
+                  name={pasteCollapsed ? 'chevron-down' : 'chevron-up'}
+                  size={16}
+                  className="briefings-page__input-toggle-icon"
+                  aria-hidden
+                />
+              </button>
+
+              <div id="briefing-paste-body" className="briefings-page__input-body" hidden={pasteCollapsed}>
+                <label className="briefings-page__input-label sr-only" htmlFor="briefing-paste">
+                  {ar ? 'الصق المحتوى' : 'Paste your content'}
+                </label>
+                <textarea
+                  id="briefing-paste"
+                  className="briefings-page__input"
+                  rows={5}
+                  value={userInput}
+                  onChange={(e) => {
+                    setUserInput(e.target.value);
+                    if (out) setOut(null);
+                    setCopied(false);
+                  }}
+                  placeholder={pastePlaceholder}
+                  disabled={busy}
+                  spellCheck
+                />
+                <IntelSourceNote className="intel-source-note--inset">
+                  {ar
+                    ? 'يُولَّد من المحتوى الملصق + قاعدة المعرفة (Falcon Economy، ADGM، FSRA، وغيرها).'
+                    : 'Generated from your paste + knowledge base (Falcon Economy, ADGM, FSRA, and related docs).'}
+                </IntelSourceNote>
+                <div className="briefings-page__input-actions">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={generate}
+                    disabled={!canGenerate}
+                    title={!userInput.trim() ? (ar ? 'الصق المحتوى أولاً' : 'Paste content first') : undefined}
+                  >
+                    <CcIcon name={busy ? 'loader' : 'sparkles'} size={17} className={busy ? 'spin' : ''} />
+                    {busy ? (ar ? 'يُولّد…' : 'Generating…') : (ar ? 'توليد' : 'Generate')}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {hasOutput && (
+            <div className="briefings-page__output briefings-page__output--filled">
+              <div className="briefings-page__output-head">
+                <div className="briefings-page__output-meta">
+                  {busy ? (
+                    <div className="briefings-page__generating" role="status" aria-live="polite">
+                      <div className="briefings-page__generating-bars" aria-hidden>
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                      <p className="briefings-page__generating-label">
+                        {ar ? 'جارٍ توليد الإحاطة…' : 'Generating your briefing…'}
+                      </p>
+                    </div>
+                  ) : (
+                    source && (
+                      <IntelSourceNote className="intel-source-note--compact">
+                        {source === 'claude' || source === 'intelligent'
+                          ? ar
+                            ? 'المصدر: المحتوى الملصق + قاعدة المعرفة المؤسسية'
+                            : 'Source: pasted content + institutional knowledge base'
+                          : ar
+                            ? 'المصدر: كتالوج الإحاطات المعتمد'
+                            : 'Source: approved briefing catalogue'}
+                      </IntelSourceNote>
+                    )
+                  )}
+                </div>
+                <div className="briefings-page__output-actions">
+                  {canCopy && (
+                    <button
+                      type="button"
+                      className={`btn btn-ghost${copied ? ' mi-copied' : ''}`}
+                      onClick={handleCopyBrief}
+                      aria-label={copied ? (ar ? 'تم النسخ' : 'Copied') : ar ? 'نسخ الإحاطة' : 'Copy briefing'}
+                    >
+                      <CcIcon name={copied ? 'check' : 'copy'} size={17} />
+                      {copied ? (ar ? 'تم النسخ' : 'Copied') : (ar ? 'نسخ' : 'Copy')}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {busy && !out?.trim() && (
+                <div className="briefings-page__skeleton" aria-hidden>
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="shimmer briefings-page__skeleton-line"
+                      style={{ width: ['42%', '88%', '76%', '94%', '68%'][i] }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {out?.trim() && (
+                <div className={`briefings-page__content${ar ? ' lang-ar' : ''}`}>
                   {mdToNodes(out)}
                 </div>
-              </>
+              )}
+            </div>
             )}
-          </IntelCardBody>
-        )}
-      </IntelCard>
+          </IntelCard>
+        </section>
+      </div>
     </div>
   );
 }

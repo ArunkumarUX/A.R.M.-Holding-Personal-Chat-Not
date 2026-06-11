@@ -3,6 +3,7 @@ import type { ExecutiveState } from '../data/executiveStore';
 import { buildChatContext } from './buildChatContext';
 import { streamClaudeChat, type ChatStreamContext } from './claudeChat';
 import {
+  buildBriefingKbQuery,
   getBriefingConfig,
   getCannedBriefingText,
   type BriefingFormatId,
@@ -34,6 +35,8 @@ export type GenerateBriefingOptions = {
   formatId: string;
   state: ExecutiveState;
   language: 'en' | 'ar';
+  /** User-pasted agenda, email, board text, or notes — required for generation */
+  userPaste: string;
   onToken?: (chunk: string) => void;
   signal?: AbortSignal;
 };
@@ -48,15 +51,19 @@ function buildBriefingContext(
   state: ExecutiveState,
   formatId: string,
   language: 'en' | 'ar',
+  userPaste: string,
 ): ChatStreamContext {
   const config = getBriefingConfig(formatId);
+  const ar = language === 'ar';
+  const message = config.buildUserMessage(state, ar, userPaste);
   const base = buildChatContext(state, {
-    query: config.buildUserMessage(state, language === 'ar'),
+    query: buildBriefingKbQuery(userPaste, config),
     routedAgents: config.agents as import('../types').AgentType[],
   });
   return {
     ...base,
     language,
+    userQuestion: message,
     briefingFormat: formatId,
     meetings: state.meetings.map((m) => ({
       title: m.title,
@@ -88,12 +95,17 @@ export async function generateBriefing({
   formatId,
   state,
   language,
+  userPaste,
   onToken,
   signal,
 }: GenerateBriefingOptions): Promise<GenerateBriefingResult> {
   const config = getBriefingConfig(formatId);
   const ar = language === 'ar';
-  const message = config.buildUserMessage(state, ar);
+  const paste = userPaste.trim();
+  if (!paste) {
+    throw new Error(ar ? 'الصق المحتوى أولاً' : 'Paste your content first');
+  }
+  const message = config.buildUserMessage(state, ar, paste);
   const agents = config.agents;
 
   if (USE_CLAUDE) {
@@ -103,7 +115,7 @@ export async function generateBriefing({
         message,
         language,
         history: [],
-        context: buildBriefingContext(state, formatId, language),
+        context: buildBriefingContext(state, formatId, language, paste),
         signal,
         onToken: (chunk) => {
           streamed += chunk;
@@ -119,7 +131,7 @@ export async function generateBriefing({
     }
   }
 
-  const intel = buildIntelligentResponse(config.fallbackQuery, state);
+  const intel = buildIntelligentResponse(buildBriefingKbQuery(paste, config), state);
   const fromIntel = intel.content?.trim();
   if (fromIntel && !fromIntel.startsWith('**Personal AI for')) {
     onToken?.(fromIntel);
