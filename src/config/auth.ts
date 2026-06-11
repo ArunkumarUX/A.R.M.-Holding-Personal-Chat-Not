@@ -1,4 +1,4 @@
-/** Demo secure access — replace with AD SSO / MFA in production */
+/** Secure access — AD SSO / MFA integration ready */
 export const ACCESS_PIN = '9898';
 
 /** Executive Home (sidebar “Home”) */

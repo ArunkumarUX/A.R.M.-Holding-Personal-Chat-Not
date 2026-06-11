@@ -1,6 +1,6 @@
 /** What stakeholders can trust vs prototype scenario data */
 
-export type DataSourceMode = 'live' | 'institutional' | 'prototype' | 'ai';
+export type DataSourceMode = 'live' | 'institutional' | 'pending' | 'ai';
 
 export type DataSourceStatus = {
   id: string;
@@ -62,7 +62,7 @@ export function buildDefaultProvenance(opts?: {
         id: 'bloomberg',
         labelEn: 'Market headlines',
         labelAr: 'عناوين السوق',
-        mode: bloombergLive ? 'live' : 'prototype',
+        mode: bloombergLive ? 'live' : 'pending',
         detailEn: bloombergLive
           ? `Live Bloomberg categories via Apify${opts?.bloombergHeadline ? `: ${opts.bloombergHeadline.slice(0, 80)}` : ''}.`
           : 'Set APIFY_TOKEN on server for live Bloomberg wire; otherwise rotation snapshot only.',
@@ -82,7 +82,7 @@ export function buildDefaultProvenance(opts?: {
         id: 'calendar',
         labelEn: 'Calendar & action register',
         labelAr: 'التقويم وسجل الإجراءات',
-        mode: 'prototype',
+        mode: 'pending',
         detailEn: 'CSO scenario dataset — dates roll with GST refresh; not Microsoft Graph yet.',
         detailAr: 'بيانات سيناريو للكبير مسؤولي الاستراتيجية — تُحدَّث بتوقيت الإمارات.',
       },
@@ -90,7 +90,7 @@ export function buildDefaultProvenance(opts?: {
         id: 'departments',
         labelEn: 'Nine department dashboards',
         labelAr: 'لوحات الإدارات التسع',
-        mode: 'prototype',
+        mode: 'pending',
         detailEn: 'Illustrative ERP-style metrics — ERP integration planned (Week 7); cite as internal records only.',
         detailAr: 'مؤشرات توضيحية للعرض — تُستشهد كسجلات داخلية فقط.',
       },
@@ -98,7 +98,7 @@ export function buildDefaultProvenance(opts?: {
         id: 'ticker',
         labelEn: 'Market ticker & charts',
         labelAr: 'شريط الأسعار والرسوم',
-        mode: 'prototype',
+        mode: 'pending',
         detailEn: 'Scenario indices for layout — not a live exchange feed.',
         detailAr: 'مؤشرات سيناريو للعرض — ليست بيانات بورصة حية.',
       },

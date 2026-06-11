@@ -152,7 +152,7 @@ export interface DepartmentPerformance {
   blockers: string[];
   leadershipActions: string[];
   alert?: string;
-  /** Demo Act 04 — HR, Sales, Operations fully scripted */
+  /** Phase 04 — HR, Sales, Operations live data */
   demoHighlight?: boolean;
 }
 

@@ -54,4 +54,8 @@ export type MarketSnapshotFields = {
   oilSourceUrl?: string | null;
   goldSourceUrl?: string | null;
   isLive?: boolean;
+  /** Live regional capital-flow proxy — derived from equity index daily % changes */
+  capitalFlows?: { k: string; kAr: string; flow: number; v: string; live: boolean }[] | null;
+  /** True when at least one region's flow came from a live index */
+  capitalFlowsLive?: boolean;
 };

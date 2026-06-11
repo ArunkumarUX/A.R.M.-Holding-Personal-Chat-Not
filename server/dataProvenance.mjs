@@ -27,7 +27,7 @@ export function buildSnapshotProvenance(patch, env = process.env) {
         id: 'bloomberg',
         mode: bloombergLive ? 'live' : 'prototype',
         live: bloombergLive,
-        label: bloombergLive ? 'Bloomberg (Apify)' : 'Market snapshot (scenario)',
+        label: bloombergLive ? 'Bloomberg (Apify)' : 'Market snapshot (Yahoo Finance / CoinGecko)',
       },
       {
         id: 'kb',
@@ -39,7 +39,7 @@ export function buildSnapshotProvenance(patch, env = process.env) {
         id: 'calendar',
         mode: 'prototype',
         live: false,
-        label: 'Calendar & actions (GST scenario)',
+        label: 'Calendar & actions (integration pending)',
       },
     ],
   };
@@ -51,8 +51,8 @@ export function buildHealthDataTrust(env = process.env) {
     bloombergApify: Boolean(env.APIFY_TOKEN?.trim()),
     webSearch: Boolean(env.BRAVE_SEARCH_API_KEY?.trim()),
     kbChunks: KB_CHUNK_COUNT,
-    calendarIntegration: 'prototype',
+    calendarIntegration: 'pending',
     marketTicker: 'live',
-    departmentMetrics: 'prototype',
+    departmentMetrics: 'pending-erp',
   };
 }

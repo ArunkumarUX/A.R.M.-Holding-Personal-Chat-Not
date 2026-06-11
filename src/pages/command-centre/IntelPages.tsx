@@ -310,7 +310,12 @@ function RadarCard({ lang }) {
 
 function CapitalFlowCard({ lang }) {
   const ar = lang === 'ar';
-  const leader = [...FLOWS].sort((a, b) => b.flow - a.flow)[0];
+  const { executiveState } = useApp();
+  const liveFlows = executiveState?.marketSnapshot?.capitalFlows;
+  const isLive = executiveState?.marketSnapshot?.capitalFlowsLive ?? false;
+  const regions = (liveFlows && liveFlows.length > 0) ? liveFlows : FLOWS;
+  const leader = [...regions].sort((a, b) => b.flow - a.flow)[0];
+  const asOf = executiveState?.marketSnapshot?.asOf;
   return (
     <IntelCard>
       <IntelCardBody>
@@ -319,18 +324,27 @@ function CapitalFlowCard({ lang }) {
           title={ar ? 'تتجه نحو أبوظبي' : 'Rotating toward Abu Dhabi'}
           laymanInfo={ar ? INTEL_LAYMAN.capitalFlows.ar : INTEL_LAYMAN.capitalFlows.en}
           action={
-            <span className="pill ghost" style={{ height: 24, color: 'var(--ink-3)' }}>
-              <CcIcon name="flask-conical" size={12} />
-              {ar ? 'سيناريو توضيحي' : 'Illustrative scenario'}
-            </span>
+            isLive ? (
+              <span className="pill good" style={{ height: 24 }}>
+                <CcIcon name="satellite-dish" size={12} />
+                {ar ? 'مباشر · Yahoo Finance' : 'Live · Yahoo Finance'}
+              </span>
+            ) : (
+              <span className="pill ghost" style={{ height: 24, color: 'var(--ink-3)' }}>
+                <CcIcon name="loader" size={12} />
+                {ar ? 'في انتظار التحديث' : 'Awaiting refresh'}
+              </span>
+            )
           }
           style={{ marginBottom: 6 }}
         />
         <p className="mi-intel-viz__caption">
-          {ar ? 'صافي التدفق حسب المصدر · 24 ساعة' : 'Net inflow by source · last 24h'}
+          {isLive
+            ? (ar ? `تغيّر مؤشر الأسهم اليومي · ${asOf ?? ''}` : `Equity index daily % change · ${asOf ?? ''}`)
+            : (ar ? 'في انتظار بيانات المؤشر المباشرة' : 'Awaiting live index data')}
         </p>
         <div className="intel-viz-chart">
-          <CapitalFlow regions={FLOWS} lang={lang} />
+          <CapitalFlow regions={regions} lang={lang} />
         </div>
         <div className="mi-intel-viz__legend">
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -344,6 +358,13 @@ function CapitalFlowCard({ lang }) {
             <span className="kpi-num muted-3" style={{ fontSize: 11 }}>ADGM</span>
           </div>
         </div>
+        {isLive && (
+          <p style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 8 }}>
+            {ar
+              ? 'المصدر: ADX · DFM · S&P 500 · STI · يورو ستوكس 50 · BSE Sensex · Yahoo Finance'
+              : 'Source: ADX · DFM · S&P 500 · STI · Euro Stoxx 50 · BSE Sensex · Yahoo Finance'}
+          </p>
+        )}
       </IntelCardBody>
     </IntelCard>
   );

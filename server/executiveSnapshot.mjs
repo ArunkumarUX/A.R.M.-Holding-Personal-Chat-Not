@@ -5,7 +5,7 @@
  */
 
 import { fetchBloombergCategoryNews } from './apifyBloomberg.mjs';
-import { fetchLiveMarketTicker } from './liveMarketQuotes.mjs';
+import { fetchLiveMarketTicker, fetchLiveCapitalFlows } from './liveMarketQuotes.mjs';
 import { fetchLiveMarketIntel } from './liveMarketIntel.mjs';
 import { fetchAllNewsFeeds, filterGccRelevant, getNewsByTag } from './liveNewsFeeds.mjs';
 
@@ -150,13 +150,15 @@ export async function buildExecutiveSnapshotPatch(cycle) {
   let liveTicker = null;
   let liveMarketIntel = null;
   let liveNewsItems = [];
+  let liveCapitalFlows = null;
 
   // Fetch all data sources in parallel
-  const [bloombergR, tickerR, marketIntelR, newsR] = await Promise.allSettled([
+  const [bloombergR, tickerR, marketIntelR, newsR, capitalFlowsR] = await Promise.allSettled([
     fetchBloombergCategoryNews(),
     fetchLiveMarketTicker(),
     fetchLiveMarketIntel(),
     fetchAllNewsFeeds(),
+    fetchLiveCapitalFlows(),
   ]);
 
   if (bloombergR.status === 'fulfilled') bloomberg = bloombergR.value;
@@ -170,6 +172,9 @@ export async function buildExecutiveSnapshotPatch(cycle) {
 
   if (newsR.status === 'fulfilled') liveNewsItems = newsR.value;
   else console.warn('[executiveSnapshot] Live news feeds skipped:', newsR.reason?.message);
+
+  if (capitalFlowsR.status === 'fulfilled') liveCapitalFlows = capitalFlowsR.value;
+  else console.warn('[executiveSnapshot] Capital flows skipped:', capitalFlowsR.reason?.message);
 
   // Build market snapshot — prefer live data, fall back to rotation
   const fallback = MARKET_ROTATION[dayIdx];
@@ -251,6 +256,8 @@ export async function buildExecutiveSnapshotPatch(cycle) {
 
     asOf: asOfLabel,
     isLive: gccLive || digitalLive,
+    capitalFlows: liveCapitalFlows ?? null,
+    capitalFlowsLive: Boolean(liveCapitalFlows?.some((r) => r.live)),
   };
 
   // Build news feed groups for signal cards

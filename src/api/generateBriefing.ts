@@ -77,7 +77,7 @@ function buildBriefingContext(
   };
 }
 
-function resolveDemoText(config: ReturnType<typeof getBriefingConfig>): string {
+function resolveScenarioText(config: ReturnType<typeof getBriefingConfig>): string {
   const canned = getCannedBriefingText(config);
   if (canned) return canned;
   if (config.id === 'stakeholder') return STAKEHOLDER_CANNED;
@@ -132,7 +132,7 @@ export async function generateBriefing({
     };
   }
 
-  const canned = resolveDemoText(config);
+  const canned = resolveScenarioText(config);
   onToken?.(canned);
   return { text: canned, source: 'canned', agents };
 }

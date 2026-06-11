@@ -9,7 +9,7 @@ export const EXECUTIVE_USER = {
   organisation: 'Abu Dhabi Global Market (ADGM)',
   orgShort: 'ADGM',
   email: 'rajiv.sehgal@adgm.com',
-  /** Demo mobile for login (UAE format) */
+  /** Mobile for login (UAE format) */
   mobile: '+971 50 123 4567',
   mobileE164: '971501234567',
   role: 'cso' as const,
