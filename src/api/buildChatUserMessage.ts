@@ -14,20 +14,9 @@ export function buildChatUserMessage(
   const firstName = ctx.executiveFirstName ?? 'Rajiv';
 
   if (ctx.conversationalMode === 'greeting') {
-    const gstPhrase = ctx.gstGreeting ?? 'Good morning';
-    const gstClock = ctx.gstTimeLabel ?? 'GST';
-    return `CONVERSATIONAL CHECK-IN — Chief of Staff AI leads this turn.
-
-USER MESSAGE:
-"${question}"
-
-Instructions:
-- Greet ${firstName} warmly by first name using the correct time-of-day for Abu Dhabi (GST: ${gstClock}): e.g. "${gstPhrase}, ${firstName}" — not a stale greeting from another timezone.
-- Share what's happened today from calendar, action register, and market snapshot — cite source handles.
-- Tone: personal executive assistant, not a product tour. ~100–140 words max.
-- Do NOT list sample prompts or capabilities unless asked.
-- End with ONE natural offer: "Would you like a brief on your next meeting?" or similar.
-${historyLength > 0 ? '- This chat already has history — do not repeat an full intro; acknowledge you are continuing the conversation.' : ''}`;
+    // System prompt already forces the exact single-sentence reply.
+    // Pass just the raw message so the system prompt is not overridden.
+    return question;
   }
 
   if (ctx.conversationalMode === 'thanks') {
@@ -41,6 +30,13 @@ Reply briefly and warmly to ${firstName}. Offer to continue with context from th
   const delegation = ctx.agentDelegation ?? [];
   const primary = delegation[0];
   const supporting = delegation.slice(1);
+
+  // Explorer AI: pass raw question — Explorer system prompt handles everything.
+  // Adding CSO delegation instructions here would override the Explorer prompt
+  // and produce executive-format answers for general knowledge / web search queries.
+  if (primary?.id === 'explorer') {
+    return question;
+  }
 
   const agentList =
     delegation.length > 0
