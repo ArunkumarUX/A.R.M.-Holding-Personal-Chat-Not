@@ -1,55 +1,55 @@
 /** A.R.M. Holding Command Centre — portfolio mock data */
 
 
-// ---------- Home signal cards ----------
+// ---------- Home signal cards — updated 25 Jun 2026 ----------
 export const SIGNALS = [
   {
-    id: 'market', icon: 'trending-up', tone: 'info', label: 'Market Movements',
-    headline: 'Dubai real estate transactions up 4.2% overnight',
-    body: 'Capital flows tilting toward premium residential and hospitality assets. UAE 10Y yields eased 6bps.',
-    metric: '+4.2%', metricLabel: 'Dubai RE 24h', spark: [38,42,40,46,44,52,49,58,55,62],
-    ar: { label: 'تحركات السوق', headline: 'معاملات العقارات في دبي ترتفع 4.2٪ بين عشية وضحاها',
-      body: 'تتجه تدفقات رأس المال نحو الأصول السكنية والضيافية المتميزة.', metricLabel: 'عقارات دبي 24س' }
+    id: 'market', icon: 'trending-up', tone: 'warn', label: 'Market Movements',
+    headline: 'Dubai May sales fell 19% vs April after record Q1',
+    body: 'Q1 2026 hit AED 252B (+31% YoY) but May transactions dipped 19% month-on-month. Off-plan remains strong at 30,000 deals / AED 73.4B in Q1. Sentiment improving post US-Iran agreement.',
+    metric: 'AED 252B', metricLabel: 'Q1 2026 total', spark: [62,70,78,85,90,96,100,105,88,82],
+    ar: { label: 'تحركات السوق', headline: 'مبيعات دبي في مايو تراجعت 19٪ بعد ربع أول قياسي',
+      body: 'بلغت المعاملات في الربع الأول 252 مليار درهم (+31٪ سنوياً)، لكن مايو شهد تراجعاً 19٪. العقارات على الخارطة لا تزال قوية.', metricLabel: 'إجمالي الربع الأول 2026' }
   },
   {
     id: 'competitor', icon: 'crosshair', tone: 'warn', label: 'Competitor Activity',
-    headline: 'Major developer launches design-led waterfront community',
-    body: 'A competing Dubai developer announced a curated lifestyle district. Recommend accelerating HUNA\'s next launch narrative.',
-    metric: '3', metricLabel: 'moves to watch', spark: [50,48,52,49,55,53,60,58,64,67],
-    ar: { label: 'نشاط المنافسين', headline: 'مطور رئيسي يطلق مجتمعاً مائيًا بتصميم رائد',
-      body: 'أعلن مطور دبي منافس عن حي نمط حياة منسق. يُوصى بتسريع سردية إطلاق HUNA التالي.', metricLabel: 'تحركات للمتابعة' }
+    headline: 'Design-led waterfront launches intensifying — HUNA positioning at stake',
+    body: 'Multiple Dubai developers are launching curated lifestyle districts. Jebel Ali Racecourse masterplan (ARM + BIG) must accelerate narrative. HUNA launch sign-off overdue.',
+    metric: '5km²', metricLabel: 'Jebel Ali site', spark: [40,44,48,52,55,58,62,65,68,72],
+    ar: { label: 'نشاط المنافسين', headline: 'إطلاقات الواجهة البحرية تتصاعد — تموضع HUNA على المحك',
+      body: 'مطورون متعددون يطلقون أحياء نمط حياة منسقة. مشروع ميدان جبل علي يحتاج تسريع السردية.', metricLabel: 'موقع جبل علي' }
   },
   {
     id: 'investment', icon: 'sparkles', tone: 'good', label: 'Investment Opportunities',
-    headline: 'Hospitality recovery flagged — portfolio fit 88',
-    body: 'Dubai occupancy and RevPAR climbing. Strong alignment with HUNA and DREC hospitality assets.',
-    metric: '88', metricLabel: 'Portfolio alignment', spark: [30,34,40,38,46,52,60,66,74,82],
-    ar: { label: 'فرص الاستثمار', headline: 'تعافي الضيافة — توافق المحفظة 88',
-      body: 'ارتفاع الإشغال وRevPAR في دبي. توافق قوي مع أصول HUNA وDREC.', metricLabel: 'توافق المحفظة' }
+    headline: 'Jebel Ali Racecourse — ground-break imminent, WSP leading masterplan',
+    body: 'ARM Holding + BIG 5 sq km development: 1.5 sq km central park, Dubai\'s first 10-minute city. WSP appointed Jan 2026 for detailed masterplan. Construction expected to start 2026. Milestone tracking needed.',
+    metric: '5km²', metricLabel: 'Jebel Ali site', spark: [20,28,36,44,52,60,68,76,84,92],
+    ar: { label: 'فرص الاستثمار', headline: 'ميدان جبل علي — البدء في البناء وشيك، WSP تقود المخطط الرئيسي',
+      body: 'مشروع 5 كم² بشراكة BIG: حديقة مركزية 1.5 كم²، أول مدينة 10 دقائق في دبي. البناء يبدأ 2026.', metricLabel: 'موقع جبل علي' }
   },
   {
     id: 'performance', icon: 'activity', tone: 'risk', label: 'Internal Performance Signals',
-    headline: 'HR flagging attrition risk — 15.8%',
-    body: 'Attrition crossed the 15% threshold; 2 critical roles unfilled beyond 8 weeks. Escalated for CEO review.',
+    headline: 'HR attrition at 15.8% — 2 critical roles unfilled 8+ weeks',
+    body: 'Attrition crossed the 15% threshold concentrated in property management. Head of Leasing Operations unfilled 9 weeks. Retention package approval and executive search escalation pending CEO decision.',
     metric: '15.8%', metricLabel: 'attrition rate', spark: [10,11,12,12,13,14,14,15,15,16], deptLink: 'hr',
-    ar: { label: 'مؤشرات الأداء الداخلي', headline: 'الموارد البشرية تشير إلى مخاطر دوران الموظفين — 15.8٪',
-      body: 'تجاوز معدل الدوران عتبة 15٪؛ وظيفتان حرجتان شاغرتان لأكثر من 8 أسابيع.', metricLabel: 'معدل الدوران' }
+    ar: { label: 'مؤشرات الأداء الداخلي', headline: 'معدل الدوران 15.8٪ — وظيفتان حرجتان شاغرتان أكثر من 8 أسابيع',
+      body: 'تجاوز معدل الدوران عتبة 15٪ في فرق إدارة العقارات. رئيس عمليات التأجير شاغر 9 أسابيع.', metricLabel: 'معدل الدوران' }
   },
   {
     id: 'regulatory', icon: 'gavel', tone: 'warn', label: 'Regulatory Shifts',
-    headline: 'RERA updates rental index guidance',
-    body: '3 high-relevance regulatory moves overnight across RERA, DFSA and CBUAE. Compliance filing due in 11 days.',
-    metric: '3', metricLabel: 'high-relevance', spark: [2,3,2,4,3,5,4,6,5,7], link: 'regulatory',
-    ar: { label: 'تحولات تنظيمية', headline: 'RERA تحدّث إرشادات مؤشر الإيجار',
-      body: '3 تحركات تنظيمية عالية الصلة عبر RERA وDFSA وCBUAE.', metricLabel: 'عالية الصلة' }
+    headline: 'RERA Smart Rental Index 2026 live — Ejari compliance mandatory',
+    body: 'New 2026 RERA rules in effect: Ejari registration within 30 days, 90-day notice for rent adjustments, Smart Rental Index governs all increases (0–20% bands). Directly impacts DREC\'s 3,200+ unit portfolio. Compliance review required.',
+    metric: '3,200+', metricLabel: 'DREC units affected', spark: [2,3,3,4,4,5,5,6,6,7], link: 'regulatory',
+    ar: { label: 'تحولات تنظيمية', headline: 'مؤشر الإيجار الذكي 2026 ساري — الامتثال لـ Ejari إلزامي',
+      body: 'قواعد RERA الجديدة: تسجيل Ejari خلال 30 يوماً، إشعار 90 يوماً لتعديلات الإيجار. يؤثر على 3,200+ وحدة لدى DREC.', metricLabel: 'وحدات DREC المتأثرة' }
   },
   {
     id: 'followup', icon: 'list-checks', tone: 'info', label: 'Follow-Up Actions',
-    headline: '4 actions awaiting your decision',
-    body: 'DREC board brief, HUNA launch sign-off, Q2 shareholder note, and 1 at-risk leasing deal need attention.',
-    metric: '4', metricLabel: 'open items', spark: [6,5,5,4,5,4,3,4,4,4],
-    ar: { label: 'إجراءات المتابعة', headline: '4 إجراءات بانتظار قرارك',
-      body: 'إحاطة مجلس DREC، اعتماد إطلاق HUNA، مذكرة الربع الثاني، وصفقة إيجار معرّضة للخطر.', metricLabel: 'بنود مفتوحة' }
+    headline: '5 actions awaiting your decision',
+    body: 'Jebel Ali milestone review, We Emerge Stronger CEO speaking slot (30 days left), HUNA launch sign-off, HR retention packages, DREC RERA compliance sign-off.',
+    metric: '5', metricLabel: 'open items', spark: [6,5,5,4,5,4,3,4,5,5],
+    ar: { label: 'إجراءات المتابعة', headline: '5 إجراءات بانتظار قرارك',
+      body: 'مراجعة مراحل جبل علي، فرصة التحدث في We Emerge Stronger (30 يوماً متبقية)، اعتماد إطلاق HUNA، حزم الاحتفاظ، امتثال DREC لـ RERA.', metricLabel: 'بنود مفتوحة' }
   },
 ];
 
@@ -309,15 +309,16 @@ export const INTEGRATIONS = [
 ];
 
 export const TICKER = [
-  { k: 'ADX General', v: '9,742.6', c: +0.84 },
   { k: 'DFM', v: '5,318.2', c: +0.41 },
-  { k: 'Brent', v: '$82.14', c: -0.62 },
-  { k: 'Gold', v: '$2,418', c: +0.93 },
+  { k: 'ADX', v: '9,742.6', c: +0.84 },
+  { k: 'Emaar', v: 'AED 8.42', c: +1.8 },
+  { k: 'Damac', v: 'AED 1.86', c: -0.5 },
+  { k: 'DREC Occ.', v: '94.2%', c: +0.4 },
+  { k: 'HIVE Occ.', v: '91%', c: +1.2 },
+  { k: 'HUNA Pipe.', v: 'AED 124M', c: +12 },
+  { k: 'RERA Index', v: '+4.2%', c: +0.3 },
+  { k: 'Jebel Ali', v: 'WSP · 2026', c: 0 },
   { k: 'USD/AED', v: '3.6725', c: 0.0 },
-  { k: 'BTC', v: '$71,240', c: +2.18 },
-  { k: 'MSCI EM', v: '1,094.7', c: +0.57 },
-  { k: 'UAE 10Y', v: '4.18%', c: -0.06 },
-  { k: 'Sukuk Idx', v: '142.8', c: +0.22 },
 ];
 
 // ---------- Organisational momentum (index) ----------

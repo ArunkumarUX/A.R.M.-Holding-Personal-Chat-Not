@@ -17,7 +17,11 @@ function extractJson(text) {
 }
 
 async function claudeJson(userPrompt, maxTokens = 4096) {
-  const { apiKey, model } = getAnthropicConfig();
+  const { apiKey } = getAnthropicConfig();
+  const model =
+    process.env.PRESENTATION_ANTHROPIC_MODEL ||
+    process.env.SLIDEAI_ANTHROPIC_MODEL ||
+    'claude-opus-4-8';
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -73,20 +77,56 @@ function demoOutline(prompt) {
   const topic = (prompt || 'A.R.M. Holding strategy update').slice(0, 80);
   return {
     title: topic,
-    theme: 'adgm-executive',
+    theme: 'arm-executive',
     estimatedSlides: 10,
-    storyline: 'Situation → insights → recommendation → roadmap',
+    storyline: 'SCQA — Situation → Complication → Question → Answer (Pyramid Principle)',
     outline: [
-      { type: 'title', title: topic, summary: 'Board-ready opening' },
-      { type: 'executive-summary', title: 'Executive summary', summary: '3 decisions for the CSO' },
-      { type: 'context-problem', title: 'Context & stakes', summary: 'Why now for A.R.M. Holding' },
-      { type: 'key-insights', title: 'Key insights', summary: 'GCC and regulatory signals' },
-      { type: 'strategy-recommendation', title: 'Strategic recommendation', summary: 'One clear path' },
-      { type: 'framework-model', title: 'Decision framework', summary: 'MECE options' },
-      { type: 'data-metrics', title: 'Metrics that matter', summary: 'D33 alignment & licence KPIs' },
-      { type: 'visual-infographic', title: 'Market snapshot', summary: 'Visual competitive lens' },
-      { type: 'action-roadmap', title: '90-day roadmap', summary: 'Owners and dates' },
-      { type: 'conclusion-next-steps', title: 'Next steps', summary: 'Ask of leadership' },
+      { type: 'title', title: topic, summary: 'Board-ready opening — We Emerge Stronger' },
+      {
+        type: 'executive-summary',
+        title: 'Approve [recommendation] — three decisions unlock AED [X]M value by [date]',
+        summary: 'Answer upfront — Pyramid Principle',
+      },
+      {
+        type: 'context-problem',
+        title: 'Portfolio context sets the stakes — DREC, HUNA, and HIVE face [complication]',
+        summary: 'Situation + complication',
+      },
+      {
+        type: 'key-insights',
+        title: 'Dubai market signals confirm [insight] — window closes in [N] months',
+        summary: 'Evidence-led insights',
+      },
+      {
+        type: 'data-metrics',
+        title: 'Market sizing supports AED [X]B addressable pool in [segment]',
+        summary: 'Table exhibit + insightPanel',
+      },
+      {
+        type: 'framework-model',
+        title: 'Strategic options score highest on [criterion] — Option [A] leads on IRR and risk',
+        summary: 'Competitive benchmark / options matrix',
+      },
+      {
+        type: 'strategy-recommendation',
+        title: 'Base case delivers break-even at month [N] with 22% IRR under disciplined phasing',
+        summary: '3-scenario financial model',
+      },
+      {
+        type: 'visual-infographic',
+        title: 'Top risks are manageable — governance controls reduce severity on [risk 1] and [risk 2]',
+        summary: 'Risk register',
+      },
+      {
+        type: 'action-roadmap',
+        title: '12-month roadmap gates capital at months 6, 12, and 18 — no commitment without KPI proof',
+        summary: 'Timeline with decision gates',
+      },
+      {
+        type: 'conclusion-next-steps',
+        title: 'CEO must approve [3 items] today to protect first-mover advantage',
+        summary: 'Decisions required',
+      },
     ],
   };
 }

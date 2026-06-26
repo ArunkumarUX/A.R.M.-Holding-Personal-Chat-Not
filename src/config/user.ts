@@ -2,6 +2,8 @@
 export const EXECUTIVE_USER = {
   firstName: 'Mohammad',
   fullName: 'H.E. Mohammad Saeed Al Shehhi',
+  /** Compact label for sidebar and tight UI slots */
+  shortName: 'Mohammad Al Shehhi',
   initials: 'MS',
   profileImage: '/images/executive-profile.png',
   title: 'Chief Executive Officer',

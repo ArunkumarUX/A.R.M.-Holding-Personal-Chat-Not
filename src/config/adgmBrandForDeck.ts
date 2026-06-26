@@ -40,15 +40,15 @@ export const ADGM_PPT_FONTS = {
   arabic: 'Madani Arabic',
 } as const;
 
-export const ADGM_PPT_FOOTER = `ADGM · ${ADGM_BRAND.tagline} · Confidential`;
+export const ADGM_PPT_FOOTER = `A.R.M. Holding · ${ADGM_BRAND.tagline} · Confidential`;
 
 export const ADGM_PPT_LOGO_LABEL = ADGM_BRAND.logoAlt;
 
 /** Mandatory brandCheck items — always merge into generated decks */
 export const ADGM_DEFAULT_BRAND_CHECK = [
-  `ADGM Brand Book ${ADGM_BRAND.version}: Clearsky ${ADGM_BRAND.primary.clearsky} + navy ${ADGM_BRAND.navy.DEFAULT}`,
+  `A.R.M. Holding Executive Standard: Clearsky ${ADGM_BRAND.primary.clearsky} + navy ${ADGM_BRAND.navy.DEFAULT}`,
   `Typography: Gilroy display / Aptos body · 16:9 widescreen`,
-  `Naming: "ADGM" only on slides (not spelled-out legal name in marketing style)`,
+  `Naming: "A.R.M. Holding" on title/close; portfolio companies (DREC, HUNA, HIVE, Capri LLC) on relevant slides`,
   `Surfaces: white canvas, mint ${ADGM_BRAND.secondary.mint} or cyan ${ADGM_BRAND.primary.cyan} accents only`,
   `Tagline "${ADGM_BRAND.tagline}" on title or closing slide where appropriate`,
 ] as const;
@@ -82,16 +82,16 @@ export function adgmDeckCssVars(): Record<string, string> {
   };
 }
 
-/** System-prompt block — keep in sync with server/adgmBrandGuidelines.mjs */
+/** System-prompt block — A.R.M. Holding executive deck standard */
 export const ADGM_PPT_BRAND_PROMPT = `
-ADGM Brand Book 2025 (MANDATORY — always apply):
-- Tagline: "${ADGM_BRAND.tagline}" · Short name: ADGM only on slides
+A.R.M. Holding Executive Deck Standard (MANDATORY — always apply):
+- Tagline: "${ADGM_BRAND.tagline}" · Brand: A.R.M. Holding · Portfolio: DREC, HUNA, HIVE, Capri LLC
 - Primary: Clearsky ${ADGM_BRAND.primary.clearsky}, Slate ${ADGM_BRAND.primary.slate}, Cyan ${ADGM_BRAND.primary.cyan}
 - Secondary: Royal ${ADGM_BRAND.secondary.royal}, Mint ${ADGM_BRAND.secondary.mint}, Sand ${ADGM_BRAND.secondary.sand}
 - Navy headers/text: ${ADGM_BRAND.navy.DEFAULT}, mid ${ADGM_BRAND.navy.mid}, deep ${ADGM_BRAND.navy.deep}
 - Typography: Gilroy (display/headlines), Aptos (body), Madani Arabic for Arabic content
 - Layout: 16:9 widescreen, white surfaces, Clearsky for CTAs/highlights only (not full-slide fills except title hero)
 - Footer: "${ADGM_PPT_FOOTER}"
-- brandCheck[] MUST include compliance with Brand Book 2025 colours and typography
-- Do NOT use off-brand purples, generic blues, or non-ADGM gradients
+- Every slide must be specific to A.R.M. Holding, its portfolio companies, Dubai real estate context, or the user's topic
+- Do NOT use generic financial centre, ADGM, or FSRA content unless explicitly requested
 `.trim();

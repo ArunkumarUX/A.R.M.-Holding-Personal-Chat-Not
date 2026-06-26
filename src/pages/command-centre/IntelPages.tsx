@@ -130,7 +130,7 @@ function MorningBriefing({ lang }) {
         title={ar ? 'إحاطة الصباح' : 'Morning briefing'}
         subtitle={ar
           ? ('يُحدَث 08:00 و 22:00 بتوقيت الإمارات' + (m?.asOf ? ' · ' + m.asOf.slice(0, 10) : ''))
-          : ('Refreshed 08:00 & 22:00 GST · GCC, capital flows, fintech, digital assets' + (m?.asOf ? ' · ' + m.asOf.slice(0, 10) : ''))}
+          : ('Refreshed 08:00 & 22:00 GST · Dubai property · developer watch · RERA · portfolio' + (m?.asOf ? ' · ' + m.asOf.slice(0, 10) : ''))}
         badge={
           isLive ? (
             <span className="pill" style={{ background: 'rgba(255,255,255,0.14)', color: '#fff', height: 26 }}>
@@ -234,8 +234,8 @@ function Benchmark({ lang }) {
         </div>
         <IntelSourceNote style={{ marginTop: 20 }}>
           {ar
-            ? 'المصادر: مؤشر المراكز المالية العالمية 37 (Z/Yen, مارس 2024) · مؤشر جاهزية الأعمال (البنك الدولي 2024) · تقرير FATF للإمارات 2024 · تقرير PwC للتشفير 2024 · استراتيجية الاقتصاد الصقور 2025–2045. يُرجى التحقق من التقرير المرجعي الداخلي المعتمد قبل الاستخدام الرسمي الخارجي.'
-            : 'Sources: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready Index 2024 · FATF MER UAE 2024 · PwC Crypto Regulation Report 2024 · Portfolio alignment Strategy 2025–2045 · IMF Article IV UAE 2024. Validate against approved internal benchmark report before formal external use.'}
+            ? 'المصادر: مراجعة محفظة DREC Q1 2026 · استراتيجية تطوير HUNA 2026 · عمليات HIVE 2026 · CBRE دبي Q1 2026 · إطار امتثال RERA · A.R.M. Holding HR Q1 2026. تحقق من التقرير المرجعي الداخلي المعتمد قبل الاستخدام الرسمي.'
+            : 'Sources: DREC Portfolio Review Q1 2026 · HUNA Development Strategy 2026 · HIVE Operations 2026 · CBRE Dubai Market Q1 2026 · ARM RERA Compliance Framework · HR Quarterly Review Q1 2026. Validate against approved internal benchmark before formal external use.'}
         </IntelSourceNote>
       </IntelCardBody>
     </IntelCard>
@@ -245,15 +245,15 @@ function Benchmark({ lang }) {
 function InvestmentOps({ lang }) {
   const ar = lang === 'ar';
   const ops = ar ? [
-    { t: 'البنية التحتية للذكاء والحوسبة السيادية', s: 92, note: 'تدفقات قياسية من رأس المال الجريء' },
-    { t: 'الائتمان الخاص', s: 86, note: 'تحول خليجي من الدين العام إلى الخاص' },
-    { t: 'الأصول الحقيقية المرمزة', s: 84, note: 'نافذة للريادة في الحفظ المؤسسي' },
-    { t: 'التمويل المستدام والانتقالي', s: 83, note: 'يتوافق مع تنويع الاقتصاد' },
+    { t: 'توسعة HIVE — مواقع عيش مشترك جديدة في دبي', s: 92, note: 'إشغال 91٪؛ الطلب يتجاوز العرض في شريحة الشباب المبدع' },
+    { t: 'إطلاق HUNA على الواجهة المائية — التصميم الرائد', s: 89, note: 'التوقيت قبل تحرك إعمار يمنح ميزة تنافسية دائمة' },
+    { t: 'ميدان جبل علي — مرحلة البناء 2026', s: 86, note: 'مخطط BIG الرئيسي 5 كم²؛ WSP تقود التفاصيل — انطلاق 2026' },
+    { t: 'خط صفقات Capri LLC — الإمارات والأسواق الدولية', s: 83, note: 'يتوافق مع أهداف التنويع في أجندة D33' },
   ] : [
-    { t: 'AI infrastructure & sovereign compute', s: 92, note: 'Record VC inflow; strong Portfolio alignment fit' },
-    { t: 'Private credit', s: 86, note: 'GCC rotation from public to private debt' },
-    { t: 'Tokenised real-world assets', s: 84, note: 'Window to lead on institutional custody' },
-    { t: 'Sustainable & transition finance', s: 83, note: 'Aligns with diversification mandate' },
+    { t: 'HIVE coliving expansion — new Dubai sites', s: 92, note: '91% occupancy; demand outpacing supply in young professional segment' },
+    { t: 'HUNA waterfront design-led launch', s: 89, note: 'Timing ahead of Emaar move creates durable competitive edge' },
+    { t: 'Jebel Ali Racecourse — construction phase 2026', s: 86, note: 'BIG 5km² masterplan; WSP detailed design underway — ground-break 2026' },
+    { t: 'Capri LLC deal pipeline — UAE & international', s: 83, note: 'Aligns with D33 economic diversification targets' },
   ];
   return (
     <IntelCard>
@@ -286,8 +286,8 @@ function InvestmentOps({ lang }) {
         </IntelRows>
         <IntelSourceNote>
           {ar
-            ? 'درجات التوافق مستمدة من استراتيجية الاقتصاد الصقور 2025–2045 (ADDED) وتقرير IMF للإمارات 2024. يُرجى التحقق من أحدث البيانات قبل الاستخدام الرسمي.'
-            : 'Alignment scores derived from Portfolio alignment Strategy 2025–2045 (ADDED) and IMF Article IV UAE 2024. Verify against latest data before formal use.'}
+            ? 'درجات التوافق مستمدة من استراتيجية A.R.M. Holding 2025–2030 وتقرير سوق دبي العقاري Q1 2026 (CBRE) ومؤشر D33. تحقق من أحدث البيانات قبل الاستخدام الرسمي.'
+            : 'Alignment scores derived from A.R.M. Holding Group Strategy 2025–2030, CBRE Dubai Market Q1 2026, and D33 Economic Agenda tracker. Verify before formal external use.'}
         </IntelSourceNote>
       </IntelCardBody>
     </IntelCard>
@@ -342,8 +342,8 @@ function RadarCard({ lang }) {
         </div>
         <IntelSourceNote>
           {ar
-            ? 'المصادر: مؤشر GFCI 37 (Z/Yen, مارس 2024) · مؤشر البنك الدولي 2024 · استراتيجية الاقتصاد الصقور. يُرجى التحقق قبل الاستخدام الرسمي.'
-            : 'Source: Z/Yen GFCI 37 (Mar 2024) · World Bank Business Ready 2024 · Portfolio alignment Strategy. Validate before formal external use.'}
+            ? 'المصادر: استراتيجية A.R.M. Holding 2025–2030 · CBRE دبي Q1 2026 · مراجعة محفظة DREC وHUNA وHIVE. تحقق قبل الاستخدام الرسمي.'
+            : 'Source: A.R.M. Holding Group Strategy 2025–2030 · CBRE Dubai Q1 2026 · DREC, HUNA & HIVE portfolio reviews. Validate before formal external use.'}
         </IntelSourceNote>
       </IntelCardBody>
     </IntelCard>
@@ -403,8 +403,8 @@ function CapitalFlowCard({ lang }) {
         {isLive && (
           <IntelSourceNote>
             {ar
-              ? 'المصدر: ADX · DFM · S&P 500 · STI · يورو ستوكس 50 · BSE Sensex · Yahoo Finance'
-              : 'Source: ADX · DFM · S&P 500 · STI · Euro Stoxx 50 · BSE Sensex · Yahoo Finance'}
+              ? 'المصدر: ADX · DFM · مؤشرات عالمية · Yahoo Finance — تدفقات نحو محفظة A.R.M. Holding'
+              : 'Source: ADX · DFM · global indices · Yahoo Finance — flows toward A.R.M. Holding portfolio'}
           </IntelSourceNote>
         )}
       </IntelCardBody>

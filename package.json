@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -n ui,api -c blue,green \"vite\" \"node server/dev-api.mjs\"",
+    "dev:restart": "bash scripts/restart-dev.sh",
     "dev:ui": "vite",
     "dev:api": "node server/dev-api.mjs",
     "prebuild": "node scripts/write-build-info.mjs",

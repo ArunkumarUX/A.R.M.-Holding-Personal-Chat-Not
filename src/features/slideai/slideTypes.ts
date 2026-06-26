@@ -34,6 +34,44 @@ export interface IconGridItem {
   body: string;
 }
 
+export interface TableRow {
+  cells: string[];
+  bold?: boolean;
+  /** Highlight row in accent colour (e.g. recommended / priority row) */
+  highlight?: boolean;
+}
+
+export interface SlideTable {
+  caption?: string;
+  subcaption?: string;
+  headers: string[];
+  rows: TableRow[];
+}
+
+export interface InsightPanel {
+  /** Heading in the dark right panel — e.g. "Key Findings" */
+  title: string;
+  bullets: string[];
+}
+
+export interface ChartSeries {
+  name: string;
+  color?: string; // hex without #
+  values: number[];
+}
+
+export interface SlideChart {
+  type: 'bar' | 'line' | 'waterfall' | 'grouped-bar' | 'bar-horizontal' | 'donut';
+  title?: string;
+  labels: string[];
+  series: ChartSeries[];
+  yUnit?: string;
+  yAxisLabel?: string;
+  baseline?: number;
+  annotation?: string;
+  annotationIndex?: number;
+}
+
 export interface Slide {
   id: string;
   layout: SlideLayout;
@@ -59,6 +97,16 @@ export interface Slide {
   titleColor?: string;
   speakerNotes?: string;
   theme?: SlideTheme;
+  /** Perceptis-quality: data table with styled header row */
+  table?: SlideTable;
+  /** Perceptis-quality: dark right insight panel (replaces rightContent when present) */
+  insightPanel?: InsightPanel;
+  /** Perceptis-quality: "So what" callout box below main content */
+  soWhat?: string;
+  /** Perceptis-quality: source citation line at slide bottom */
+  sourceNote?: string;
+  /** Native PowerPoint chart + SVG preview — mutually exclusive with table */
+  chart?: SlideChart;
 }
 
 export interface DeckTheme {

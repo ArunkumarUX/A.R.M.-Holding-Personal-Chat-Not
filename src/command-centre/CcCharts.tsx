@@ -319,9 +319,9 @@ export function CapitalFlow({
     >
         <defs>
           <radialGradient id={`cfCore${gid}`} cx="42%" cy="38%" r="62%">
-            <stop offset="0%" stopColor="var(--adgm-blue-400)" />
-            <stop offset="55%" stopColor="var(--adgm-blue-500)" />
-            <stop offset="100%" stopColor="var(--petrol-700)" />
+            <stop offset="0%" stopColor="#4a4a4a" />
+            <stop offset="55%" stopColor="var(--arm-ink, #242321)" />
+            <stop offset="100%" stopColor="var(--arm-black, #000000)" />
           </radialGradient>
         </defs>
 
@@ -357,8 +357,8 @@ export function CapitalFlow({
         <text x={cx} y={cy - 4} textAnchor="middle" dominantBaseline="middle" fontSize="11" fontWeight="700" fill="#fff">
           {ar ? 'دبي' : 'Dubai'}
         </text>
-        <text x={cx} y={cy + 10} textAnchor="middle" dominantBaseline="middle" fontSize="8.5" fontWeight="600" fill="rgba(255,255,255,0.88)" letterSpacing="0.1em">
-          ADGM
+        <text x={cx} y={cy + 10} textAnchor="middle" dominantBaseline="middle" fontSize="7.5" fontWeight="600" fill="rgba(255,255,255,0.88)" letterSpacing="0.08em">
+          A.R.M.
         </text>
     </svg>
   );

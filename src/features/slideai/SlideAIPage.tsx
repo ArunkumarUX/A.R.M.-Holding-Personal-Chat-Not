@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { useApp } from '../../context/AppContext';
@@ -8,20 +9,27 @@ import { exportToPptx } from './pptxExporter';
 import { slideAiDeckToPresentationDeck } from './deckAdapters';
 import { bccPortfolioCssVars } from './bccPortfolioTemplate';
 import SlideAIChat from './SlideAIChat';
+import { SlideAiHistoryPanel } from './SlideAiHistoryPanel';
 import { SlidePreviewPanel } from './SlidePreviewPanel';
 
 export function SlideAIPage() {
   const { settings, showToast } = useApp();
   const ar = settings.language === 'ar';
-  const { deck, deckRevision, reset, exportBusy, setExportBusy } = useSlideStore(
+  const [showHistory, setShowHistory] = useState(false);
+  const { deck, deckRevision, reset, exportBusy, setExportBusy, refreshHistory } = useSlideStore(
     useShallow((s) => ({
       deck: s.deck,
       deckRevision: s.deckRevision,
       reset: s.reset,
       exportBusy: s.exportBusy,
       setExportBusy: s.setExportBusy,
+      refreshHistory: s.refreshHistory,
     })),
   );
+
+  useEffect(() => {
+    refreshHistory();
+  }, [refreshHistory]);
 
   const onExportPptx = async () => {
     if (!deck) return;
@@ -55,7 +63,7 @@ export function SlideAIPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'adgm-slideai-deck.json';
+    a.download = 'arm-holding-deck.json';
     a.click();
     URL.revokeObjectURL(url);
     showToast(ar ? 'تم تنزيل JSON' : 'Deck JSON downloaded', 'success');
@@ -71,12 +79,32 @@ export function SlideAIPage() {
               {ar ? 'محادثة لبناء العروض' : 'Chat to build decks'}
             </span>
           </div>
-          {deck && (
-            <button type="button" className="pill ghost" onClick={reset}>
-              {ar ? 'عرض جديد' : 'New deck'}
+          <div className="cc-slideai__panel-head-actions">
+            <button
+              type="button"
+              className={`pill ghost cc-slideai__history-toggle${showHistory ? ' cc-slideai__history-toggle--on' : ''}`}
+              onClick={() => setShowHistory((v) => !v)}
+              aria-pressed={showHistory}
+            >
+              <CcIcon name="history" size={14} />
+              {ar ? 'السجل' : 'History'}
             </button>
-          )}
+            {deck && (
+              <button type="button" className="pill ghost" onClick={reset}>
+                {ar ? 'عرض جديد' : 'New deck'}
+              </button>
+            )}
+          </div>
         </header>
+        {showHistory && (
+          <div className="cc-slideai__chat-history-wrap">
+            <SlideAiHistoryPanel
+              ar={ar}
+              variant="inline"
+              onRestored={() => setShowHistory(false)}
+            />
+          </div>
+        )}
         <SlideAIChat />
       </aside>
 

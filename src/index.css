@@ -2,7 +2,7 @@
 
 /* A.R.M. Holding — armholding.ae brand tokens */
 @theme {
-  --font-sans: "Helvetica Neue", Helvetica, Arial, "Aptos", system-ui, sans-serif;
+  --font-sans: 'proxima-nova', 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
   --font-display: var(--font-sans);
   --font-arabic: "Noto Naskh Arabic", serif;
   --font-numeric: var(--font-sans);
@@ -99,7 +99,7 @@ body {
   letter-spacing: var(--tracking-body);
 }
 
-/* Large display headings — Gilroy SemiBold, tighter than body copy */
+/* Large display headings — Proxima Nova, tighter than body copy */
 .font-display.tracking-tight,
 h1.font-display {
   letter-spacing: -0.02em;

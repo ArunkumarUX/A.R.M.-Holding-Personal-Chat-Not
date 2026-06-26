@@ -11,16 +11,39 @@ import type { AgentResponse, ChatMessage, Deck, Slide } from './slideTypes';
 
 function extractJson(text: string): unknown {
   const trimmed = text.trim();
-  try {
-    return JSON.parse(trimmed);
-  } catch {
-    const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)\n?```/);
-    if (fence) return JSON.parse(fence[1].trim());
-    const start = trimmed.indexOf('{');
-    const end = trimmed.lastIndexOf('}');
-    if (start >= 0 && end > start) return JSON.parse(trimmed.slice(start, end + 1));
-    throw new Error('Could not parse AI response as JSON');
+
+  // 1. Direct parse — happy path (server prefills '{' so model can't emit fences)
+  try { return JSON.parse(trimmed); } catch { /* continue */ }
+
+  // 2. Strip markdown fences — handles ```json…``` with or without closing fence.
+  //    Line-split approach is robust against truncated responses.
+  if (trimmed.startsWith('```')) {
+    const lines = trimmed.split('\n');
+    const body = lines.slice(1); // drop ```json header line
+    const closeIdx = body.findLastIndex((l) => l.trim() === '```');
+    const jsonLines = closeIdx >= 0 ? body.slice(0, closeIdx) : body;
+    try { return JSON.parse(jsonLines.join('\n').trim()); } catch { /* continue */ }
   }
+
+  // 3. Brace scan — first '{' to last '}' (handles leading/trailing prose)
+  const start = trimmed.indexOf('{');
+  const end   = trimmed.lastIndexOf('}');
+  if (start >= 0 && end > start) {
+    try { return JSON.parse(trimmed.slice(start, end + 1)); } catch { /* continue */ }
+  }
+
+  // 4. Salvage truncated JSON — close unclosed brackets then braces
+  const base = start >= 0 ? trimmed.slice(start) : '{' + trimmed;
+  let salvage = base;
+  const openArr = (salvage.match(/\[/g) || []).length - (salvage.match(/\]/g) || []).length;
+  if (openArr > 0) salvage += ']'.repeat(openArr);
+  const openObj = (salvage.match(/\{/g) || []).length - (salvage.match(/\}/g) || []).length;
+  if (openObj > 0) salvage += '}'.repeat(openObj);
+  if (openArr > 0 || openObj > 0) {
+    try { return JSON.parse(salvage); } catch { /* continue */ }
+  }
+
+  throw new Error('Could not parse AI response as JSON');
 }
 
 function normalizeDeck(deck: Deck): Deck {
@@ -174,11 +197,15 @@ export async function checkSlideAiAvailable(): Promise<boolean> {
   }
 }
 
+export type RunSlideAgentOptions = SlideAiUserMessageOptions & {
+  signal?: AbortSignal;
+};
+
 export async function runSlideAgent(
   userMessage: string,
   history: ChatMessage[],
   currentDeck: Deck | null,
-  options?: SlideAiUserMessageOptions,
+  options?: RunSlideAgentOptions,
 ): Promise<AgentResponse> {
   const forceNew = Boolean(options?.forceNewDeck) || userRequestsNewDeck(userMessage);
   const agentOptions: SlideAiUserMessageOptions = { ...options, forceNewDeck: forceNew };
@@ -193,8 +220,12 @@ export async function runSlideAgent(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages, system, mode }),
+      signal: options?.signal,
     });
   } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw err;
+    }
     const note = shortError(err instanceof Error ? err.message : 'Network error');
     return demoResponse(userMessage, currentDeck, note, agentOptions);
   }
@@ -213,7 +244,11 @@ export async function runSlideAgent(
   }
 
   if (!res.ok) {
-    const reason = shortError(data.error || `HTTP ${res.status}`);
+    // 422 = server parsed the response but JSON was unrecoverable — surface the
+    // diagnostic message from the server rather than a generic API error.
+    const reason = res.status === 422
+      ? (data.error || 'Deck JSON could not be parsed — try a shorter prompt or fewer slides.')
+      : shortError(data.error || `HTTP ${res.status}`);
     if (!deckForTurn || forceNew) {
       return demoResponse(userMessage, null, reason, agentOptions);
     }
@@ -221,7 +256,7 @@ export async function runSlideAgent(
       action: 'message',
       deck: null,
       updatedSlides: null,
-      message: `AI error: ${reason}. Restart \`npm run dev\` if the API stopped.`,
+      message: reason,
     };
   }
 
@@ -230,14 +265,17 @@ export async function runSlideAgent(
     return demoResponse(userMessage, currentDeck, 'Empty AI response.', agentOptions);
   }
 
+  // The server already sanitised fences and salvaged truncation,
+  // so a parse failure here is genuinely unexpected — log and surface it.
   try {
     return parseAgentResponse(raw);
-  } catch {
+  } catch (err) {
+    console.error('[SlideAI client] parseAgentResponse failed:', err);
     return {
       action: 'message',
       deck: null,
       updatedSlides: null,
-      message: raw.slice(0, 500) || 'Could not parse deck update — try rephrasing your request.',
+      message: 'Unexpected JSON error — check the browser console. Try a shorter prompt.',
     };
   }
 }

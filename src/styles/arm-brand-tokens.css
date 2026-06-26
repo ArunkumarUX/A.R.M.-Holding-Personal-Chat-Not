@@ -8,6 +8,8 @@
   --arm-white: #ffffff;
   --arm-canvas: #fafafa;
   --arm-line: #e0e0e0;
+  --arm-sidebar: #e5e5e5;
+  --arm-portfolio-bg: #ebebeb;
 
   --adgm-clearsky: var(--arm-ink);
   --adgm-slate: #8a8a8a;
@@ -56,6 +58,12 @@
   --line: var(--arm-line);
   --line-strong: #c8c8c8;
   --sidebar-ink: var(--arm-black);
+  --font-sans: 'proxima-nova', 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  --font-numeric: var(--font-sans);
+  --tracking-body: 0.02em;
+  --sidebar-bg: var(--arm-sidebar);
+  --sidebar-border: #d8d8d8;
   --sidebar-active: linear-gradient(135deg, var(--arm-ink) 0%, var(--arm-black) 100%);
   --sidebar-hover: rgba(36, 35, 33, 0.06);
   --accent: var(--arm-ink);
@@ -71,9 +79,9 @@
 .brand-logo-full .adgm-logo-img {
   width: auto !important;
   max-width: 100%;
-  height: 48px;
+  height: 60px;
   object-fit: contain;
-  object-position: left center;
+  object-position: center center;
 }
 
 .adgm-logo-img--on-dark {

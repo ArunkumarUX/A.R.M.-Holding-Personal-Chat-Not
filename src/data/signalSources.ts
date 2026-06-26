@@ -3,6 +3,7 @@ import type { LiveNewsItem } from '../types/marketIntel';
 import type { ExecutiveState } from './executiveStore';
 import { getSourcesFromHandles } from './executiveStore';
 import { enrichSources } from '../utils/sourceLinks';
+import { plainNewsText } from '../utils/sanitizeNewsText';
 import { mktHandle } from '../utils/sourceHandles';
 
 /** Convert a live news article into a Source card with a real clickable link */
@@ -15,7 +16,7 @@ function newsItemToSource(item: LiveNewsItem, id: string): Source {
     documentName: item.source,
     date: item.date,
     confidence: 0.92,
-    excerpt: item.excerpt?.slice(0, 200) || item.title,
+    excerpt: plainNewsText(item.excerpt, item.title).slice(0, 200),
     href: item.url,
     externalUrl: item.url,
     openLabel: `Read on ${item.source}`,

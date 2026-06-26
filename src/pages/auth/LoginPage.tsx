@@ -12,6 +12,7 @@ import {
   saveVerifiedSession,
 } from '../../auth/authStorage';
 import { PRODUCT_NAME } from '../../config/user';
+import { AuthPortfolioBand } from '../../components/auth/AuthPortfolioBand';
 import '../../styles/auth-gate.css';
 
 type Channel = 'mobile' | 'email';
@@ -60,11 +61,12 @@ export function LoginPage() {
 
   return (
     <div className="auth-gate auth-gate--login">
-      <header className="auth-gate__brand">
-        <AdgmLogo variant="onLight" showTagline={false} />
-      </header>
+      <div className="auth-gate__login-shell">
+        <div className="auth-gate__brand auth-gate__brand--above">
+          <AdgmLogo variant="onLight" horizontal size={80} showTagline={false} />
+        </div>
 
-      <main className="auth-gate__main">
+        <main className="auth-gate__main">
         <h1 className="auth-gate__title">{PRODUCT_NAME}</h1>
         <p className="auth-gate__subtitle">Secure access · A.R.M. Holding</p>
 
@@ -135,7 +137,10 @@ export function LoginPage() {
             {!submitting && <ArrowRight size={18} aria-hidden />}
           </button>
         </form>
-      </main>
+        </main>
+      </div>
+
+      <AuthPortfolioBand />
     </div>
   );
 }

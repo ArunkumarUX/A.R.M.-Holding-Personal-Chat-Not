@@ -11,7 +11,7 @@ const FEEDS = [
     label: 'Google News — GCC Finance',
     siteUrl: 'https://news.google.com',
     rssUrl:
-      'https://news.google.com/rss/search?q=A.R.M.+Holding+OR+DREC+OR+HUNA+OR+HIVE+OR+%22Dubai+real+estate%22+OR+RERA&hl=en-AE&gl=AE&ceid=AE:en',
+      'https://news.google.com/rss/search?q=%22Dubai+real+estate%22+OR+%22Dubai+property%22+OR+%22Jebel+Ali+Racecourse%22+OR+%22A.R.M.+Holding%22+OR+RERA+OR+Emaar+OR+Meraas+OR+%22Dubai+developer%22&hl=en-AE&gl=AE&ceid=AE:en',
     tags: ['market', 'competitor', 'investment', 'regulatory', 'followup'],
   },
   {
@@ -135,16 +135,23 @@ function extractDate(block) {
 }
 
 function extractExcerpt(block) {
-  return (
+  const raw =
     extractTag(block, 'description') ||
     extractTag(block, 'summary') ||
-    extractTag(block, 'content')
-  ).slice(0, 220);
+    extractTag(block, 'content');
+  const cleaned = cleanText(raw);
+  return cleaned.length > 220 ? `${cleaned.slice(0, 217).trim()}…` : cleaned;
 }
 
 function cleanText(text) {
+  if (!text) return '';
   return text
-    .replace(/<[^>]+>/g, '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/gi, '$1')
+    .replace(/<a[^>]*>/gi, ' ')
+    .replace(/<\/a>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/<[^>]*$/g, ' ')
+    .replace(/https?:\/\/\S+/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -197,51 +204,83 @@ export async function fetchAllNewsFeeds() {
 /**
  * A.R.M. Holding-relevance keywords — an article must mention at least one of these
  * to appear on the Executive Home signal cards.
- * Generic business news (Ryanair, UK retail, US tech layoffs, etc.) scores 0
- * and is excluded from Competitor / Regulatory / Investment sections.
+ * Deliberately excludes broad region words (gcc, gulf, emirates) that match
+ * unrelated articles (webinars, sports, airlines, etc.).
  */
 const ARM_RELEVANCE_KEYWORDS = [
-  'arm holding', 'a.r.m.', 'drec', 'huna', 'hive', 'dubai', 'uae', 'gcc',
-  'real estate', 'property', 'rera', 'dld', 'hospitality', 'coliving',
-  'emaar', 'meraas', 'nakheel', 'revpar', 'occupancy', 'pre-sales',
-  'art dubai', 'we emerge stronger', 'sculpture', 'h residence',
-  'palm spring', 'beach centre', 'd33', 'emirates', 'gulf',
-  'middle east property', 'dubai developer', 'leasing', 'rental index',
+  // Company & brands
+  'arm holding', 'a.r.m.', 'drec', 'huna', 'hive coliv', 'capri llc',
+  // Properties & projects
+  'jebel ali racecourse', 'palm spring village', 'beach centre', 'h residence',
+  'huna sculpture', 'we emerge stronger', 'art dubai',
+  // Dubai real estate specifics
+  'dubai real estate', 'dubai property', 'dubai developer', 'dubai developer',
+  'dubai land department', 'dubai residential', 'dubai off-plan', 'dubai rental',
+  // Regulators
+  'rera', 'dld', 'ejari', 'rental index', 'smart rental',
+  // Competitors
+  'emaar', 'meraas', 'nakheel', 'damac', 'aldar', 'sobha', 'ellington',
+  // Market metrics
+  'revpar', 'occupancy rate', 'pre-sales', 'leasing', 'coliving',
+  // Portfolio topics
+  'real estate investment', 'property market', 'd33', 'hospitality recovery',
+  // Specific current initiatives
+  'jebel ali', 'bjarke ingels', 'big architect', 'wsp masterplan',
 ];
+
+/**
+ * Per-signal keyword classifiers — ensures articles are routed to the
+ * most relevant signal slot rather than all appearing in the same card.
+ */
+const SIGNAL_KEYWORDS = {
+  market:     ['dubai real estate', 'dubai property', 'property market', 'transactions', 'revpar', 'occupancy', 'off-plan', 'property prices', 'market update', 'q1 2026', 'q2 2026'],
+  competitor: ['emaar', 'meraas', 'nakheel', 'damac', 'aldar', 'sobha', 'ellington', 'developer launch', 'waterfront', 'lifestyle district', 'rival'],
+  investment: ['jebel ali', 'jebel ali racecourse', 'arm holding', 'capri', 'investment', 'masterplan', 'ground-break', 'bjarke ingels', 'wsp', 'off-plan'],
+  regulatory: ['rera', 'dld', 'ejari', 'rental index', 'smart rental', 'compliance', 'regulation', 'cbuae', 'dfsa'],
+  followup:   ['art dubai', 'we emerge stronger', 'sculpture', 'h residence', 'huna', 'drec', 'hive'],
+};
 
 function isArmRelevant(item) {
   const text = (item.title + ' ' + (item.excerpt || '')).toLowerCase();
   return ARM_RELEVANCE_KEYWORDS.some((kw) => text.includes(kw));
 }
 
+function signalScore(tag, item) {
+  const text = (item.title + ' ' + (item.excerpt || '')).toLowerCase();
+  const kws = SIGNAL_KEYWORDS[tag] ?? [];
+  return kws.reduce((acc, kw) => acc + (text.includes(kw) ? 1 : 0), 0);
+}
+
 /**
- * Get news items for a given signal tag — A.R.M. Holding/GCC-relevant articles only.
- * Feed-level tags are broad (a BBC feed tags ALL articles as 'competitor'),
- * so we apply per-article relevance filtering to prevent non-A.R.M. Holding news
- * (e.g. airline charges, UK retail, sports) from appearing on Executive Home.
- * Returns empty array if no relevant items — callers handle the fallback.
+ * Get news items for a given signal tag — A.R.M. Holding/Dubai real estate only.
+ * First filters by ARM relevance, then scores by signal-specific keywords so
+ * competitor/investment/regulatory cards each get the most appropriate articles.
  */
 export function getNewsByTag(tag, allItems, limit = 3) {
   const tagged = allItems.filter((i) => i.tags?.includes(tag));
   const relevant = tagged.filter(isArmRelevant);
-  return relevant.slice(0, limit);
+  // Sort by signal-specific keyword score then recency
+  const scored = relevant
+    .map((item) => ({ item, score: signalScore(tag, item) }))
+    .sort((a, b) => b.score - a.score || new Date(b.item.date).getTime() - new Date(a.item.date).getTime());
+  return scored.map((s) => s.item).slice(0, limit);
 }
 
 export function filterGccRelevant(items, limit = 5) {
   const keywords = [
-    'arm holding', 'drec', 'huna', 'hive', 'dubai', 'uae', 'gcc', 'real estate',
-    'property', 'rera', 'dld', 'hospitality', 'coliving', 'emaar', 'meraas',
-    'art dubai', 'we emerge stronger', 'leasing', 'rental', 'developer',
-    'emirates', 'gulf', 'd33', 'occupancy', 'revpar',
+    'arm holding', 'drec', 'huna', 'hive', 'capri', 'jebel ali',
+    'dubai real estate', 'dubai property', 'rera', 'dld', 'ejari',
+    'emaar', 'meraas', 'nakheel', 'damac', 'aldar',
+    'art dubai', 'we emerge stronger', 'leasing', 'rental index',
+    'd33', 'occupancy', 'revpar', 'off-plan', 'developer',
   ];
   const scored = items.map((item) => {
-    const text = (item.title + ' ' + item.excerpt).toLowerCase();
+    const text = (item.title + ' ' + (item.excerpt || '')).toLowerCase();
     const score = keywords.reduce((acc, kw) => acc + (text.includes(kw) ? 1 : 0), 0);
     return { item, score };
   });
   scored.sort(
     (a, b) => b.score - a.score || new Date(b.item.date).getTime() - new Date(a.item.date).getTime(),
   );
-  // Return only truly relevant items — never fall back to irrelevant articles
   return scored.filter((s) => s.score > 0).map((s) => s.item).slice(0, limit);
 }

@@ -36,32 +36,55 @@ import {
   scoreBar,
   signalEmoji,
 } from '../utils/executiveAnswerVisuals';
+import { isLegacyLiveTicker } from '../utils/marketTicker';
 
-const STORAGE_KEY = 'arm-executive-state-v1';
+const STORAGE_KEY = 'arm-executive-state-v3';
+const LEGACY_STORAGE_KEYS = ['arm-executive-state-v1', 'arm-executive-state-v2'] as const;
+
+/** Drop stale ADGM-era cache; use in DevTools for a full reset with STORAGE_KEY too. */
+export function clearExecutiveStateCache() {
+  for (const key of [...LEGACY_STORAGE_KEYS, STORAGE_KEY]) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* private mode / quota */
+    }
+  }
+}
+
+function purgeLegacyExecutiveState() {
+  for (const key of LEGACY_STORAGE_KEYS) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* ignore */
+    }
+  }
+}
 const MARKET_ROTATION: ExecutiveState['marketSnapshot'][] = [
   {
     gccEquities: '+0.8%',
     digitalAssetsWoW: '+4.2%',
-    competitorNote: 'Emaar announces waterfront lifestyle district',
-    topSector: 'Design-led residential (HUNA fit 90)',
+    competitorNote: 'Emaar launches design-led waterfront district — HUNA positioning at stake',
+    topSector: 'Off-plan residential (30,000 deals · AED 73.4B in Q1 2026)',
   },
   {
     gccEquities: '+1.1%',
     digitalAssetsWoW: '+3.8%',
-    competitorNote: 'Meraas launches curated retail expansion',
-    topSector: 'Hospitality recovery (DREC assets)',
+    competitorNote: 'Meraas expands curated retail — competitor to DREC Beach Centre',
+    topSector: 'Jebel Ali Racecourse — ARM + BIG 5km² masterplan, ground-break 2026',
   },
   {
     gccEquities: '+0.4%',
     digitalAssetsWoW: '+2.9%',
-    competitorNote: 'RERA rental index update published',
-    topSector: 'Coliving demand (HIVE occupancy 91%)',
+    competitorNote: 'RERA Smart Rental Index 2026 live — Ejari compliance mandatory for all units',
+    topSector: 'Coliving demand rising — HIVE occupancy 91%, expansion pipeline active',
   },
   {
     gccEquities: '+0.6%',
     digitalAssetsWoW: '+3.1%',
-    competitorNote: 'Art Dubai partnership framework updated',
-    topSector: 'Cultural tourism (We Emerge Stronger)',
+    competitorNote: 'Dubai May sales -19% vs April — sentiment recovering post US-Iran agreement',
+    topSector: 'Cultural & art tourism — We Emerge Stronger open call closes 25 Jul 2026',
   },
 ];
 
@@ -107,11 +130,19 @@ function buildDynamicMeetings(today: Date): Meeting[] {
     },
     {
       id: 'mtg3',
-      title: 'Art Dubai — We Emerge Stronger commission',
+      title: 'Art Dubai — We Emerge Stronger commission debrief',
       time: meetingIso(addDays(today, 2), 11, 0),
-      attendees: 'Art Dubai curators, A.R.M. Holding cultural team',
+      attendees: 'Art Dubai curators, A.R.M. Holding cultural team, Raya Wakim (Marketing)',
       location: 'A.R.M. Holding HQ, Dubai',
       prepStatus: 'ready',
+    },
+    {
+      id: 'mtg4',
+      title: 'Jebel Ali Racecourse — WSP masterplan milestone review',
+      time: meetingIso(addDays(today, 7), 9, 30),
+      attendees: 'Alain Kallas (CDO), WSP team, Amol Mankani (Finance)',
+      location: 'A.R.M. Holding HQ, Dubai',
+      prepStatus: 'pending',
     },
   ];
 }
@@ -120,7 +151,7 @@ function buildDynamicActions(today: Date): ActionItem[] {
   return [
     {
       id: 'a1',
-      title: 'Approve RERA rental repricing plan for DREC portfolio',
+      title: 'Approve DREC RERA Smart Rental Index compliance plan — Ejari update for 3,200+ units',
       owner: 'H.E. Mohammad Saeed Al Shehhi',
       due: dateOnly(addDays(today, -1)),
       status: 'overdue',
@@ -128,7 +159,7 @@ function buildDynamicActions(today: Date): ActionItem[] {
     },
     {
       id: 'a2',
-      title: 'Approve retention packages — 2 property management roles',
+      title: 'Approve retention packages — 2 critical property management roles (attrition at 15.8%)',
       owner: 'H.E. Mohammad Saeed Al Shehhi',
       due: dateOnly(addDays(today, 3)),
       status: 'open',
@@ -136,7 +167,7 @@ function buildDynamicActions(today: Date): ActionItem[] {
     },
     {
       id: 'a3',
-      title: 'HUNA launch narrative sign-off',
+      title: 'HUNA launch narrative sign-off — competitor waterfront launches accelerating',
       owner: 'Marketing → Mohammad',
       due: dateOnly(addDays(today, 9)),
       status: 'open',
@@ -144,9 +175,16 @@ function buildDynamicActions(today: Date): ActionItem[] {
     },
     {
       id: 'a4',
-      title: 'Review We Emerge Stronger talking points — Art Dubai',
+      title: 'Confirm CEO speaking slot — We Emerge Stronger open call closes 25 Jul 2026',
       owner: 'H.E. Mohammad Saeed Al Shehhi',
       due: dateOnly(addDays(today, 2)),
+      status: 'open',
+    },
+    {
+      id: 'a5',
+      title: 'Jebel Ali Racecourse — review WSP masterplan milestone schedule with Alain Kallas',
+      owner: 'H.E. Mohammad Saeed Al Shehhi',
+      due: dateOnly(addDays(today, 7)),
       status: 'open',
     },
   ];
@@ -421,8 +459,12 @@ export function applyExecutiveSnapshotPatch(
     bloombergArticles: patch.bloombergArticles ?? state.bloombergArticles,
     bloombergFetchedAt: patch.bloombergFetchedAt ?? state.bloombergFetchedAt,
     regulatoryHeadline: patch.regulatoryHeadline ?? state.regulatoryHeadline,
-    liveTicker: patch.liveTicker ?? state.liveTicker,
-    liveTickerFetchedAt: patch.liveTickerFetchedAt ?? state.liveTickerFetchedAt,
+    liveTicker: isLegacyLiveTicker(patch.liveTicker)
+      ? undefined
+      : (patch.liveTicker ?? (isLegacyLiveTicker(state.liveTicker) ? undefined : state.liveTicker)),
+    liveTickerFetchedAt: isLegacyLiveTicker(patch.liveTicker ?? state.liveTicker)
+      ? undefined
+      : (patch.liveTickerFetchedAt ?? state.liveTickerFetchedAt),
     documents,
     departments,
     metrics: {
@@ -453,6 +495,7 @@ export function refreshExecutiveState(
 }
 
 export function loadExecutiveState(): ExecutiveState {
+  purgeLegacyExecutiveState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return createSeedState();
@@ -463,6 +506,8 @@ export function loadExecutiveState(): ExecutiveState {
     return {
       ...parsed,
       documents: ensureFalconKbDocuments(parsed.documents ?? []),
+      liveTicker: isLegacyLiveTicker(parsed.liveTicker) ? undefined : parsed.liveTicker,
+      liveTickerFetchedAt: isLegacyLiveTicker(parsed.liveTicker) ? undefined : parsed.liveTickerFetchedAt,
     };
   } catch {
     return createSeedState();

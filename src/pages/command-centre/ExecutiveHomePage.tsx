@@ -7,8 +7,7 @@ import { Emblem, AnimatedNumber, Sparkline, RingGauge, RagPill } from '../../com
 import { RadarChart, Donut, MomentumChart, CapitalFlow } from '../../command-centre/CcCharts';
 import { mdToNodes } from '../../command-centre/CcMarkdown';
 import {
-  SIGNALS, DEPARTMENTS, AGENTS, CENTRES, BENCH_DIMS, BRIEF_FORMATS, PLAN, INTEGRATIONS,
-  SUGGESTIONS, CANNED, TICKER, MOMENTUM, FLOWS, REGULATORY, KB_CATS, KB_DOCS, DIFFERENTIATION,
+  TICKER,
 } from '../../data/commandCentreData';
 import { deriveCommandCentreSignals } from '../../data/deriveCommandCentreSignals';
 import { countLiveSignals } from '../../data/prioritySignalHelpers';
@@ -22,6 +21,7 @@ import { IntelCardSources } from '../../command-centre/IntelCardSources';
 import { IntelLaymanInfo } from '../../command-centre/IntelLaymanInfo';
 import { getSourcesForSignal } from '../../data/signalSources';
 import { SIGNAL_CARD_INFO } from '../../data/intelLaymanCopy';
+import { resolveMarketTicker } from '../../utils/marketTicker';
 
 function MarketTicker({ items }: { items: typeof TICKER }) {
   const Row = ({ k }) => {
@@ -129,7 +129,9 @@ function SignalCard({ s, lang, big, sources }) {
             <div className="intel-signal-headline__sub">{L.headlineSub}</div>
           ) : null}
         </div>
-        <p className="muted" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, flex: 1 }}>{L.body}</p>
+        <p className="muted intel-signal-body" style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, flex: 1 }}>
+          {L.body}
+        </p>
         {L.sourceLine ? (
           <div className="eyebrow muted-3" style={{ fontSize: 11, marginTop: -4 }}>
             {L.sourceLine}
@@ -147,44 +149,16 @@ function SignalCard({ s, lang, big, sources }) {
   );
 }
 
-// Dynamically derive correlated risk insight from live department data
-function deriveAiInsight(depts) {
-  const it = depts.find((d) => d.id === 'it');
-  const sales = depts.find((d) => d.id === 'sales');
-  const itRisk = it?.risks.find((r) => /crm|integration|vendor/i.test(r.t));
-  const salesHighRisk = sales?.risks.find((r) => r.sev === 'High');
-  if (itRisk && salesHighRisk) {
-    const dealMatch = salesHighRisk.t.match(/AED \d+[MB][^—]*/);
-    const dealRef = dealMatch ? dealMatch[0].trim().replace(/ — .*$/, '') : 'high-value deal';
-    const itRef = itRisk.t.replace(/ on .*$/, '').replace(/ — .*$/, '');
-    return {
-      en: 'Two departments show correlated risk: ' + itRef + ' (IT) threatens to stall the ' + dealRef + ' (Sales).',
-      ar: 'مخاطر مترابطة عبر إدارتين: ' + itRef + ' (التقنية) يهدد بتعطيل ' + dealRef + ' (المبيعات).',
-      promptEn: 'Explain the correlated risk between IT and Sales and recommend an action.',
-      promptAr: 'اشرح المخاطر المترابطة بين التقنية والمبيعات وأوصِ بإجراء.',
-    };
-  }
-  // Fallback: any two high-risk departments
-  const hiRisk = depts.filter((d) => d.risks.some((r) => r.sev === 'High'));
-  if (hiRisk.length >= 2) {
-    const d1 = hiRisk[0], d2 = hiRisk[1];
-    return {
-      en: d1.name + ' and ' + d2.name + ' both carry High-severity risks — review for cross-department impact.',
-      ar: 'مخاطر عالية في ' + d1.nameAr + ' و' + d2.nameAr + ' — راجع للتأثير المتقاطع.',
-      promptEn: 'Explain cross-department risks for ' + d1.name + ' and ' + d2.name + ' and recommend actions.',
-      promptAr: 'اشرح المخاطر المتقاطعة لـ' + d1.nameAr + ' و' + d2.nameAr + ' وأوصِ بإجراءات.',
-    };
-  }
-  return null;
-}
-
 
 export function ExecutiveHomePage() {
   const { settings, executiveState, startNewChat } = useApp();
   const lang = settings.language === 'ar' ? 'ar' : 'en';
   const signals = useMemo(() => deriveCommandCentreSignals(executiveState), [executiveState]);
   const liveSignalCount = useMemo(() => countLiveSignals(executiveState), [executiveState]);
-  const tickerItems = executiveState.liveTicker?.length ? executiveState.liveTicker : TICKER;
+  const tickerItems = useMemo(
+    () => resolveMarketTicker(executiveState.liveTicker),
+    [executiveState.liveTicker],
+  );
   const signalSourcesById = useMemo(() => {
     const map: Record<string, ReturnType<typeof getSourcesForSignal>> = {};
     for (const sig of signals) {
@@ -199,7 +173,6 @@ export function ExecutiveHomePage() {
     navigate(`/chat?seed=${encodeURIComponent(q)}`);
   };
   const ar = lang === 'ar';
-  const insight = useMemo(() => deriveAiInsight(DEPARTMENTS), []);
   const quick = ar ? EXECUTIVE_QUICK_PROMPTS.ar : EXECUTIVE_QUICK_PROMPTS.en;
   return (
     <div className="grid mi-stagger cc-page" style={{ gap: 22 }}>
@@ -234,23 +207,6 @@ export function ExecutiveHomePage() {
           />
         ))}
       </div>
-
-      {insight && (
-        <IntelCard rise className="intel-card--insight">
-          <IntelCardBody style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
-            <IntelIconBox icon="brain-circuit" size="lg" color="#042024" background="linear-gradient(135deg, var(--teal-300), var(--aqua))" />
-            <div className="cc-flex-grow">
-              <div className="eyebrow" style={{ color: 'var(--accent-bright)' }}>{ar ? 'إضاءة الذكاء · نمط مكتشف' : 'AI insight · pattern detected'}</div>
-              <div className="type-title type-title-sm" style={{ marginTop: 5 }}>
-                {ar ? insight.ar : insight.en}
-              </div>
-            </div>
-            <button type="button" className="btn btn-primary" onClick={() => onAsk(ar ? insight.promptAr : insight.promptEn)}>
-              <CcIcon name="sparkles" size={17} />{ar ? 'استكشف' : 'Investigate'}
-            </button>
-          </IntelCardBody>
-        </IntelCard>
-      )}
 
       <div className="card card-adgm-dark rise" style={{ marginTop: 4 }}>
         <div className="card-pad card-adgm-dark__layout">

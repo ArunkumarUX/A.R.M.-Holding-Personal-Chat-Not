@@ -32,13 +32,13 @@ export function resolveSlideStyle(slide: Slide, deckTheme: DeckTheme): ResolvedS
     isDark,
     titleColor,
     cssVars: {
-      '--slide-bg': hexCss(bg, isDark ? '#0b1f3a' : '#f4f7fb'),
-      '--slide-text': hexCss(text, isDark ? '#ffffff' : '#152a44'),
+      '--slide-bg': hexCss(bg, isDark ? '#1a2332' : '#ffffff'),
+      '--slide-text': hexCss(text, isDark ? '#ffffff' : '#1a2332'),
       '--slide-title-text': titleColor,
-      '--slide-accent': hexCss(accent, '#9f00a7'),
+      '--slide-accent': hexCss(accent, '#0087FF'),
       '--slide-accent-light': hexCss(
         slide.theme?.accent ?? deckTheme.secondaryAccent ?? accent,
-        '#cf57d6',
+        '#33a0ff',
       ),
     },
   };

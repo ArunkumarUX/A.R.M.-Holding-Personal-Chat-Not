@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { AdgmLogo } from '../brand/AdgmLogo';
-import { DEPARTMENTS } from '../../data/commandCentreData';
 import { useApp } from '../../context/AppContext';
 import { needsTour } from '../../auth/authStorage';
 import { EXECUTIVE_USER } from '../../config/user';
@@ -21,7 +20,7 @@ const NAV = [
     group: 'Intelligence',
     groupAr: 'الاستخبارات',
     items: [
-      { id: 'performance', path: '/performance', icon: 'gauge', label: 'Performance', labelAr: 'الأداء', badge: 4 },
+      { id: 'performance', path: '/performance', icon: 'gauge', label: 'Performance', labelAr: 'الأداء' },
       { id: 'market', path: '/market', icon: 'globe', label: 'Market Intelligence', labelAr: 'استخبارات السوق' },
       { id: 'regulatory', path: '/regulatory', icon: 'gavel', label: 'Regulatory', labelAr: 'التنظيم' },
       { id: 'knowledge', path: '/knowledge', icon: 'library', label: 'Knowledge Base', labelAr: 'قاعدة المعرفة' },
@@ -38,7 +37,7 @@ const NAV = [
               id: 'create-ppt',
               path: '/create-ppt',
               icon: 'presentation',
-              label: 'Create PPT',
+              label: 'Presentations',
               labelAr: 'إنشاء عرض',
             },
             ...(PRESENTATION_BUILDER_ENABLED
@@ -121,7 +120,6 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
   const isChat = view === 'chat';
   const isSlideAi = view === 'create-ppt' || view === 'presentation-builder';
 
-  const alertCount = DEPARTMENTS.filter((d) => d.rag === 'risk' || d.rag === 'warn').length;
   /** Icon-only rail on desktop; mobile drawer always shows labels */
   const showSidebarText = tourActive || !effectiveCollapsed || mobileOpen;
 
@@ -153,7 +151,7 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
       >
         <div className="brand-row">
           {showSidebarText ? (
-            <AdgmLogo variant="onLight" horizontal size={48} className="brand-logo-full" />
+            <AdgmLogo variant="onLight" horizontal size={60} className="brand-logo-full" />
           ) : (
             <AdgmLogo variant="onLight" markOnly size={36} className="brand-mark" />
           )}
@@ -170,16 +168,12 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
               )}
               {g.items.map((it) => {
                 const active = location.pathname === it.path || location.pathname.startsWith(`${it.path}/`);
-                const badge = it.id === 'performance' ? alertCount : it.badge;
-                const showBadge = badge && showSidebarText;
                 return (
                   <button
                     key={it.id}
                     type="button"
                     data-nav={it.id}
-                    className={['nav-item', active ? 'active' : '', badge && !showSidebarText ? 'has-alert' : '']
-                      .filter(Boolean)
-                      .join(' ')}
+                    className={['nav-item', active ? 'active' : ''].filter(Boolean).join(' ')}
                     onClick={() => {
                       navigate(it.path);
                       setMobileOpen(false);
@@ -190,7 +184,6 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
                   >
                     <CcIcon name={it.icon} size={19} className="ic" />
                     <span className="nav-label">{ar ? it.labelAr : it.label}</span>
-                    {showBadge ? <span className="nav-badge">{badge}</span> : null}
                   </button>
                 );
               })}
@@ -207,7 +200,9 @@ export function CommandCentreShell({ children }: { children: ReactNode }) {
           </div>
           {showSidebarText && (
             <div className="sb-user-meta">
-              <div className="sb-user-name">{EXECUTIVE_USER.fullName}</div>
+              <div className="sb-user-name" title={EXECUTIVE_USER.fullName}>
+                {EXECUTIVE_USER.shortName}
+              </div>
               <div className="sb-user-role">{EXECUTIVE_USER.orgShort}</div>
             </div>
           )}

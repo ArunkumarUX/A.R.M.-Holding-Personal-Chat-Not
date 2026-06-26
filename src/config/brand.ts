@@ -18,11 +18,11 @@ export const ADGM_BRAND = {
   logoAspect: 228 / 128,
 
   typography: {
-    primary: "'Helvetica Neue', Helvetica, Arial, 'Aptos', system-ui, sans-serif",
-    secondary: "'Aptos', 'Segoe UI', system-ui, sans-serif",
+    primary: "'proxima-nova', 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif",
+    secondary: "'proxima-nova', 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif",
     arabic: "'Noto Naskh Arabic', serif",
-    sans: "'Helvetica Neue', Helvetica, Arial, 'Aptos', system-ui, sans-serif",
-    display: "'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif",
+    sans: "'proxima-nova', 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif",
+    display: "'proxima-nova', 'Proxima Nova', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif",
     trackingBody: '0.02em',
     trackingLogo: '0.28em',
     numeric: 'var(--font-sans)',

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { CcIcon } from '../../command-centre/CcIcon';
+import { SlideAiHistoryPanel } from './SlideAiHistoryPanel';
 import { slideDisplayTitle } from './deckNormalize';
 import { useSlideStore } from './useSlideStore';
 import { slideStyleToken } from './slideStyle';
@@ -53,10 +54,11 @@ export function SlidePreviewPanel({ ar }: { ar: boolean }) {
 
   if (!deck) {
     return (
-      <div className="cc-slideai__preview-empty">
+      <div className="cc-slideai__preview-empty cc-slideai__preview-empty--with-history">
         <CcIcon name="presentation" size={40} className="cc-slideai__preview-icon" />
         <p>{ar ? 'ستظهر شرائحك هنا' : 'Your slides will appear here'}</p>
-        <span className="muted-3">{ar ? 'اكتب في المحادثة للبدء' : 'Chat to start building'}</span>
+        <span className="muted-3">{ar ? 'اكتب في المحادثة للبدء أو افتح سجلاً سابقاً' : 'Chat to start building or open a past deck'}</span>
+        <SlideAiHistoryPanel ar={ar} variant="preview" />
       </div>
     );
   }

@@ -99,7 +99,7 @@ function WelcomeContent() {
           transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           aria-hidden
         />
-        <Sparkles className="h-10 w-10 text-adgm-primary" aria-hidden />
+        <Sparkles className="h-10 w-10 text-[#242321]" aria-hidden />
       </motion.div>
 
       <AnimatePresence>

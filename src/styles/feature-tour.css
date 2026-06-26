@@ -5,7 +5,7 @@
   inset: 0;
   z-index: 99999;
   pointer-events: none;
-  font-family: var(--font-sans, 'adgm-gilroy', 'Gilroy', system-ui, sans-serif);
+  font-family: var(--font-sans, 'proxima-nova', 'Proxima Nova', system-ui, sans-serif);
 }
 
 .feature-tour__shade {

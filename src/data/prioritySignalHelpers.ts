@@ -1,4 +1,5 @@
 import type { LiveNewsItem } from '../types/marketIntel';
+import { plainNewsText, sanitizeNewsText } from '../utils/sanitizeNewsText';
 import type { ExecutiveState } from './executiveStore';
 
 export function newsSourceLine(item?: LiveNewsItem | null): string | undefined {
@@ -8,19 +9,20 @@ export function newsSourceLine(item?: LiveNewsItem | null): string | undefined {
 
 export function newsHeadline(item?: LiveNewsItem | null, max = 120): string {
   if (!item?.title) return '';
-  return item.title.length > max ? `${item.title.slice(0, max - 1).trim()}…` : item.title;
+  const title = sanitizeNewsText(item.title);
+  return title.length > max ? `${title.slice(0, max - 1).trim()}…` : title;
 }
 
 export function newsBody(item?: LiveNewsItem | null, fallback = ''): string {
   if (!item) return fallback;
-  const text = item.excerpt?.trim() || item.title;
-  return text.length > 220 ? `${text.slice(0, 217).trim()}…` : text;
+  return plainNewsText(item.excerpt, item.title, fallback);
 }
 
 export function joinNewsBodies(items: LiveNewsItem[], limit = 3): string {
   return items
     .slice(0, limit)
-    .map((i) => i.title)
+    .map((i) => sanitizeNewsText(i.title))
+    .filter(Boolean)
     .join(' · ');
 }
 

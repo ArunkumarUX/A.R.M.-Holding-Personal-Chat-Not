@@ -1,0 +1,39 @@
+/**
+ * A.R.M. Holding — Proxima Nova (self-hosted in public/)
+ */
+@font-face {
+  font-family: 'proxima-nova';
+  src:
+    local('Proxima Nova'),
+    local('Proxima Nova Regular'),
+    local('ProximaNova-Regular'),
+    url('/ProximaNovaRegular/ProximaNovaRegular.woff') format('woff'),
+    url('/ProximaNovaRegular/ProximaNovaRegular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'proxima-nova';
+  src:
+    local('Proxima Nova Bold'),
+    local('ProximaNova-Bold'),
+    url('/ProximaNovaBold/ProximaNovaBold.woff') format('woff'),
+    url('/ProximaNovaBold/ProximaNovaBold.ttf') format('truetype');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'proxima-nova';
+  src:
+    local('Proxima Nova Black'),
+    local('ProximaNova-Black'),
+    url('/ProximaNovaBlack/ProximaNovaBlack.woff') format('woff'),
+    url('/ProximaNovaBlack/ProximaNovaBlack.ttf') format('truetype');
+  font-weight: 800 900;
+  font-style: normal;
+  font-display: swap;
+}

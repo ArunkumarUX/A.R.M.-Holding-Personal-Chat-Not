@@ -6,11 +6,20 @@ import {
   normalizeAgentDeck,
 } from './deckNormalize';
 import { mergeSlides } from './mergeSlides';
+import {
+  deleteSlideAiHistory,
+  getSlideAiHistoryEntry,
+  listSlideAiHistory,
+  upsertSlideAiHistory,
+  type SlideAiHistoryEntry,
+} from './slideAiHistory';
 import type { AgentResponse, ChatMessage, Deck } from './slideTypes';
 
 interface SlideStore {
   deck: Deck | null;
   chatHistory: ChatMessage[];
+  sessionId: string | null;
+  historyRevision: number;
   activeSlideIndex: number;
   deckRevision: number;
   contentKey: string;
@@ -26,6 +35,11 @@ interface SlideStore {
   setLoadingStep: (step: number) => void;
   clearPreviewFlash: () => void;
   setExportBusy: (v: boolean) => void;
+  refreshHistory: () => void;
+  getHistory: () => SlideAiHistoryEntry[];
+  persistCurrentSession: () => void;
+  restoreSession: (id: string) => boolean;
+  removeSession: (id: string) => void;
   reset: () => void;
 }
 
@@ -44,6 +58,8 @@ function bumpPreview(
 export const useSlideStore = create<SlideStore>((set, get) => ({
   deck: null,
   chatHistory: [],
+  sessionId: null,
+  historyRevision: 0,
   activeSlideIndex: 0,
   deckRevision: 0,
   contentKey: '0',
@@ -52,12 +68,58 @@ export const useSlideStore = create<SlideStore>((set, get) => ({
   previewFlash: false,
   exportBusy: false,
 
+  refreshHistory: () => set((s) => ({ historyRevision: s.historyRevision + 1 })),
+
+  getHistory: () => listSlideAiHistory(),
+
+  persistCurrentSession: () => {
+    const { deck, chatHistory, sessionId } = get();
+    if (!deck?.slides?.length) return;
+    const saved = upsertSlideAiHistory({ id: sessionId, deck, chatHistory });
+    set({ sessionId: saved.id, historyRevision: get().historyRevision + 1 });
+  },
+
+  restoreSession: (id) => {
+    const entry = getSlideAiHistoryEntry(id);
+    if (!entry) return false;
+    const normalized = normalizeAgentDeck(cloneDeck(entry.deck));
+    set({
+      deck: normalized,
+      chatHistory: entry.chatHistory,
+      sessionId: entry.id,
+      activeSlideIndex: 0,
+      deckRevision: get().deckRevision + 1,
+      contentKey: `${Date.now()}-restore`,
+      previewFlash: true,
+      isLoading: false,
+      loadingStep: 0,
+    });
+    return true;
+  },
+
+  removeSession: (id) => {
+    deleteSlideAiHistory(id);
+    const { sessionId } = get();
+    set({
+      historyRevision: get().historyRevision + 1,
+      ...(sessionId === id
+        ? {
+            deck: null,
+            chatHistory: [],
+            sessionId: null,
+            activeSlideIndex: 0,
+          }
+        : {}),
+    });
+  },
+
   setDeck: (deck) => {
     const normalized = normalizeAgentDeck(cloneDeck(deck));
     bumpPreview(set, {
       deck: normalized,
       activeSlideIndex: 0,
     });
+    get().persistCurrentSession();
   },
 
   applyAgentResult: (result) => {
@@ -77,6 +139,7 @@ export const useSlideStore = create<SlideStore>((set, get) => ({
         deck: normalized,
         activeSlideIndex: nextIndex,
       });
+      get().persistCurrentSession();
       return true;
     }
 
@@ -95,6 +158,7 @@ export const useSlideStore = create<SlideStore>((set, get) => ({
         deck: normalized,
         activeSlideIndex: firstUpdatedSlideIndex(normalized.slides, result.updatedSlides!),
       });
+      get().persistCurrentSession();
       return true;
     }
 
@@ -104,6 +168,7 @@ export const useSlideStore = create<SlideStore>((set, get) => ({
         deck: normalized,
         activeSlideIndex: Math.min(activeSlideIndex, normalized.slides.length - 1),
       });
+      get().persistCurrentSession();
       return true;
     }
 
@@ -116,16 +181,19 @@ export const useSlideStore = create<SlideStore>((set, get) => ({
   setLoadingStep: (step) => set({ loadingStep: step }),
   clearPreviewFlash: () => set({ previewFlash: false }),
   setExportBusy: (v) => set({ exportBusy: v }),
-  reset: () =>
+  reset: () => {
+    get().persistCurrentSession();
     set({
       deck: null,
       chatHistory: [],
+      sessionId: null,
       activeSlideIndex: 0,
-      deckRevision: 0,
-      contentKey: '0',
+      deckRevision: get().deckRevision + 1,
+      contentKey: `${Date.now()}-new`,
       isLoading: false,
       loadingStep: 0,
       previewFlash: false,
       exportBusy: false,
-    }),
+    });
+  },
 }));

@@ -19,6 +19,7 @@ import {
   printDeckPdfPreview,
 } from '../../utils/presentationExport';
 import { mergeBrandCheck } from '../../config/adgmBrandForDeck';
+import { McKinseyDeckGuidance } from '../../features/slideai/McKinseyDeckGuidance';
 
 const CRAFT_STACK = ['McKinsey', 'Open Design', 'Claude Design', 'PPT Master'];
 
@@ -66,14 +67,14 @@ export function PresentationBuilderPage() {
     ? {
         eyebrow: 'العروض التقديمية',
         title: 'منشئ العروض بالذكاء الاصطناعي',
-        sub: 'عرض استثنائي لمجلس ADGM — McKinsey + Open Design + Claude Design + PPT Master في مسار واحد.',
+        sub: 'عرض استثنائي لمجلس A.R.M. Holding — McKinsey + Claude Design · Opus 4.8',
         craftLabel: 'حرفة التصميم',
         exportUnified: 'جميع المهارات (Cursor)',
-        badge: 'محلي · غير منشور',
+        badge: 'McKinsey · Opus 4.8',
         statusOffline: 'التوليف بالذكاء الاصطناعي غير متصل — تحقق من الخادم وANTHROPIC_API_KEY.',
         steps: ['المدخلات', 'توضيح', 'المخطط', 'معاينة', 'تصدير'],
         prompt: 'صف العرض',
-        promptPh: 'مثال: عرض استراتيجي Q2 لمجلس ADGM — Falcon Economy والأصول الرقمية',
+        promptPh: 'مثال: عرض توسع HIVE — 3 مواقع كوليفينغ، نموذج مالي بثلاثة سيناريوهات، قرارات المجلس',
         notes: 'ملاحظات أو أفكار خام',
         link: 'رابط (اختياري)',
         doc: 'لصق نص مستند',
@@ -108,14 +109,14 @@ export function PresentationBuilderPage() {
     : {
         eyebrow: 'Presentations',
         title: 'AI Presentation Builder',
-        sub: 'Outstanding board decks — McKinsey, Open Design, Claude Design, and PPT Master unified in one flow.',
+        sub: 'Outstanding board decks for A.R.M. Holding — McKinsey SCQA + Claude Design · powered by Opus 4.8.',
         craftLabel: 'Design craft',
         exportUnified: 'All skills (Cursor)',
-        badge: 'Local · not on production',
+        badge: 'McKinsey · Opus 4.8',
         statusOffline: 'AI synthesis offline — check server connection and ANTHROPIC_API_KEY.',
         steps: ['Input', 'Clarify', 'Outline', 'Preview', 'Export'],
         prompt: 'Describe your presentation',
-        promptPh: 'e.g. Q2 board pack for ADGM — Falcon Economy, digital assets, FSRA outlook',
+        promptPh: 'e.g. HIVE expansion board pack — 3 co-living sites, 3-scenario model, CEO decisions required',
         notes: 'Notes or rough ideas',
         link: 'Website link (optional)',
         doc: 'Paste document text',
@@ -140,7 +141,7 @@ export function PresentationBuilderPage() {
         exportPptxBusy: 'Building PowerPoint…',
         exportHtml: 'HTML deck (premium)',
         exportHint:
-          'All skills applied: action titles, KPI towers, exhibit panels. Export .pptx or HTML for wow board-ready output. See docs/ADGM-PPT-MASTER.md.',
+          'McKinsey craft applied: SCQA storyline, action titles, KPI towers, insightPanel exhibits. Export .pptx or HTML.',
         brand: 'Brand check',
         busy: 'Generating…',
         speakerNotes: 'Speaker notes',
@@ -304,6 +305,11 @@ export function PresentationBuilderPage() {
       ) : null}
 
       {step === 'input' && (
+        <>
+          <McKinseyDeckGuidance
+            lang={ar ? 'ar' : 'en'}
+            onApplyPrompt={(text) => setPrompt(text)}
+          />
         <IntelCard>
           <IntelCardBody>
             <h3 className="settings-section-title">{t.steps[0]}</h3>
@@ -407,6 +413,7 @@ export function PresentationBuilderPage() {
             </div>
           </IntelCardBody>
         </IntelCard>
+        </>
       )}
 
       {step === 'clarify' && (

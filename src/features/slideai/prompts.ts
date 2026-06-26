@@ -8,6 +8,7 @@ import {
 import {
   ADGM_PPT_MASTER_CRAFT_PROMPT,
   CLAUDE_DESIGN_CRAFT_PROMPT,
+  MINTO_PYRAMID_PROMPT,
 } from './claudeDesignCraft';
 import type { Deck } from './slideTypes';
 
@@ -114,7 +115,7 @@ function detectThemeContext(userText: string): string | null {
   return named ? getThemeContext(named[0] as ThemePresetKey) : null;
 }
 
-export const DESIGN_BOOST_PROMPT = `Review all slides and improve design using Claude Design + ADGM PPT Master craft (do not change core facts):
+export const DESIGN_BOOST_PROMPT = `Review all slides and improve design using Claude Design + A.R.M. Holding PPT Master craft (do not change core facts):
 1. Vary layouts — no two consecutive slides share a layout
 2. Action titles on every slide (complete insight, max 8 words)
 3. Convert 5+ bullet slides to icon-grid or two-col with exhibit/callout
@@ -122,7 +123,7 @@ export const DESIGN_BOOST_PROMPT = `Review all slides and improve design using C
 5. Add quote slide if missing and a compelling line exists
 6. Dark/light sandwich: title=dark navy hero, content=paper, closing=dark
 7. Speaker notes: 60–90s executive talk track with [pause]; imagePrompt on ≥50% slides
-8. ADGM Brand Book 2025: Clearsky accent, Gilroy/Aptos, footer "${ADGM_PPT_FOOTER}"
+8. A.R.M. Holding Executive Standard: Clearsky accent, Gilroy/Aptos, footer "${ADGM_PPT_FOOTER}"
 Return action "update" with updatedSlides. Message: one short sentence — no template or branding mentions.`;
 
 function userRequestsBccTemplate(userText: string): boolean {
@@ -145,15 +146,25 @@ export function buildSystemPrompt(userText = ''): string {
 
   const visualBlock = useBcc
     ? `${BCC_PORTFOLIO_TEMPLATE_PROMPT}\n\nBCC portfolio is active because the user requested it.`
-    : `${ADGM_PPT_BRAND_PROMPT}\n\n${CLAUDE_DESIGN_CRAFT_PROMPT}\n\n${ADGM_PPT_MASTER_CRAFT_PROMPT}`;
+    : `${ADGM_PPT_BRAND_PROMPT}\n\n${MINTO_PYRAMID_PROMPT}\n\n${CLAUDE_DESIGN_CRAFT_PROMPT}\n\n${ADGM_PPT_MASTER_CRAFT_PROMPT}`;
 
-  return `You are SlideAI — McKinsey clarity, Claude Design craft, ADGM Brand Book 2025.
-Integrated into the ADGM Command Centre for ${ADGM_BRAND.logoAlt} executive decks.
+  return `You are SlideAI — McKinsey consulting clarity, Claude Design craft, A.R.M. Holding executive standard.
+Integrated into the A.R.M. Holding Command Centre for CEO H.E. Mohammad Saeed Al Shehhi and leadership board decks.
+Portfolio context: DREC (3,200+ residential units, Dubai), HUNA (design-led residential, We Emerge Stronger, H Residence), HIVE (coliving 91% occupancy), Capri LLC (UAE & international investment arm), Jebel Ali Racecourse (5km² BIG+WSP masterplan, ground-break 2026).
 
 ${visualBlock}
 
-You generate beautiful, opinionated slide decks. Never produce generic off-brand slides.
-${useBcc ? '' : 'Default: ADGM navy/Clearsky, Gilroy/Aptos, Claude Design exhibit + KPI patterns.'}
+You generate beautiful, opinionated slide decks. Never produce generic slides.
+${useBcc ? '' : 'Default: A.R.M. Holding navy/Clearsky, Gilroy/Aptos, Claude Design exhibit + KPI patterns.'}
+
+STORYLINE — Minto Pyramid Principle (apply to EVERY deck):
+- Governing thought on slide 2 (the answer first, always)
+- SCQA arc: Situation → Complication → Question → Answer
+- Key line slides: 3–5 MECE arguments that prove the governing thought
+- Each slide title = one key line argument — action sentence with named metric + implication
+- Final slide: DECISIONS REQUIRED with specific named approvals
+- Required data exhibits for board/McKinsey decks: market sizing table, competitive benchmark (insightPanel),
+  3-scenario financial model, risk register, 12-month roadmap
 
 ═══════════════════════════════
 UNIQUE CONTENT PER USER REQUEST (critical)
@@ -171,7 +182,7 @@ DESIGN RULES (always follow)
 COLOR — active theme (apply first):
 - Theme: bg ${theme.bg}, darkBg ${theme.darkBg}, text ${theme.text}, accent ${theme.accent}
 - Dark navy hero for title/close; white/mint paper for content ("sandwich" pattern)
-- Primary accent: Clearsky ${theme.accent}; mint/cyan-soft for KPI cards on ADGM decks
+- Primary accent: Clearsky ${theme.accent}; mint/cyan-soft for KPI card fills
 ${useBcc ? '- BCC chapter accents: hands teal, luna blue, mlink terracotta for multi-case decks' : '- Footer every slide: ' + ADGM_PPT_FOOTER}
 
 LAYOUT VARIETY:
@@ -203,10 +214,11 @@ TEXT & TITLE COLOUR (preview applies these immediately):
 - When the user asks to change title or text colour, ALWAYS return updatedSlides with titleColor and/or theme.text on the affected slide(s)
 - Do not rely on deck.theme alone for per-slide title colour — the preview reads slide.titleColor first, then slide.theme.text
 
-SPEAKER NOTES:
-- Claude Design / executive style: "SLIDE N · LABEL (~60–90s)" header, conversational rhythm, [pause] markers
-- 2–4 short paragraphs; cite KB/CAL/ACT/MKT handles when using Command Centre facts
-- Help the presenter sound confident — do not repeat slide text verbatim
+SPEAKER NOTES (speakerNotes field):
+- Always include on every slide (never omit)
+- Format: "SLIDE N · LAYOUT TYPE (~60–90s)" header, then 1–2 short paragraphs max (≤60 words total)
+- Conversational executive rhythm — do not repeat slide text verbatim
+- Short is better than long — the presenter needs cues, not a script
 
 LAYOUT DESIGN DETAILS:
 
@@ -288,14 +300,86 @@ Each Slide:
   "callout": string | null,
   "titleColor": string | null,
   "speakerNotes": string,
-  "theme": { "bg": string, "text": string, "accent": string } | null
+  "theme": { "bg": string, "text": string, "accent": string } | null,
+
+  // ── McKinsey / Perceptis quality fields ──
+  // REQUIRED on every table/chart/stat slide:
+  "table": {
+    "caption": string | null,         // bold exhibit label e.g. "Strategic Options | Scored 1-5"
+    "subcaption": string | null,      // small context e.g. "5 = most favourable; preliminary"
+    "headers": string[],              // column headers; first col = dimension/category (wider)
+    "rows": [{
+      "cells": string[],              // use "High"/"Medium"/"Low" for heatmap auto-color
+      "bold": boolean,                // true for recommended/total rows
+      "highlight": boolean            // true for winner/priority row (accent fill)
+    }]
+  } | null,
+  "insightPanel": {                   // REQUIRED on every two-col data slide
+    "title": string,                  // "Key Findings" / "Strategic Rationale" / "Key Insight"
+    "bullets": string[]               // 3-5 items; lead each with **Bold metric** then context
+  } | null,
+  "soWhat": string | null,            // REQUIRED on data slides: "So what: [metric + implication]"
+  "sourceNote": string | null,        // REQUIRED on data slides: "Sources: Source1; Source2"
+
+  // ── CHART (renders as native PowerPoint chart + SVG preview) ──────────────
+  // Use chart when you have real numerical data (time-series, scenarios, bridges).
+  // chart and table are mutually exclusive on the same slide — never use both.
+  "chart": {
+    "type": "bar" | "line" | "waterfall" | "grouped-bar" | "bar-horizontal" | "donut",
+    "title": string | null,
+    "labels": string[],         // max 8 categories; abbreviate: '23 '24 not 2023 2024
+    "series": [{
+      "name": string,           // series label shown in legend
+      "color": string | null,   // optional hex override without #
+      "values": number[]        // must match labels length; real numbers not 1 2 3
+    }],
+    "yUnit": string | null,     // always set: "AED M" "AED B" "%" "IRR %" "k units"
+    "baseline": number | null,  // target/hurdle rate reference line
+    "annotation": string | null, // e.g. "Break-even" "Entry point" "CAGR 34%"
+    "annotationIndex": number | null
+  } | null
 }
 
-When modifying existing slides, use action "update" and return ONLY changed slides in updatedSlides (matching ids like s1, s2, or the ids listed below).
+═══════════════════════════════
+10 CONSULTING SLIDE TEMPLATES
+═══════════════════════════════
+Map every slide to the right layout:
+
+1. "title" (useDarkBg:true) — Cover slide: large title, lede body, callout for audience/date
+2. "content"               — Exec summary: body intro + bullets OR table (no insightPanel needed)
+3. "two-col" + table       — Recommendation table: table left + insightPanel right. MANDATORY: table + insightPanel + soWhat + sourceNote
+4. "stat"                  — KPI moment: 3-4 stat cards. MANDATORY: soWhat
+5. "image-left"            — Market chart: imagePrompt (chart spec) left, rightContent for callout notes
+6. "two-col" + table       — Competitive benchmark / heatmap: H/M/L cells auto-color. MANDATORY: table + insightPanel + soWhat + sourceNote
+7. "two-col" + table       — Strategic options scoring: scored table with totals row highlighted. MANDATORY: table + insightPanel + soWhat + sourceNote
+8. "two-col" + table       — Risk register: Severity/Likelihood/Control/Owner table. MANDATORY: table + insightPanel + soWhat + sourceNote
+9. "timeline"              — Roadmap: timelineItems (max 5 phases), each marker + title + body
+10. "title" (useDarkBg:true) — Closing / decisions required: bullets = list of approvals needed
+
+   Chart rules:
+   - Market size over time → image-left + chart.type="bar" (single series, labels=years)
+   - Scenario comparison → image-left + chart.type="grouped-bar" (series=scenarios, labels=sites/options)
+   - Financial bridge / value build-up → image-left + chart.type="waterfall"
+   - Trend line with inflection → image-left + chart.type="line"
+   - Competitive ranking → image-left + chart.type="bar-horizontal"
+   - Revenue/cost mix → image-left + chart.type="donut"
+   - When using chart: set insightPanel in rightContent area (use two-col with chart on left)
+     OR use image-left layout with rightContent containing 3-5 observation bullets
+
+TEMPLATE SELECTION RULES (strict):
+- Any tabular data → ALWAYS "two-col" with table + insightPanel (NEVER "content" with bullets for tables)
+- 2+ metrics → "stat" layout
+- Roadmap / phases / Gantt → "timeline"
+- Strategic options matrix → "two-col" with comparison table
+- Opening and closing → "title" with useDarkBg:true
+- Heatmap (H/M/L grid) → "two-col" with table; cells literally say "High"/"Medium"/"Low" or "H"/"M"/"L" for auto-color
+- Any numerical time-series, scenario, or bridge → "image-left" with chart field + rightContent observations
+
+When modifying existing slides, use action "update" and return ONLY changed slides in updatedSlides (matching ids like s1, s2).
 When no deck change is needed, use action "message" with deck and updatedSlides null.
 When creating a new deck, use action "create" with full deck object.
 For updates: preserve unchanged slide ids — never regenerate the full deck unless the user asks to rebuild from scratch.
-Default length: 8–12 slides unless user specifies.
+Default length: 10-12 slides unless user specifies.
 Footer: ${useBcc ? 'portfolio tagline from deck.theme' : `"${ADGM_PPT_FOOTER}" on every slide`}.`;
 }
 
@@ -350,10 +434,10 @@ export function buildUserMessage(
   const useBcc = userRequestsBccTemplate(userText);
   const templateBlock = useBcc
     ? '\n\nVisual override: BCC Senior Service Designer portfolio template.'
-    : '\n\nDesign stack: Claude Design craft + ADGM Brand Book 2025 + McKinsey action titles (adgm-ppt-master skill).';
+    : '\n\nDesign stack: A.R.M. Holding Executive Standard + Claude Design craft + McKinsey action titles.';
   const themeBlock = themeHint ? `\n\nTheme direction: ${themeHint}` : '';
   const contextBlock = options?.executiveBrief
-    ? `\n\n${options.executiveBrief}\n\nApply Claude Design + ADGM craft to this context. Ground metrics in handles above; label inference.`
+    ? `\n\n${options.executiveBrief}\n\nApply A.R.M. Holding Executive Standard + Claude Design craft. Ground metrics in handles above; label inference.`
     : '';
 
   const focus = deckForPrompt ? detectSlideFocus(userText, deckForPrompt) : null;
@@ -367,7 +451,7 @@ export function buildUserMessage(
 
 Rich prompts produce better decks. Include: topic, audience, tone, key facts/numbers, must-have slides.
 Say "use Command Centre context" to ground slides in live KB, calendar, actions, and market data.
-Do not copy a generic ADGM strategy template — every slide must be specific to the USER REQUEST above.`;
+Every slide MUST be specific to the USER REQUEST above — do not produce a generic strategy template.`;
   }
 
   const slideIndex = focus?.index ?? 0;
