@@ -1,18 +1,14 @@
 /**
  * Server-side Falcon KB retrieval (mirrors src/data/kb/falconKb.ts).
+ * JSON is imported so Netlify esbuild bundling does not need __dirname/fs paths.
  */
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const jsonPath = path.join(__dirname, '../../src/data/kb/falconKbChunks.json');
+import kbData from '../../src/data/kb/falconKbChunks.json' with { type: 'json' };
 
 let cached = null;
 
 function load() {
   if (cached) return cached;
-  cached = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  cached = kbData;
   return cached;
 }
 

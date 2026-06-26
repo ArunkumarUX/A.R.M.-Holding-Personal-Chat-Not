@@ -13,8 +13,11 @@
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
 
-# API is served by netlify/functions/api.mjs via export const config.path = "/api/*"
-# (no redirect needed — avoids path stripping on rewrite)
+# API must be routed before the SPA catch-all (order matters).
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
 
 [[redirects]]
   from = "/*"
