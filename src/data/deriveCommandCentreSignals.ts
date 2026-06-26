@@ -90,22 +90,9 @@ export function deriveCommandCentreSignals(state: ExecutiveState): CommandCentre
       ? m.competitorNote
       : m.competitorNote;
 
-  const regHeadline = regulatoryLead
-    ? newsHeadline(regulatoryLead)
-    : (state.regulatoryHeadline ?? m.bloombergLead ?? 'Regulatory intelligence');
-
   const followupItems = [...(sn?.followup ?? []), ...(sn?.gccTop ?? [])].filter(
     (item, idx, arr) => arr.findIndex((x) => x.title === item.title) === idx,
   );
-
-  const metricLabelMarket =
-    m.gccEquitiesLive && m.digitalAssetsLive
-      ? 'GCC / digital 24h'
-      : m.digitalAssetsLive
-        ? 'Digital 24h'
-        : m.gccEquitiesLive
-          ? 'GCC indices'
-          : 'GCC / digital 24h';
 
   return [
     {

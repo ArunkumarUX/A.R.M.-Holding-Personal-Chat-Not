@@ -6,4 +6,5 @@ export const PERFORMANCE_COMPANY_DEPT_IDS: Record<KbCompanyId, readonly string[]
   drec: ['strategy', 'finance', 'sales', 'procurement', 'ops'],
   huna: ['marketing', 'finance', 'strategy', 'legal'],
   hive: ['ops', 'it', 'marketing', 'finance'],
+  capri: ['strategy', 'finance', 'legal', 'ops'],
 };

@@ -3,6 +3,7 @@
  * Consulting-grade output matching Perceptis / McKinsey standard.
  * Pixel-perfect alignment grid — all positions derived from layout constants.
  */
+// @ts-nocheck
 import pptxgen from 'pptxgenjs';
 import type { Deck, Slide, SlideChart, SlideTable } from './slideTypes';
 

@@ -9,7 +9,7 @@ import { exportToPptx } from './pptxExporter';
 import { slideAiDeckToPresentationDeck } from './deckAdapters';
 import { bccPortfolioCssVars } from './bccPortfolioTemplate';
 import SlideAIChat from './SlideAIChat';
-import { SlideAiHistoryPanel } from './SlideAiHistoryPanel';
+import { SlideAiHistorySheet } from './SlideAiHistorySheet';
 import { SlidePreviewPanel } from './SlidePreviewPanel';
 
 export function SlideAIPage() {
@@ -96,16 +96,12 @@ export function SlideAIPage() {
             )}
           </div>
         </header>
-        {showHistory && (
-          <div className="cc-slideai__chat-history-wrap">
-            <SlideAiHistoryPanel
-              ar={ar}
-              variant="inline"
-              onRestored={() => setShowHistory(false)}
-            />
-          </div>
-        )}
         <SlideAIChat />
+        <SlideAiHistorySheet
+          ar={ar}
+          open={showHistory}
+          onClose={() => setShowHistory(false)}
+        />
       </aside>
 
       <section className="cc-slideai__panel cc-slideai__panel--preview">
