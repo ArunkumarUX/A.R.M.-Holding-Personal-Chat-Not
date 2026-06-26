@@ -22,10 +22,22 @@ import { smartSearch, braveSearchBroad, freeRssSearch, formatSearchResultsBlock,
 
 export function normalizeAnthropicApiKey(raw) {
   if (!raw) return '';
-  return String(raw)
-    .trim()
-    .replace(/^['"]|['"]$/g, '')
-    .replace(/\s+/g, '');
+  let key = String(raw).trim().replace(/^\uFEFF/, '');
+  key = key.replace(/^ANTHROPIC_API_KEY\s*=\s*/i, '');
+  key = key.replace(/^['"]|['"]$/g, '').replace(/\s+/g, '');
+  if (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1);
+  }
+  return key;
+}
+
+export function anthropicKeyFingerprint(apiKey) {
+  const key = normalizeAnthropicApiKey(apiKey);
+  if (!key) return null;
+  return { length: key.length, prefix: key.slice(0, 12), suffix: key.slice(-4) };
 }
 
 export function getAnthropicConfig() {

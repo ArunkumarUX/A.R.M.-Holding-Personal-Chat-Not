@@ -14,6 +14,7 @@
     "preview": "vite preview",
     "verify:slideai": "node scripts/verify-slideai-local.mjs",
     "sync:anthropic-key": "bash scripts/sync-anthropic-key-from-price-monitor.sh",
+    "sync:anthropic-key:personal": "bash scripts/sync-anthropic-key-from-price-monitor.sh personal",
     "ppt-master:setup": "bash scripts/setup-ppt-master.sh",
     "open-design:setup": "bash scripts/setup-open-design.sh",
     "claude-design:setup": "bash scripts/setup-claude-design-ai.sh",

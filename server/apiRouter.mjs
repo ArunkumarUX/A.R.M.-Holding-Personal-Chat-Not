@@ -1,4 +1,4 @@
-import { createChatHttpResponse, getAnthropicConfig, verifyAnthropicApiKey } from './chatCore.mjs';
+import { createChatHttpResponse, getAnthropicConfig, verifyAnthropicApiKey, anthropicKeyFingerprint } from './chatCore.mjs';
 import { createPresentationHttpResponse } from './presentationBuilder.mjs';
 import { createSlideAiHttpResponse } from './slideAi.mjs';
 import { createExecutiveSnapshotResponse } from './executiveSnapshot.mjs';
@@ -80,6 +80,7 @@ export async function handleApiRequest(request, opts = {}) {
       auth: true,
       claude: Boolean(apiKey),
       claudeStatus: apiKey ? 'configured' : 'missing',
+      claudeKeyFingerprint: anthropicKeyFingerprint(apiKey),
       model,
       dataTrust: buildHealthDataTrust(),
     };
@@ -88,6 +89,10 @@ export async function handleApiRequest(request, opts = {}) {
       payload.claudeStatus = verified.status;
       payload.claudeVerified = verified.status === 'ok';
       if (verified.httpStatus) payload.claudeHttpStatus = verified.httpStatus;
+      if (verified.status === 'invalid') {
+        payload.claudeFix =
+          'Update ANTHROPIC_API_KEY in Netlify → Environment variables (Functions scope). Match claudeKeyFingerprint to your working key, then redeploy.';
+      }
     }
     return json(payload);
   }
