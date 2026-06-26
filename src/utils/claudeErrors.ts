@@ -3,7 +3,13 @@ import type { OfflineNoticeKind } from '../types';
 /** Whether Claude failed for a reason where offline KB answers are acceptable. */
 export function isInvalidAnthropicApiKey(message: string): boolean {
   const m = message.toLowerCase();
-  return m.includes('invalid x-api-key') || m.includes('authentication_error');
+  return (
+    m.includes('invalid x-api-key') ||
+    m.includes('authentication_error') ||
+    m.includes('must start with sk-ant-') ||
+    m.includes('looks like a jwt') ||
+    m.includes('invalid_format')
+  );
 }
 
 export function shouldFallbackToOfflineKb(message: string): boolean {
@@ -27,16 +33,19 @@ function anthropicKeySetupHint(ar: boolean): string {
     typeof window !== 'undefined' && window.location.hostname.includes('netlify.app');
   if (onNetlify) {
     return ar
-      ? 'مفتاح Claude API غير صالح. أنشئ مفتاحاً جديداً من console.anthropic.com ثم حدّث ANTHROPIC_API_KEY في Netlify → Site configuration → Environment variables وأعد النشر.'
-      : 'Invalid Claude API key. Create a new key at console.anthropic.com, update ANTHROPIC_API_KEY in Netlify → Site configuration → Environment variables, then redeploy.';
+      ? 'مفتاح Claude API غير صالح على Netlify. احذف ANTHROPIC_API_KEY الحالي وأضف مفتاح sk-ant-… من console.anthropic.com (ليس رمز JWT). ثم أعد النشر.'
+      : 'Wrong value on Netlify for ANTHROPIC_API_KEY — it must be an sk-ant-… key from console.anthropic.com (not a JWT token). Delete the current variable, paste the correct key, and redeploy.';
   }
   return ar
-    ? 'مفتاح Claude API غير صالح. أنشئ مفتاحاً جديداً من console.anthropic.com وأضفه إلى .env.local كـ ANTHROPIC_API_KEY ثم أعد تشغيل npm run dev.'
-    : 'Invalid Claude API key. Create a new key at console.anthropic.com, set ANTHROPIC_API_KEY in .env.local, and restart npm run dev.';
+    ? 'مفتاح Claude API غير صالح. أنشئ مفتاح sk-ant-… من console.anthropic.com وأضفه إلى .env.local ثم أعد تشغيل npm run dev.'
+    : 'Invalid Claude API key. Set ANTHROPIC_API_KEY to an sk-ant-… key from console.anthropic.com in .env.local, then restart npm run dev.';
 }
 
 export function formatClaudeErrorForUser(message: string, ar = false): string {
   if (isInvalidAnthropicApiKey(message)) {
+    return anthropicKeySetupHint(ar);
+  }
+  if (/jwt|sk-ant-/i.test(message) && message.includes('ANTHROPIC_API_KEY')) {
     return anthropicKeySetupHint(ar);
   }
   return message;

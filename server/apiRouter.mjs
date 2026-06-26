@@ -1,4 +1,4 @@
-import { createChatHttpResponse, getAnthropicConfig, verifyAnthropicApiKey, anthropicKeyFingerprint } from './chatCore.mjs';
+import { createChatHttpResponse, getAnthropicConfig, verifyAnthropicApiKey, anthropicKeyFingerprint, describeAnthropicKeyProblem } from './chatCore.mjs';
 import { createPresentationHttpResponse } from './presentationBuilder.mjs';
 import { createSlideAiHttpResponse } from './slideAi.mjs';
 import { createExecutiveSnapshotResponse } from './executiveSnapshot.mjs';
@@ -89,9 +89,10 @@ export async function handleApiRequest(request, opts = {}) {
       payload.claudeStatus = verified.status;
       payload.claudeVerified = verified.status === 'ok';
       if (verified.httpStatus) payload.claudeHttpStatus = verified.httpStatus;
-      if (verified.status === 'invalid') {
+      if (verified.detail) payload.claudeKeyProblem = verified.detail;
+      if (verified.status === 'invalid' || verified.status === 'invalid_format') {
         payload.claudeFix =
-          'Update ANTHROPIC_API_KEY in Netlify → Environment variables (Functions scope). Match claudeKeyFingerprint to your working key, then redeploy.';
+          'Delete ANTHROPIC_API_KEY in Netlify and set an sk-ant-… key from console.anthropic.com (or copy from personal-ai-chat .env.local). Redeploy.';
       }
     }
     return json(payload);

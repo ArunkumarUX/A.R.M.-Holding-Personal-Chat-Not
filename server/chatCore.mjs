@@ -34,10 +34,36 @@ export function normalizeAnthropicApiKey(raw) {
   return key;
 }
 
+/** Real Anthropic keys are sk-ant-…; Netlify often gets a JWT or OAuth token by mistake. */
+export function isPlausibleAnthropicApiKey(apiKey) {
+  const key = normalizeAnthropicApiKey(apiKey);
+  return Boolean(key && key.startsWith('sk-ant-') && key.length >= 40 && key.length <= 200);
+}
+
+export function describeAnthropicKeyProblem(apiKey) {
+  const key = normalizeAnthropicApiKey(apiKey);
+  if (!key) return 'ANTHROPIC_API_KEY is not set.';
+  if (key.startsWith('eyJ')) {
+    return 'ANTHROPIC_API_KEY looks like a JWT/session token (starts with eyJ…), not an Anthropic API key. Use an sk-ant-… key from console.anthropic.com.';
+  }
+  if (!key.startsWith('sk-ant-')) {
+    return 'ANTHROPIC_API_KEY must start with sk-ant- (from console.anthropic.com → API Keys).';
+  }
+  if (key.length > 200) {
+    return 'ANTHROPIC_API_KEY is too long — paste only the sk-ant-… key, not JSON or a full env file.';
+  }
+  return null;
+}
+
 export function anthropicKeyFingerprint(apiKey) {
   const key = normalizeAnthropicApiKey(apiKey);
   if (!key) return null;
-  return { length: key.length, prefix: key.slice(0, 12), suffix: key.slice(-4) };
+  return {
+    length: key.length,
+    prefix: key.slice(0, 12),
+    suffix: key.slice(-4),
+    plausible: isPlausibleAnthropicApiKey(key),
+  };
 }
 
 export function getAnthropicConfig() {
@@ -52,6 +78,11 @@ export function getAnthropicConfig() {
 export async function verifyAnthropicApiKey() {
   const { apiKey, model } = getAnthropicConfig();
   if (!apiKey) return { status: 'missing' };
+
+  const formatProblem = describeAnthropicKeyProblem(apiKey);
+  if (formatProblem) {
+    return { status: 'invalid_format', httpStatus: 401, detail: formatProblem };
+  }
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -418,6 +449,10 @@ export async function streamChat(payload, writeEvent) {
   const { apiKey, model } = getAnthropicConfig();
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY not configured on the server.');
+  }
+  const keyProblem = describeAnthropicKeyProblem(apiKey);
+  if (keyProblem) {
+    throw new Error(keyProblem);
   }
 
   const { message, language = 'en', history = [], context = {} } = payload || {};
