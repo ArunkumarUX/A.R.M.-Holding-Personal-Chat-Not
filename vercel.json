@@ -13,6 +13,9 @@
     { "source": "/api/health", "destination": "/api/health" },
     { "source": "/api/chat", "destination": "/api/chat" },
     { "source": "/api/slideai", "destination": "/api/slideai" },
+    { "source": "/api/presentation", "destination": "/api/[...path]" },
+    { "source": "/api/decks", "destination": "/api/[...path]" },
+    { "source": "/api/decks/:path*", "destination": "/api/[...path]" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [

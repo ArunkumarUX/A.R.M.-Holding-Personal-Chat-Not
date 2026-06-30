@@ -1,5 +1,6 @@
 import { ADGM_BRAND } from '../../config/brand';
 import { ADGM_PPT_BRAND_PROMPT, ADGM_PPT_FOOTER } from '../../config/adgmBrandForDeck';
+import { APPAREL_GROUP_PPT_STANDARD } from '../../config/apparelGroupPptPrompt';
 import {
   BCC_PORTFOLIO_DECK_THEME,
   BCC_PORTFOLIO_TEMPLATE_PROMPT,
@@ -146,7 +147,7 @@ export function buildSystemPrompt(userText = ''): string {
 
   const visualBlock = useBcc
     ? `${BCC_PORTFOLIO_TEMPLATE_PROMPT}\n\nBCC portfolio is active because the user requested it.`
-    : `${ADGM_PPT_BRAND_PROMPT}\n\n${MINTO_PYRAMID_PROMPT}\n\n${CLAUDE_DESIGN_CRAFT_PROMPT}\n\n${ADGM_PPT_MASTER_CRAFT_PROMPT}`;
+    : `${ADGM_PPT_BRAND_PROMPT}\n\n${APPAREL_GROUP_PPT_STANDARD}\n\n${MINTO_PYRAMID_PROMPT}\n\n${CLAUDE_DESIGN_CRAFT_PROMPT}\n\n${ADGM_PPT_MASTER_CRAFT_PROMPT}`;
 
   return `You are SlideAI — McKinsey consulting clarity, Claude Design craft, Apparel Group executive standard.
 Integrated into the Apparel Group Command Centre for CEO Neeraj and leadership board decks.

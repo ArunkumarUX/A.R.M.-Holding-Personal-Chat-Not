@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { useApp } from '../../context/AppContext';
-import { downloadDeckHtml } from '../../utils/presentationHtmlDeckExport';
+import { downloadDeckJob } from '../../api/perceptisDeck';
 import { useSlideStore } from './useSlideStore';
-import { exportToPptx } from './pptxExporter';
-import { slideAiDeckToPresentationDeck } from './deckAdapters';
+import { usePerceptisDeckStore } from './perceptisDeckStore';
 import { bccPortfolioCssVars } from './bccPortfolioTemplate';
 import SlideAIChat from './SlideAIChat';
 import { SlideAiHistorySheet } from './SlideAiHistorySheet';
@@ -16,14 +15,20 @@ export function SlideAIPage() {
   const { settings, showToast } = useApp();
   const ar = settings.language === 'ar';
   const [showHistory, setShowHistory] = useState(false);
-  const { deck, deckRevision, reset, exportBusy, setExportBusy, refreshHistory } = useSlideStore(
+  const { reset: resetChat, refreshHistory } = useSlideStore(
     useShallow((s) => ({
-      deck: s.deck,
-      deckRevision: s.deckRevision,
       reset: s.reset,
-      exportBusy: s.exportBusy,
-      setExportBusy: s.setExportBusy,
       refreshHistory: s.refreshHistory,
+    })),
+  );
+
+  const { phase, title, prompt, jobId, downloadReady } = usePerceptisDeckStore(
+    useShallow((s) => ({
+      phase: s.phase,
+      title: s.title,
+      prompt: s.prompt,
+      jobId: s.jobId,
+      downloadReady: s.downloadReady,
     })),
   );
 
@@ -31,43 +36,35 @@ export function SlideAIPage() {
     refreshHistory();
   }, [refreshHistory]);
 
-  const onExportPptx = async () => {
-    if (!deck) return;
-    setExportBusy(true);
+  const onReset = () => {
+    usePerceptisDeckStore.getState().reset();
+    resetChat();
+  };
+
+  const onDownloadPptx = () => {
+    if (!jobId || !downloadReady) return;
     try {
-      await exportToPptx(deck);
+      const name = (title || prompt || 'apparel-group-deck').replace(/[^\w.-]+/g, '-').slice(0, 60);
+      downloadDeckJob(jobId, `${name}.pptx`);
       showToast(ar ? 'تم تنزيل PowerPoint' : 'PowerPoint downloaded', 'success');
     } catch (err) {
       showToast(
-        ar ? 'فشل التصدير' : `Export failed: ${err instanceof Error ? err.message : 'unknown error'}`,
+        ar ? 'فشل التنزيل' : `Download failed: ${err instanceof Error ? err.message : 'unknown'}`,
         'info',
       );
-    } finally {
-      setExportBusy(false);
     }
   };
 
-  const onExportHtml = () => {
-    if (!deck) return;
-    try {
-      downloadDeckHtml(slideAiDeckToPresentationDeck(deck));
-      showToast(ar ? 'تم تنزيل HTML' : 'HTML deck downloaded', 'success');
-    } catch (err) {
-      showToast(ar ? 'فشل تصدير HTML' : 'HTML export failed', 'info');
-    }
-  };
-
-  const onExportJson = () => {
-    if (!deck) return;
-    const blob = new Blob([JSON.stringify(deck, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'arm-holding-deck.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast(ar ? 'تم تنزيل JSON' : 'Deck JSON downloaded', 'success');
-  };
+  const hasJob = phase !== 'idle' || Boolean(prompt);
+  const downloadReadyNow = downloadReady && Boolean(jobId);
+  const isGenerating = ['queued', 'analysing', 'generating', 'downloading', 'stalled'].includes(phase);
+  const downloadLabel = isGenerating
+    ? ar
+      ? 'جاري الإنشاء…'
+      : 'Generating…'
+    : ar
+      ? 'تنزيل .pptx'
+      : 'Download .pptx';
 
   return (
     <div className="cc-slideai" style={bccPortfolioCssVars() as CSSProperties}>
@@ -76,7 +73,7 @@ export function SlideAIPage() {
           <div>
             <span className="cc-slideai__brand">SlideAI</span>
             <span className="cc-slideai__brand-sub">
-              {ar ? 'محادثة لبناء العروض' : 'Chat to build decks'}
+              {ar ? 'Perceptis AI · عروض تنفيذية' : 'Perceptis AI · executive decks'}
             </span>
           </div>
           <div className="cc-slideai__panel-head-actions">
@@ -89,45 +86,56 @@ export function SlideAIPage() {
               <CcIcon name="history" size={14} />
               {ar ? 'السجل' : 'History'}
             </button>
-            {deck && (
-              <button type="button" className="pill ghost" onClick={reset}>
+            {hasJob && (
+              <button type="button" className="pill ghost" onClick={onReset}>
                 {ar ? 'عرض جديد' : 'New deck'}
               </button>
             )}
           </div>
         </header>
         <SlideAIChat />
-        <SlideAiHistorySheet
-          ar={ar}
-          open={showHistory}
-          onClose={() => setShowHistory(false)}
-        />
+        <SlideAiHistorySheet ar={ar} open={showHistory} onClose={() => setShowHistory(false)} />
       </aside>
 
       <section className="cc-slideai__panel cc-slideai__panel--preview">
         <header className="cc-slideai__panel-head">
           <div className="cc-slideai__preview-title">
-            <span key={deckRevision}>{deck ? deck.title : ar ? 'معاينة' : 'Preview'}</span>
+            <span className="cc-slideai__preview-title-text" title={title || prompt}>
+              {title || (ar ? 'معاينة العرض' : 'Deck preview')}
+            </span>
           </div>
-          {deck && (
+          {hasJob && (
             <div className="cc-slideai__preview-actions">
-              <span className="muted-3">
-                {deck.slides.length} {ar ? 'شرائح' : 'slides'}
+              <span className="cc-slideai__perceptis-pill" data-phase={phase}>
+                <CcIcon name="sparkles" size={14} />
+                {phase === 'ready' || phase === 'ppt_ready'
+                  ? ar
+                    ? 'جاهز'
+                    : 'Ready'
+                  : phase === 'stalled'
+                    ? ar
+                      ? 'لا يزال قيد المعالجة'
+                      : 'Still processing'
+                  : phase === 'error'
+                    ? ar
+                      ? 'أعد المحاولة'
+                      : 'Retry available'
+                    : isGenerating
+                      ? ar
+                        ? 'جاري الإنشاء…'
+                        : 'Generating…'
+                      : ar
+                        ? 'في الانتظار'
+                        : 'Waiting'}
               </span>
-              <button type="button" className="pill ghost cc-slideai__export-secondary" onClick={onExportJson}>
-                JSON
-              </button>
-              <button type="button" className="pill ghost cc-slideai__export-secondary" onClick={onExportHtml}>
-                HTML
-              </button>
               <button
                 type="button"
                 className="btn-primary cc-slideai__export"
-                onClick={onExportPptx}
-                disabled={exportBusy}
+                onClick={onDownloadPptx}
+                disabled={!downloadReadyNow}
               >
                 <CcIcon name="download" size={16} />
-                {exportBusy ? (ar ? 'جاري التصدير…' : 'Exporting…') : '.pptx'}
+                {downloadLabel}
               </button>
             </div>
           )}

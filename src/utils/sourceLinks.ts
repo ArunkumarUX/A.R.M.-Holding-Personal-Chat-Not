@@ -91,7 +91,7 @@ function handlePrefix(handle?: string): string {
 export function sourceTypeFromHandle(handle?: string): SourceType {
   const p = handlePrefix(handle);
   if (p === 'KB') return 'knowledge';
-  if (p === 'MKT') return 'external';
+  if (p === 'MKT' || p === 'BBG') return 'external';
   if (p === 'CAL') return 'calendar';
   if (p === 'ACT') return 'action';
   if (p === 'CRM') return 'crm';
@@ -137,7 +137,8 @@ export function enrichSource(source: Source, state: ExecutiveState): Source {
   }
 
   if (sourceType === 'external') {
-    out.href = source.externalUrl ?? MARKET_FEED_URL;
+    const excerptUrl = source.excerpt?.match(/https?:\/\/[^\s·]+/)?.[0];
+    out.href = source.externalUrl ?? excerptUrl ?? MARKET_FEED_URL;
     out.externalUrl = out.href;
     out.openLabel = 'Open source';
     return out;
@@ -168,12 +169,16 @@ export function enrichSources(sources: Source[], state: ExecutiveState): Source[
   return sources.map((s) => enrichSource(s, state));
 }
 
-/** Sources shown in the panel: knowledge-base docs + items with an external website */
+/** Sources shown in citation chips and the side panel */
 export function panelSources(sources: Source[]): Source[] {
   return sources.filter(
     (s) =>
       s.sourceType === 'knowledge' ||
       s.sourceType === 'external' ||
-      Boolean(s.externalUrl),
+      s.sourceType === 'calendar' ||
+      s.sourceType === 'action' ||
+      s.sourceType === 'crm' ||
+      Boolean(s.externalUrl) ||
+      Boolean(s.href),
   );
 }

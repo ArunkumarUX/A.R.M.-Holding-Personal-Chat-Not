@@ -5,35 +5,36 @@
  */
 // @ts-nocheck
 import pptxgen from 'pptxgenjs';
+import { ADGM_PPT_COLORS } from '../../config/adgmBrandForDeck';
 import type { Deck, Slide, SlideChart, SlideTable } from './slideTypes';
 
-// ─── Apparel Group Design Tokens ────────────────────────────────────────────
+// ─── Apparel Group Design Tokens (from brand guidelines) ─────────────────────
 const C = {
-  navy:           '1A2332',
-  navyMid:        '1E3A4F',
-  clearsky:       '0087FF',
-  clearskyLight:  'EBF5FF',
-  white:          'FFFFFF',
-  ink:            '1A2332',
-  inkMuted:       '5C6B7A',
-  inkLight:       '9CA3AF',
-  paper:          'FFFFFF',
-  paperSoft:      'F7F9FC',
-  line:           'E2E8F0',
-  gold:           'C9A84C',
-  mint:           '44D7B6',
-  tableHead:      '1A2332',
-  tableEven:      'F7F9FC',
-  highlightFill:  'EBF5FF',
-  highlightText:  '0055AA',
-  highCell:       '1A2332',
-  highCellText:   'FFFFFF',
-  medCell:        'C9A84C',
-  medCellText:    '1A2332',
-  lowCell:        'E2E8F0',
-  lowCellText:    '5C6B7A',
-  soWhatBg:       'EBF5FF',
-  soWhatBorder:   '0087FF',
+  navy:           ADGM_PPT_COLORS.navy,
+  navyMid:        ADGM_PPT_COLORS.navyMid,
+  clearsky:       ADGM_PPT_COLORS.accent,
+  clearskyLight:  ADGM_PPT_COLORS.accentSoft,
+  white:          ADGM_PPT_COLORS.white,
+  ink:            ADGM_PPT_COLORS.ink,
+  inkMuted:       ADGM_PPT_COLORS.inkMuted,
+  inkLight:       ADGM_PPT_COLORS.slate,
+  paper:          ADGM_PPT_COLORS.paper,
+  paperSoft:      ADGM_PPT_COLORS.paperSoft,
+  line:           ADGM_PPT_COLORS.line,
+  gold:           'C5D92D',
+  mint:           ADGM_PPT_COLORS.mint,
+  tableHead:      ADGM_PPT_COLORS.tableHead,
+  tableEven:      ADGM_PPT_COLORS.paperSoft,
+  highlightFill:  ADGM_PPT_COLORS.kpiFill,
+  highlightText:  ADGM_PPT_COLORS.navyMid,
+  highCell:       ADGM_PPT_COLORS.navy,
+  highCellText:   ADGM_PPT_COLORS.white,
+  medCell:        'C5D92D',
+  medCellText:    ADGM_PPT_COLORS.ink,
+  lowCell:        ADGM_PPT_COLORS.line,
+  lowCellText:    ADGM_PPT_COLORS.inkMuted,
+  soWhatBg:       ADGM_PPT_COLORS.accentSoft,
+  soWhatBorder:   ADGM_PPT_COLORS.accent,
 } as const;
 
 const FONT_DISPLAY = 'Gotham';

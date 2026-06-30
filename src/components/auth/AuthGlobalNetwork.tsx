@@ -46,8 +46,8 @@ export function AuthGlobalNetwork() {
         >
           <defs>
             <linearGradient id="auth-map-sky" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#f8fbfd" />
-              <stop offset="100%" stopColor="#eef4f8" />
+              <stop offset="0%" stopColor="#f4f7f9" />
+              <stop offset="100%" stopColor="#eef2f6" />
             </linearGradient>
           </defs>
 
@@ -56,51 +56,51 @@ export function AuthGlobalNetwork() {
           <g className="auth-global-network__land">
             <path
               d="M38 18c4-2 9-1 12 2 3 2 5 6 4 10-1 5-6 8-11 7-5-1-9-6-8-11 1-4 2-6 3-8z"
-              fill="#d7e2ea"
+              fill="#e4eaf0"
             />
             <path
               d="M42 30c6-1 12 1 16 5 4 4 6 10 5 16-2 8-10 14-18 15-8 1-16-4-19-12-2-6 0-13 5-18 4-4 8-5 11-6z"
-              fill="#c9d6e0"
+              fill="#dde4ea"
             />
             <path
               d="M48 36c8-2 14 2 18 8 3 5 4 12 2 18-3 9-12 15-21 14-7-1-13-6-16-13-2-5-1-11 2-16 3-5 9-9 15-11z"
-              fill="#dbe4ec"
+              fill="#e8eef4"
             />
             <path
               d="M52 34c5-3 11-2 15 2 5 5 7 12 5 19-2 8-9 14-17 15-6 1-12-3-15-9-2-4-2-9 0-13 2-5 7-10 12-14z"
-              fill="#cfd9e3"
+              fill="#d5dde5"
             />
             <path
               d="M58 35c4-1 8 1 10 5 2 4 2 9-1 13-3 5-9 8-14 7-4-1-8-5-8-10 0-4 2-8 5-11 2-2 5-3 8-4z"
-              fill="#b8c9d6"
+              fill="#cdd6df"
             />
             <path
               d="M61 42c7-1 12 3 14 9 2 5 1 11-3 15-5 5-13 7-19 4-5-2-9-8-8-14 1-5 5-10 10-12 2-1 4-2 6-2z"
-              fill="#d2dde6"
+              fill="#e0e7ee"
             />
             <path
               d="M66 44c5-1 9 2 11 7 2 4 1 9-2 12-4 4-10 5-14 2-3-2-5-7-4-11 1-4 4-8 9-10z"
-              fill="#c5d4df"
+              fill="#d8e0e8"
             />
             <path
               d="M69 48c4-1 8 1 10 5 2 3 1 8-2 10-4 3-9 3-12 0-2-2-3-6-1-9 1-3 3-5 5-6z"
-              fill="#b7c8d5"
+              fill="#cfd8e1"
             />
             <path
               d="M72 50c6-1 11 3 12 9 1 5-2 10-7 12-4 2-10 1-13-3-2-3-2-8 1-11 2-4 4-6 7-7z"
-              fill="#cad8e2"
+              fill="#dce4eb"
             />
             <path
               d="M74 54c5 0 9 3 10 8 1 4-1 8-5 10-3 2-8 2-11-1-2-2-3-6-1-9 1-3 4-6 7-8z"
-              fill="#d8e3ea"
+              fill="#e6ecf2"
             />
             <path
               d="M46 58c5-2 10 0 13 4 3 4 3 10 0 14-3 5-10 7-15 5-4-2-7-7-6-12 1-4 4-8 8-11z"
-              fill="#c2d0db"
+              fill="#d2dbe3"
             />
             <path
               d="M50 66c4-1 8 1 10 5 2 3 1 7-2 9-3 2-8 2-10-1-2-2-2-6 0-8 1-3 1-4 2-5z"
-              fill="#d0dce5"
+              fill="#dde5ec"
             />
           </g>
 

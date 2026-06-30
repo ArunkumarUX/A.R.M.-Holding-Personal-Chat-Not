@@ -6,6 +6,8 @@ import {
   buildGroundedRecords,
   deriveGroundingMeta,
   kbHandle,
+  mktHandle,
+  normalizeCitedHandle,
   type GroundingLevel,
 } from '../utils/sourceHandles';
 import { enrichSources, panelSources, sourceTypeFromHandle } from '../utils/sourceLinks';
@@ -25,7 +27,7 @@ import { buildFocusAreaResponse } from './focusResponses';
 import { AGENT_LABELS, routeAgentsForQuery } from './agents';
 import { buildDailyCatchUpResponse, buildShortGreetingResponse } from './personalGreeting';
 import { detectChatIntent } from '../utils/chatIntent';
-import { FALCON_KB_SOURCES, retrieveFalconExcerpts } from './kb/falconKb';
+import { FALCON_KB_SOURCES, retrieveFalconExcerpts, sourcesFromFalconExcerpts } from './kb/falconKb';
 import type { ExecutiveSnapshotPatch, BloombergArticle } from '../api/executiveSnapshot';
 import type { LiveMarketIntelSnapshot, MarketSnapshotFields, SignalNewsBundle } from '../types/marketIntel';
 import {
@@ -613,7 +615,8 @@ export function getSourcesForQuery(state: ExecutiveState, docIds: string[]): Sou
 /** Resolve UI sources from handles cited in the model answer */
 export function getSourcesFromHandles(state: ExecutiveState, handles: string[]): Source[] {
   const records = buildGroundedRecords(state);
-  return handles
+  const unique = [...new Set(handles.map(normalizeCitedHandle))];
+  return unique
     .map((handle, i) => {
       const rec = records.find((r) => r.handle === handle);
       if (!rec) return null;
@@ -621,7 +624,7 @@ export function getSourcesFromHandles(state: ExecutiveState, handles: string[]):
         id: `src-${handle}`,
         handle,
         kind: rec.kind,
-        sourceType: sourceTypeFromHandle(handle),
+        sourceType: rec.kind === 'external' ? 'external' : sourceTypeFromHandle(handle),
         title: rec.label,
         documentName: rec.system,
         date: rec.asOf,
@@ -632,27 +635,64 @@ export function getSourcesFromHandles(state: ExecutiveState, handles: string[]):
     .filter(Boolean) as Source[];
 }
 
-export function resolveAnswerGrounding(
+function dedupeSources(sources: Source[]): Source[] {
+  const seen = new Set<string>();
+  return sources.filter((s) => {
+    const key = (s.handle ?? s.id).toUpperCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/** Resolve chat sources from citations, retrieved KB excerpts, and institutional fallbacks */
+export function resolveChatSources(
+  query: string,
   answerText: string,
   state: ExecutiveState,
-  _fallbackDocIds: string[], // kept for API compat — no longer used as fallback
+  fallbackDocIds: string[],
 ): { grounding?: GroundingLevel; sources: Source[] } {
   const records = buildGroundedRecords(state);
   const meta = deriveGroundingMeta(answerText, records);
+  const handleSet = new Set<string>();
+  const addHandle = (handle?: string) => {
+    if (!handle) return;
+    handleSet.add(normalizeCitedHandle(handle));
+  };
 
-  // Only show sources that Claude actually cited via handles in the response text.
-  // Never fall back to guessing — that produces fake "apparelgroup.com" chips on unrelated answers.
-  if (!meta.citedHandles.length) {
-    return { grounding: undefined, sources: [] };
+  meta.citedHandles.forEach(addHandle);
+
+  const excerpts = query.trim() ? retrieveFalconExcerpts(query) : [];
+  for (const ex of excerpts) addHandle(ex.docHandle);
+
+  if (/\b(market|stock|gcc|bloomberg|retail|competitor|news|headline|equit)/i.test(query)) {
+    addHandle(mktHandle(state.marketSnapshot.asOf?.slice(0, 10) ?? state.lastSync.slice(0, 10)));
   }
 
-  const fromHandles = getSourcesFromHandles(state, meta.citedHandles);
-  const merged = enrichSources(fromHandles, state);
+  const fromHandles = handleSet.size
+    ? enrichSources(getSourcesFromHandles(state, [...handleSet]), state)
+    : [];
+  const fromExcerpts = sourcesFromFalconExcerpts(excerpts, (sources) => enrichSources(sources, state));
+  const fromFallback = fallbackDocIds.length
+    ? enrichSources(getSourcesForQuery(state, fallbackDocIds), state)
+    : [];
+
+  const merged = dedupeSources([...fromHandles, ...fromExcerpts, ...fromFallback]);
   const visible = panelSources(merged);
   if (!visible.length) {
     return { grounding: undefined, sources: [] };
   }
-  return { grounding: meta.level, sources: visible };
+
+  const grounding = meta.citedHandles.length ? meta.level : 'partial';
+  return { grounding, sources: visible };
+}
+
+export function resolveAnswerGrounding(
+  answerText: string,
+  state: ExecutiveState,
+  fallbackDocIds: string[],
+): { grounding?: GroundingLevel; sources: Source[] } {
+  return resolveChatSources('', answerText, state, fallbackDocIds);
 }
 
 export interface IntelligentResponse {

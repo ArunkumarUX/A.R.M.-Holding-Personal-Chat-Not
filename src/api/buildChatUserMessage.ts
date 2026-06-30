@@ -92,7 +92,7 @@ Reply briefly and warmly to ${firstName}. Offer to continue with context from th
     ? `\n- USER CONTEXT FOCUS: ${AGENT_MAP[contextAgent]?.name ?? contextAgent} — the user selected this specialist on the home/chat screen. Lead with this agent's lens, tone, and tools. Stay in this context unless the question clearly requires another specialist.`
     : '';
 
-  return `MANDATORY: Apply **1. GLOBAL SYSTEM PROMPT** and all Response Standards from the system message to this answer — for any user question, without exception.
+  return `MANDATORY: Apply the **AGI Executive OS** master system prompt and all Response Standards from the system message — for any user question, without exception.
 
 DELEGATED AGENTS FOR THIS TURN: ${agentList}
 

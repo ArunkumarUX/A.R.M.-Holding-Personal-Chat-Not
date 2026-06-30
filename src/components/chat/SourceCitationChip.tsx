@@ -77,8 +77,10 @@ export function SourceCitationChip({ sources, ar, onClick, maxAvatars = 3, compa
           ))}
         </span>
         <span className="chat-source-citation__label">
-          {compact && primaryDomain && count === 1
-            ? primaryDomain
+          {compact
+            ? ar
+              ? 'المصادر'
+              : 'Sources'
             : ar
               ? `${count} مصدر`
               : `${count} source${count === 1 ? '' : 's'}`}

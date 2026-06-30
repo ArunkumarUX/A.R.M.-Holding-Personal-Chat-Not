@@ -21,7 +21,7 @@ import {
   saveExecutiveState,
   buildIntelligentResponse,
   deriveMorningSignals,
-  resolveAnswerGrounding,
+  resolveChatSources,
   bumpQueryMetrics,
   completeAction,
   refreshExecutiveState,
@@ -269,7 +269,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         contextAgent,
       });
       const intel = buildIntelligentResponse(content, state);
-      const grounded = resolveAnswerGrounding(intel.content, state, intel.sourceDocIds);
+      const grounded = resolveChatSources(content, intel.content, state, intel.sourceDocIds);
       setActiveSources(grounded.sources);
       const msg: ChatMessage = {
         id: `m-${++msgCounter}`,
@@ -522,10 +522,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
           const intent = detectChatIntent(content);
           const isConversational =
             intent === 'greeting' || intent === 'catchup' || intent === 'thanks' || intent === 'irrelevant';
-          const isExplorer = turn.routedAgents.includes('explorer');
-          const grounded = (isConversational || isExplorer)
+          const grounded = isConversational
             ? { sources: [] as Source[], grounding: undefined as GroundingLevel | undefined }
-            : resolveAnswerGrounding(streamed, executiveState, intel.sourceDocIds);
+            : resolveChatSources(content.trim(), streamed, executiveState, intel.sourceDocIds);
           const cleaned = stripAnswerSourceFooter(streamed);
           setActiveSources(grounded.sources);
           persistExecutive((s) => ({
@@ -563,7 +562,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
               contextAgent,
             }, history.length);
             const intel = buildIntelligentResponse(content, executiveState);
-            const grounded = resolveAnswerGrounding(intel.content, executiveState, intel.sourceDocIds);
+            const grounded = resolveChatSources(content.trim(), intel.content, executiveState, intel.sourceDocIds);
             const notice = offlineNoticeKind(errMsg);
             setActiveSources(grounded.sources);
             persistExecutive((s) => ({
@@ -656,7 +655,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
       const intel = buildIntelligentResponse(lastUser.content, executiveState);
       const answer = intel.content + '\n\n*Regenerated from institutional records*';
-      const grounded = resolveAnswerGrounding(answer, executiveState, intel.sourceDocIds);
+      const grounded = resolveChatSources(lastUser.content, answer, executiveState, intel.sourceDocIds);
       persistExecutive((s) => ({
         ...s,
         conversations: s.conversations.map((c) => {

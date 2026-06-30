@@ -13,6 +13,9 @@ import { ChatApiNotice } from '../components/chat/ChatApiNotice';
 import type { OfflineNoticeKind } from '../types';
 import { stripOfflineFallbackBanner } from '../utils/claudeErrors';
 import { stripAnswerSourceFooter } from '../utils/sourceHandles';
+import { useApp } from '../context/AppContext';
+import { hydrateAssistantMessage } from '../utils/chatMessages';
+import { resolveChatSources } from '../data/executiveStore';
 
 export type CcChatAiMsg = {
   id: number;
@@ -29,6 +32,7 @@ export type CcChatAiMsg = {
 
 export function CcChatAiMessage({
   message: m,
+  userQuery = '',
   ar,
   busy,
   copied,
@@ -37,6 +41,7 @@ export function CcChatAiMessage({
   onOpenSources,
 }: {
   message: CcChatAiMsg;
+  userQuery?: string;
   ar: boolean;
   busy: boolean;
   copied: boolean;
@@ -44,7 +49,25 @@ export function CcChatAiMessage({
   onRetry: () => void;
   onOpenSources: (sources: Source[]) => void;
 }) {
-  const linkedSources = panelSources(m.sources ?? []);
+  const { executiveState } = useApp();
+  const linkedSources = useMemo(() => {
+    const stored = panelSources(m.sources ?? []);
+    if (stored.length) return stored;
+    if (!m.text?.trim() || m.thinking) return [];
+    const hydrated = hydrateAssistantMessage(
+      {
+        role: 'assistant',
+        content: m.text,
+        sources: m.sources,
+        grounding: m.grounding,
+      },
+      executiveState,
+      userQuery,
+    );
+    if (hydrated.sources.length) return panelSources(hydrated.sources);
+    const resolved = resolveChatSources(userQuery, m.text, executiveState, []);
+    return panelSources(resolved.sources);
+  }, [m.sources, m.text, m.grounding, m.thinking, executiveState, userQuery]);
   const hasResources = linkedSources.length > 0;
   const messageReady = !m.thinking && Boolean(m.text?.trim());
   const showSourceMeta = messageReady && hasResources;

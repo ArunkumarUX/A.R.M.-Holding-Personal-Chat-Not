@@ -115,5 +115,6 @@ Use the deck Markdown from this Presentation Builder export.
 - Speaker notes: 60–90s executive talk track per slide
 
 ## 5 — Deliver
-Best path: regenerate premium HTML AND/OR native .pptx via PPT Master.
+Best path: Perceptis API (PERCEPTIS_API_KEY in .env.local) for native McKinsey-grade .pptx, OR regenerate premium HTML AND/OR native .pptx via PPT Master.
+Use server/apparelGroupPptPrompt.mjs for the full board-ready strategy brief.
 Confirm storyline with user, then execute. Audience: ${EXECUTIVE_USER.fullName}, CEO, Apparel Group.`;

@@ -1,5 +1,11 @@
 import { getAnthropicConfig } from './chatCore.mjs';
-import { PRESENTATION_BUILDER_SYSTEM } from './presentationBuilderPrompts.mjs';
+import { PRESENTATION_BUILDER_SYSTEM, buildPerceptisPromptFromPayload, buildCompactPerceptisPrompt } from './presentationBuilderPrompts.mjs';
+import {
+  generatePerceptisDeck,
+  getPerceptisConfig,
+  getPerceptisJobStatus,
+  startPerceptisDeckJob,
+} from './perceptisClient.mjs';
 import { applyBrandToDeck } from './adgmBrandGuidelines.mjs';
 
 function extractJson(text) {
@@ -162,7 +168,8 @@ export async function handlePresentationRequest(payload) {
   const action = payload?.action;
 
   if (action === 'ping') {
-    return { ok: true, service: 'presentation' };
+    const { apiKey: perceptisKey } = getPerceptisConfig();
+    return { ok: true, service: 'presentation', perceptis: Boolean(perceptisKey) };
   }
 
   const source = buildSourceBlock(payload);
@@ -247,6 +254,65 @@ export async function handlePresentationRequest(payload) {
         },
       };
     }
+  }
+
+  if (action === 'perceptis-start') {
+    const prompt = buildCompactPerceptisPrompt(payload);
+    const { templateName: envTemplate } = getPerceptisConfig();
+    console.log(
+      `[perceptis-start] slides=${payload.deck?.slides?.length ?? 0} promptChars=${prompt.length}`,
+    );
+    const started = await startPerceptisDeckJob(prompt, {
+      templateName: payload.templateName?.trim() || envTemplate || undefined,
+      useWebSearch: Boolean(payload.useWebSearch),
+      useKnowledgeBase: Boolean(payload.useKnowledgeBase),
+    });
+    return {
+      ok: true,
+      provider: 'perceptis',
+      jobId: started.job_id,
+      status: started.status,
+    };
+  }
+
+  if (action === 'perceptis-status') {
+    if (!payload?.jobId) throw new Error('jobId is required');
+    const status = await getPerceptisJobStatus(payload.jobId);
+    const download = status.downloads?.[0];
+    return {
+      ok: true,
+      provider: 'perceptis',
+      jobId: payload.jobId,
+      status: status.status,
+      error: status.error ?? null,
+      slideCount: download?.slide_count ?? null,
+      downloadUrl: download?.url ?? null,
+      format: download?.format ?? 'pptx',
+    };
+  }
+
+  if (action === 'perceptis-deck') {
+    const prompt = buildPerceptisPromptFromPayload(payload);
+    const { templateName: envTemplate } = getPerceptisConfig();
+    console.log(
+      `[perceptis-deck] slides=${payload.deck?.slides?.length ?? 0} promptChars=${prompt.length} template=${payload.templateName || envTemplate || 'default'}`,
+    );
+    const result = await generatePerceptisDeck(prompt, {
+      timeoutSec: payload.timeoutSec ?? 300,
+      templateName: payload.templateName?.trim() || envTemplate || undefined,
+      useWebSearch: Boolean(payload.useWebSearch),
+      useKnowledgeBase: Boolean(payload.useKnowledgeBase),
+    });
+    const download = result.downloads?.[0];
+    return {
+      ok: true,
+      provider: 'perceptis',
+      jobId: result.job_id,
+      status: result.status,
+      slideCount: download?.slide_count ?? null,
+      downloadUrl: download?.url ?? null,
+      format: download?.format ?? 'pptx',
+    };
   }
 
   throw new Error(`Unknown action: ${action}`);

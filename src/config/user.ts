@@ -18,9 +18,10 @@ export const EXECUTIVE_USER = {
 };
 
 /** Product naming — browser title & auth chrome */
-export const PRODUCT_NAME = 'Personal AI — Apparel Group';
-export const PRODUCT_NAME_AR = 'الذكاء الشخصي — Apparel Group';
-export const PRODUCT_AGENT_NAME = 'Personal AI Agent';
+export const AGI_EXECUTIVE_OS_NAME = 'AGI Executive OS';
+export const PRODUCT_NAME = 'Personal AI - CEO Agent';
+export const PRODUCT_NAME_AR = 'الذكاء الشخصي - وكيل الرئيس التنفيذي';
+export const PRODUCT_AGENT_NAME = 'AGI Executive OS';
 export const PRODUCT_AGENT_NAME_AR = 'وكيل الذكاء الشخصي';
 /** @deprecated Use PRODUCT_AGENT_NAME in product UI */
 export const PRODUCT_SHORT_NAME = PRODUCT_AGENT_NAME;

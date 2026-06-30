@@ -7,7 +7,7 @@ import { CcChatAiMessage } from '../../command-centre/CcChatAiMessage';
 import { CANNED } from '../../data/commandCentreData';
 import { useGstLive } from '../../utils/gstGreeting';
 import { useApp } from '../../context/AppContext';
-import { buildIntelligentResponse, resolveAnswerGrounding } from '../../data/executiveStore';
+import { buildIntelligentResponse, resolveChatSources } from '../../data/executiveStore';
 import { prepareChatTurn } from '../../api/prepareChatTurn';
 import { buildChatHistory } from '../../api/buildChatContext';
 import { streamClaudeChat } from '../../api/claudeChat';
@@ -55,7 +55,7 @@ function buildAiPayload(
   const intel = buildIntelligentResponse(q, executiveState);
   const canned = CANNED[q as keyof typeof CANNED];
   const text = canned ?? intel.content;
-  const resolved = resolveAnswerGrounding(text, executiveState, intel.sourceDocIds);
+  const resolved = resolveChatSources(q, text, executiveState, intel.sourceDocIds);
   return {
     text,
     agents: routedAgents.length ? routedAgents : intel.agents,
@@ -123,7 +123,12 @@ export function CommandCentreChatPage() {
     idRef.current = nextUiMessageId(loaded);
     const lastAi = [...activeConversation.messages].reverse().find((m) => m.role === 'assistant');
     if (lastAi) {
-      const { sources } = hydrateAssistantMessage(lastAi, executiveState);
+      const lastAiIdx = activeConversation.messages.lastIndexOf(lastAi);
+      const prevUser = activeConversation.messages
+        .slice(0, lastAiIdx)
+        .reverse()
+        .find((m) => m.role === 'user');
+      const { sources } = hydrateAssistantMessage(lastAi, executiveState, prevUser?.content ?? '');
       if (sources.length) setActiveSources(sources);
     }
     setSourcesPanelOpen(false);
@@ -237,14 +242,13 @@ export function CommandCentreChatPage() {
             throw new Error('Empty response from Claude');
           }
 
-          // Skip sources/grounding for: conversational turns, Explorer AI (general knowledge / web search)
+          // Skip grounding only for lightweight conversational turns
           const intent = detectChatIntent(q);
           const isConversational =
             intent === 'greeting' || intent === 'catchup' || intent === 'thanks' || intent === 'irrelevant';
-          const isExplorer = meta.agents.includes('explorer');
-          const grounded = (isConversational || isExplorer)
+          const grounded = isConversational
             ? { sources: [] as Source[], grounding: undefined as GroundingLevel | undefined }
-            : resolveAnswerGrounding(streamed, executiveState, intel.sourceDocIds);
+            : resolveChatSources(q, streamed, executiveState, intel.sourceDocIds);
           const cleaned = stripAnswerSourceFooter(streamed);
 
           setMsgs((m) =>
@@ -580,8 +584,12 @@ export function CommandCentreChatPage() {
             </div>
           ) : (
             <div className="grid mi-stagger" style={{ gap: 22 }}>
-              {msgs.map((m) =>
-                m.role === 'user' ? (
+              {msgs.map((m, idx) => {
+                const userQuery =
+                  m.role === 'ai'
+                    ? [...msgs.slice(0, idx)].reverse().find((x) => x.role === 'user')?.text ?? ''
+                    : '';
+                return m.role === 'user' ? (
                   <div key={m.id} className="mi-user-bubble" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <div
                       style={{
@@ -601,6 +609,7 @@ export function CommandCentreChatPage() {
                   <CcChatAiMessage
                     key={m.id}
                     message={m}
+                    userQuery={userQuery}
                     ar={ar}
                     busy={busy}
                     copied={copiedId === m.id}
@@ -608,8 +617,8 @@ export function CommandCentreChatPage() {
                     onRetry={() => retryAiMessage(m.id)}
                     onOpenSources={openSourcesPanel}
                   />
-                ),
-              )}
+                );
+              })}
             </div>
           )}
         </div>

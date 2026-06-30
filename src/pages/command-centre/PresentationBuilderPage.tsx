@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { IntelCard, IntelCardBody } from '../../command-centre/CcCard';
 import { useApp } from '../../context/AppContext';
@@ -10,16 +10,19 @@ import {
   fetchSlides,
   regenerateSlide,
 } from '../../api/presentationBuilder';
+import { buildPerceptisExportPayload } from '../../api/perceptisDeckPayload';
+import { downloadPerceptisBlob } from '../../api/perceptisDeck';
 import {
   downloadDeckJson,
   downloadDeckMarkdown,
-  downloadDeckPptx,
-  downloadDeckHtml,
   UNIFIED_PPT_CURSOR_PROMPT,
   printDeckPdfPreview,
 } from '../../utils/presentationExport';
 import { mergeBrandCheck } from '../../config/adgmBrandForDeck';
 import { McKinseyDeckGuidance } from '../../features/slideai/McKinseyDeckGuidance';
+import { PerceptisDeckSync } from '../../features/slideai/PerceptisDeckSync';
+import { PerceptisPptxViewer } from '../../features/slideai/PerceptisPptxViewer';
+import { usePerceptisDeckStore } from '../../features/slideai/perceptisDeckStore';
 
 const CRAFT_STACK = ['McKinsey', 'Open Design', 'Claude Design', 'PPT Master'];
 
@@ -51,8 +54,9 @@ export function PresentationBuilderPage() {
   const [error, setError] = useState('');
   const [previewIndex, setPreviewIndex] = useState(0);
   const [showNotes, setShowNotes] = useState(true);
-  const [pptxBusy, setPptxBusy] = useState(false);
   const [apiLive, setApiLive] = useState(true);
+
+  const { phase: perceptisPhase, blob: perceptisBlob, message: perceptisMessage } = usePerceptisDeckStore();
 
   useEffect(() => {
     checkPresentationApiAvailable().then(setApiLive);
@@ -62,6 +66,19 @@ export function PresentationBuilderPage() {
     () => ({ prompt, notes, link, documentText, slideCount, tone }),
     [prompt, notes, link, documentText, slideCount, tone],
   );
+
+  const perceptisPayload = useMemo(() => {
+    if (!deck?.slides?.length) return null;
+    return buildPerceptisExportPayload(inputPayload(), deck, {
+      outline,
+      clarificationAnswers: answers,
+      notes: [notes, 'Presentation Builder — Perceptis API only.'].filter(Boolean).join('\n\n'),
+    });
+  }, [deck, outline, answers, notes, inputPayload]);
+
+  const perceptisSourceKey = deck ? `pb-${deck.title}-${deck.slides.length}` : '';
+
+  const currentSlide = deck?.slides?.[previewIndex];
 
   const t = ar
     ? {
@@ -95,11 +112,13 @@ export function PresentationBuilderPage() {
         exportMd: 'Markdown',
         exportJson: 'JSON',
         exportPptx: 'PowerPoint (.pptx)',
+        exportPerceptis: 'Perceptis deck (.pptx)',
         exportPdf: 'PDF (طباعة)',
         exportPptxBusy: 'جاري إنشاء PowerPoint…',
+        exportPerceptisBusy: 'جاري إنشاء عرض Perceptis…',
         exportHtml: 'HTML deck (مميز)',
         exportHint:
-          'كل المهارات مدمجة: عناوين إجرائية، أبراج KPI، معارض — .pptx أو HTML بمظهر استثنائي.',
+          'كل ملفات PowerPoint تُنشأ عبر Perceptis API فقط — المعاينة مباشرة من ملف Perceptis.',
         brand: 'فحص الهوية',
         busy: 'جاري التوليد…',
         speakerNotes: 'ملاحظات المتحدث',
@@ -137,11 +156,13 @@ export function PresentationBuilderPage() {
         exportMd: 'Markdown',
         exportJson: 'JSON',
         exportPptx: 'PowerPoint (.pptx)',
+        exportPerceptis: 'Perceptis deck (.pptx)',
         exportPdf: 'PDF (print)',
         exportPptxBusy: 'Building PowerPoint…',
+        exportPerceptisBusy: 'Generating Perceptis deck…',
         exportHtml: 'HTML deck (premium)',
         exportHint:
-          'McKinsey craft applied: SCQA storyline, action titles, KPI towers, insightPanel exhibits. Export .pptx or HTML.',
+          'All PowerPoint files are generated via Perceptis API only — preview shows the live Perceptis deck.',
         brand: 'Brand check',
         busy: 'Generating…',
         speakerNotes: 'Speaker notes',
@@ -236,26 +257,34 @@ export function PresentationBuilderPage() {
     window.setTimeout(() => setCopiedKind(''), 2000);
   };
 
-  const onExportPptx = async () => {
-    if (!deck) return;
+  const onDownloadPerceptisPptx = () => {
+    if (!deck || !perceptisBlob) return;
     setError('');
-    setPptxBusy(true);
     try {
-      await downloadDeckPptx(deck, { includeSpeakerNotes: showNotes });
+      downloadPerceptisBlob(
+        perceptisBlob,
+        `${(deck?.title || prompt || 'apparel-group-deck').replace(/[^\w.-]+/g, '-').slice(0, 60)}.pptx`,
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not export PowerPoint file');
-    } finally {
-      setPptxBusy(false);
+      setError(err instanceof Error ? err.message : 'Perceptis download failed');
     }
   };
 
-  const currentSlide = deck?.slides?.[previewIndex];
+  const perceptisReady = perceptisPhase === 'ready' && Boolean(perceptisBlob);
+  const perceptisBusy = perceptisPhase === 'queued' || perceptisPhase === 'generating';
 
   const formatSlideType = (type?: string) =>
     (type || 'slide').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <div className="grid mi-stagger cc-page cc-pres-builder" style={{ gap: 20 }}>
+      {deck && perceptisPayload && (step === 'preview' || step === 'export') ? (
+        <PerceptisDeckSync
+          payload={perceptisPayload}
+          sourceKey={perceptisSourceKey}
+          enabled
+        />
+      ) : null}
       <div className="section-head">
         <div>
           <div className="eyebrow">{t.eyebrow}</div>
@@ -529,44 +558,54 @@ export function PresentationBuilderPage() {
             </div>
           </aside>
           <div className="cc-pres-builder__stage">
-            <article className="cc-pres-builder__slide cc-pres-builder__slide--wow">
-              <header className="cc-pres-builder__slide-header">
-                <span className="cc-pres-builder__slide-brand">Apparel Group</span>
-                <span className="cc-pres-builder__slide-meta">
-                  {t.slideOf} {previewIndex + 1} / {deck.slides.length}
-                </span>
-              </header>
-              <div className="cc-pres-builder__slide-body">
-                <span className="cc-pres-builder__slide-type">{currentSlide?.type?.replace(/-/g, ' ')}</span>
-                <h2 className="cc-pres-builder__slide-title">{currentSlide?.title}</h2>
-                <ul className="cc-pres-builder__bullets">
-                  {currentSlide?.bullets?.map((b, i) => (
-                    <li key={i}>{b}</li>
-                  ))}
-                </ul>
-                {currentSlide?.metrics?.length ? (
-                  <table className="cc-pres-builder__metrics">
-                    <tbody>
-                      {currentSlide.metrics.map((m) => (
-                        <tr key={m.label}>
-                          <td>{m.label}</td>
-                          <td>{m.value}</td>
-                        </tr>
+            <div className="cc-slideai__canvas-wrap cc-slideai__canvas-wrap--perceptis cc-pres-builder__perceptis-stage">
+              {perceptisReady ? (
+                <PerceptisPptxViewer blob={perceptisBlob} slideIndex={previewIndex} />
+              ) : currentSlide ? (
+                <article className="cc-pres-builder__slide cc-pres-builder__slide--wow cc-pres-builder__slide--inline">
+                  <header className="cc-pres-builder__slide-header">
+                    <span className="cc-pres-builder__slide-brand">Apparel Group</span>
+                    <span className="cc-pres-builder__slide-meta">
+                      {t.slideOf} {previewIndex + 1} / {deck.slides.length}
+                    </span>
+                  </header>
+                  <div className="cc-pres-builder__slide-body">
+                    <span className="cc-pres-builder__slide-type">{currentSlide?.type?.replace(/-/g, ' ')}</span>
+                    <h2 className="cc-pres-builder__slide-title">{currentSlide?.title}</h2>
+                    <ul className="cc-pres-builder__bullets">
+                      {currentSlide?.bullets?.map((b, i) => (
+                        <li key={i}>{b}</li>
                       ))}
-                    </tbody>
-                  </table>
-                ) : null}
-                {currentSlide?.visualHint ? (
-                  <p className="cc-pres-builder__visual">
-                    <CcIcon name="bar-chart-2" size={14} />
-                    {currentSlide.visualHint}
+                    </ul>
+                    {currentSlide?.metrics?.length ? (
+                      <table className="cc-pres-builder__metrics">
+                        <tbody>
+                          {currentSlide.metrics.map((m) => (
+                            <tr key={m.label}>
+                              <td>{m.label}</td>
+                              <td>{m.value}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : null}
+                  </div>
+                  <p className="cc-pres-builder__perceptis-wait muted-3">
+                    {perceptisBusy
+                      ? perceptisMessage || t.exportPerceptisBusy
+                      : ar
+                        ? 'معاينة مؤقتة — Perceptis يبدأ تلقائياً'
+                        : 'Draft preview — Perceptis generating automatically'}
                   </p>
-                ) : null}
-              </div>
-              {showNotes && currentSlide?.speakerNotes ? (
-                <footer className="cc-pres-builder__slide-notes">{currentSlide.speakerNotes}</footer>
-              ) : null}
-            </article>
+                </article>
+              ) : (
+                <div className="cc-slideai__perceptis-placeholder">
+                  <CcIcon name="sparkles" size={36} />
+                  <p>{t.exportPerceptis}</p>
+                  <span className="muted-3">{perceptisMessage || t.exportPerceptisBusy}</span>
+                </div>
+              )}
+            </div>
             <div className="cc-pres-builder__footer">
               <label className="pill ghost cc-pres-builder__notes-toggle">
                 <input type="checkbox" checked={showNotes} onChange={(e) => setShowNotes(e.target.checked)} />
@@ -601,15 +640,13 @@ export function PresentationBuilderPage() {
               <button
                 type="button"
                 className="cc-pres-builder__export-btn cc-pres-builder__export-btn--primary"
-                disabled={pptxBusy}
-                onClick={onExportPptx}
+                disabled={!perceptisReady || perceptisBusy}
+                onClick={onDownloadPerceptisPptx}
               >
-                <CcIcon name="presentation" size={22} />
-                <span>{pptxBusy ? t.exportPptxBusy : t.exportPptx}</span>
-              </button>
-              <button type="button" className="cc-pres-builder__export-btn" onClick={() => downloadDeckHtml(deck)}>
-                <CcIcon name="layout" size={20} />
-                <span>{t.exportHtml}</span>
+                <CcIcon name="sparkles" size={22} />
+                <span>
+                  {perceptisBusy ? t.exportPerceptisBusy : perceptisReady ? t.exportPptx : t.exportPptxBusy}
+                </span>
               </button>
               <button type="button" className="cc-pres-builder__export-btn" onClick={() => downloadDeckMarkdown(deck, outline, showNotes)}>
                 <CcIcon name="file-text" size={20} />

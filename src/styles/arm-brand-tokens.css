@@ -72,6 +72,7 @@
   --sidebar-active: linear-gradient(135deg, #003399 0%, #002b7a 100%);
   --sidebar-hover: rgba(0, 51, 153, 0.06);
   --accent: var(--ag-lime);
+  --accent-foreground: rgba(4, 42, 110, 1);
   --accent-bright: #d4e84a;
 }
 

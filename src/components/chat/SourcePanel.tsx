@@ -92,6 +92,9 @@ export function SourcePanel() {
   const externalSources = activeSources.filter(
     (s) => s.sourceType === 'external' || (s.externalUrl && s.sourceType !== 'knowledge'),
   );
+  const internalSources = activeSources.filter(
+    (s) => s.sourceType === 'calendar' || s.sourceType === 'action' || s.sourceType === 'crm',
+  );
 
   const handleOpen = (src: Source) => {
     if (src.sourceType === 'knowledge' && src.href) {
@@ -168,6 +171,19 @@ export function SourcePanel() {
                   </h3>
                   <div className="cc-sources-panel__list">
                     {externalSources.map((src) => (
+                      <SourceCard key={src.id} src={src} onCopy={copyMessage} onOpen={handleOpen} />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {internalSources.length > 0 && (
+                <section>
+                  <h3 className="cc-sources-panel__section">
+                    {ar ? 'أنظمة داخلية' : 'Internal systems'}
+                  </h3>
+                  <div className="cc-sources-panel__list">
+                    {internalSources.map((src) => (
                       <SourceCard key={src.id} src={src} onCopy={copyMessage} onOpen={handleOpen} />
                     ))}
                   </div>

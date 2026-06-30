@@ -9,6 +9,12 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { getAnthropicConfig, streamChat } from './chatCore.mjs';
 import { handlePresentationRequest } from './presentationBuilder.mjs';
+import {
+  handleCreateDeckRequest,
+  handleGetDeckRequest,
+  handleDeckDownloadRequest,
+  handleDeckPreviewTimings,
+} from './deckJobs.mjs';
 import { handleSlideAiRequest } from './slideAi.mjs';
 import { createExecutiveSnapshotResponse } from './executiveSnapshot.mjs';
 import { isValidEmailShape, isValidUaeMobileShape } from './authCredentials.mjs';
@@ -204,6 +210,54 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'POST' && url.pathname === '/api/chat') {
     await handleChat(req, res);
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/decks') {
+    const body = await readJsonBody(req);
+    if (body === null) {
+      sendJson(res, 400, { error: 'Invalid JSON' });
+      return;
+    }
+    try {
+      const { status, body: result } = await handleCreateDeckRequest(body, req.headers);
+      sendJson(res, status, result);
+    } catch (err) {
+      sendJson(res, 500, { error: err?.message || 'Deck job failed' });
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname.startsWith('/api/decks/')) {
+    const rest = url.pathname.slice('/api/decks/'.length);
+    const [jobId, action] = rest.split('/');
+
+    if (action === 'download') {
+      const result = await handleDeckDownloadRequest(jobId);
+      if (result.json) {
+        sendJson(res, result.status, result.json);
+        return;
+      }
+      res.writeHead(result.status, {
+        'Content-Type': result.contentType,
+        'Access-Control-Allow-Origin': '*',
+        ...result.headers,
+      });
+      res.end(result.body);
+      return;
+    }
+
+    const result = await handleGetDeckRequest(jobId);
+    sendJson(res, result.status, result.body);
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname.startsWith('/api/decks/') && url.pathname.endsWith('/preview')) {
+    const jobId = url.pathname.slice('/api/decks/'.length).replace(/\/preview$/, '');
+    const body = await readJsonBody(req);
+    await handleDeckPreviewTimings(jobId, body?.phase === 'completed' ? 'completed' : 'started');
+    res.writeHead(204, { 'Access-Control-Allow-Origin': '*' });
+    res.end();
     return;
   }
 

@@ -178,6 +178,13 @@ Valid handles for this turn: ${records.map((r) => r.handle).join(', ')}`;
 const HANDLE_RE =
   /\b(KB-\d{3}(?:-\d{2})?|ACT-\d{2,}|CAL-\d{4}|CRM-[a-z0-9-]+|MKT-\d{4}-\d{2}-\d{2}|BBG-\d{2})\b/gi;
 
+export function normalizeCitedHandle(handle: string): string {
+  const h = handle.trim().toUpperCase();
+  const kb = h.match(/^(KB-\d{3})/);
+  if (kb) return kb[1];
+  return h;
+}
+
 export function extractCitedHandles(text: string): string[] {
   const found = new Set<string>();
   for (const m of text.matchAll(HANDLE_RE)) {

@@ -6,6 +6,12 @@ import { createAuthSessionStore } from './authSessionStore.mjs';
 import { SESSION_TTL_MS } from './memoryAuthStore.mjs';
 import { buildHealthDataTrust } from './dataProvenance.mjs';
 import { isValidEmailShape, isValidUaeMobileShape } from './authCredentials.mjs';
+import {
+  handleCreateDeckRequest,
+  handleGetDeckRequest,
+  handleDeckDownloadRequest,
+  handleDeckPreviewTimings,
+} from './deckJobs.mjs';
 
 const ACCESS_PIN = process.env.ADGM_ACCESS_PIN || '9898';
 
@@ -111,6 +117,63 @@ export async function handleApiRequest(request, opts = {}) {
 
   if (request.method === 'POST' && path === '/api/presentation') {
     return createPresentationHttpResponse(request);
+  }
+
+  if (request.method === 'POST' && path === '/api/decks') {
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return json({ error: 'Invalid JSON' }, 400);
+    }
+    try {
+      const headers = Object.fromEntries(request.headers.entries());
+      const result = await handleCreateDeckRequest(body, headers);
+      return json(result.body, result.status);
+    } catch (err) {
+      return json({ error: err?.message || 'Deck job failed' }, 500);
+    }
+  }
+
+  if (request.method === 'GET' && path.startsWith('/api/decks/')) {
+    const rest = path.slice('/api/decks/'.length);
+    if (rest.endsWith('/download')) {
+      const jobId = decodeURIComponent(rest.slice(0, -'/download'.length));
+      try {
+        const result = await handleDeckDownloadRequest(jobId);
+        if (result.json) return json(result.json, result.status);
+        return new Response(result.body, {
+          status: result.status,
+          headers: {
+            ...corsHeaders(),
+            'Content-Type': result.contentType,
+            ...result.headers,
+          },
+        });
+      } catch (err) {
+        return json({ error: err?.message || 'Download failed' }, 500);
+      }
+    }
+
+    const jobId = decodeURIComponent(rest.split('/')[0]);
+    try {
+      const result = await handleGetDeckRequest(jobId);
+      return json(result.body, result.status);
+    } catch (err) {
+      return json({ error: err?.message || 'Status failed' }, 500);
+    }
+  }
+
+  if (request.method === 'POST' && path.endsWith('/preview') && path.startsWith('/api/decks/')) {
+    const jobId = decodeURIComponent(path.slice('/api/decks/'.length).replace(/\/preview$/, ''));
+    let body = {};
+    try {
+      body = await request.json();
+    } catch {
+      /* optional body */
+    }
+    await handleDeckPreviewTimings(jobId, body?.phase === 'completed' ? 'completed' : 'started');
+    return new Response(null, { status: 204, headers: corsHeaders() });
   }
 
   if (request.method === 'POST' && path === '/api/slideai') {

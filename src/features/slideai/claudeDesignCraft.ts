@@ -178,12 +178,10 @@ LAYER 2 — McKINSEY VISUAL STANDARD:
 - Stat slide for all KPI moments (3–4 metrics with context)
 
 LAYER 3 — APPAREL GROUP DESIGN SYSTEM:
-- Navy #1A2332 + Clearsky #0087FF, Gilroy/Aptos, tagline "Images RetailME Awards"
+- Navy #003399 + Lime #C5D92D, Gotham, tagline "Exceed Expectations Everyday"
 - Dark navy cover + dark closing; white/paper content slides ("sandwich")
-- Audience: Neeraj, CEO, Apparel Group
-- Portfolio: R&B (3,200+ units), 6thStreet (Dubai Hills Mall, Images RetailME Awards),
-  Club Apparel (co-living, 91% store performance), Nysaa (investment arm),
-  KSA expansion (5km² BIG+WSP masterplan, ground-break 2026)
+- Audience: Neeraj Teckchandani, CEO, Apparel Group
+- Portfolio: R&B Fashion, 6thStreet, Club Apparel, Nysaa; 2,500+ stores · 14 countries
 
 SLIDE COUNT:
 - 8–10 slides: board update or strategy paper

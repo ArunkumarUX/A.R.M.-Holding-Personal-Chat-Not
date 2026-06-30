@@ -170,6 +170,6 @@ Apparel Group Executive Deck Standard (MANDATORY — always apply):
 - Typography: Gotham (display/body), Noto Naskh Arabic for Arabic content
 - Layout: 16:9 widescreen, white and light blue-grey section surfaces, navy headers, lime accents
 - Footer: "${APPAREL_GROUP_DECK_FOOTER}"
-- Every slide must be specific to Apparel Group retail, GCC expansion, omnichannel, or the user's topic
-- Do NOT use Apparel Group, retail, R&B, 6thStreet, or Club Apparel content
+- Every slide must be specific to Apparel Group retail, GCC expansion, omnichannel, R&B, 6thStreet, Club Apparel, or the user's topic
+- Do NOT use generic ADGM, Falcon Economy, or unrelated holding-company content unless the user explicitly requests it
 `.trim();

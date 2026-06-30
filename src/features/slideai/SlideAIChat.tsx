@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { useApp } from '../../context/AppContext';
 import { useSlideStore } from './useSlideStore';
-import { checkSlideAiAvailable, runSlideAgent } from './claudeSlideAgent';
-import { DESIGN_BOOST_PROMPT } from './prompts';
+import { usePerceptisDeckStore } from './perceptisDeckStore';
+import { buildPerceptisPromptPayload } from '../../api/perceptisDeckPayload';
+import { checkSlideAiAvailable } from './claudeSlideAgent';
 import { PORTFOLIO_QUICK_STARTS } from './mckinseyGuidanceContent';
 import {
   formatSlideAiExecutiveBrief,
@@ -104,34 +106,39 @@ Rules: Chart-led (8+ exhibits), at least 5 quantitative charts, action titles, s
 ] as const;
 
 const LOADING_STEPS_EN = [
-  'Understanding your request…',
-  'Designing slide changes…',
-  'Applying to preview…',
+  'Sending your brief to Perceptis…',
+  'Queued — preparing your deck…',
+  'Building slides with AI…',
+  'Applying Apparel Group brand…',
 ];
 
 const LOADING_STEPS_AR = [
-  'جاري فهم طلبك…',
-  'جاري تصميم التعديلات…',
-  'جاري تطبيق المعاينة…',
+  'إرسال الموجز إلى Perceptis…',
+  'في قائمة الانتظار…',
+  'بناء الشرائح بالذكاء الاصطناعي…',
+  'تطبيق هوية Apparel Group…',
 ];
 
 export default function SlideAIChat() {
   const { settings, executiveState } = useApp();
   const ar = settings.language === 'ar';
   const [input, setInput] = useState('');
-  const {
-    chatHistory,
-    isLoading,
-    loadingStep,
-    deck,
-    addMessage,
-    applyAgentResult,
-    setLoading,
-    setLoadingStep,
-  } = useSlideStore();
+  const { chatHistory, addMessage } = useSlideStore(
+    useShallow((s) => ({
+      chatHistory: s.chatHistory,
+      addMessage: s.addMessage,
+    })),
+  );
+  const { phase, progressStep, message, cancel } = usePerceptisDeckStore(
+    useShallow((s) => ({
+      phase: s.phase,
+      progressStep: s.progressStep,
+      message: s.message,
+      cancel: s.cancel,
+    })),
+  );
+  const isGenerating = phase === 'queued' || phase === 'generating';
   const bottomRef = useRef<HTMLDivElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const abortedRef = useRef(false);
   const suggestions = ar ? QUICK_PROMPTS_AR : QUICK_PROMPTS_EN;
   const loadingSteps = ar ? LOADING_STEPS_AR : LOADING_STEPS_EN;
   const [apiLive, setApiLive] = useState<boolean | null>(null);
@@ -143,84 +150,43 @@ export default function SlideAIChat() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatHistory, isLoading, loadingStep]);
-
-  useEffect(() => {
-    if (!isLoading) return;
-    const timer = window.setInterval(() => {
-      setLoadingStep((loadingStep + 1) % loadingSteps.length);
-    }, 1800);
-    return () => window.clearInterval(timer);
-  }, [isLoading, loadingStep, loadingSteps.length, setLoadingStep]);
+  }, [chatHistory, isGenerating, progressStep]);
 
   function stopGeneration() {
-    if (!abortRef.current) return;
-    abortedRef.current = true;
-    abortRef.current.abort();
-    abortRef.current = null;
-    setLoading(false);
+    cancel();
     addMessage({
       role: 'assistant',
-      content: ar ? 'تم إيقاف التوليد.' : 'Generation stopped.',
+      content: ar ? 'تم إيقاف الإنشاء. يمكنك إعادة المحاولة من المعاينة.' : 'Generation stopped. You can retry from the preview panel.',
     });
   }
 
-  async function send(text?: string) {
+  function send(text?: string) {
     const userMsg = (text ?? input).trim();
-    if (!userMsg || isLoading) return;
+    if (!userMsg || isGenerating) return;
     setInput('');
     addMessage({ role: 'user', content: userMsg });
-    setLoading(true);
-    setLoadingStep(0);
-    abortedRef.current = false;
 
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    try {
-      const state = useSlideStore.getState();
-      const wantsNewDeck = userRequestsNewDeck(userMsg);
-      const deckForAgent = wantsNewDeck ? null : state.deck;
-      const executiveBrief = userRequestsSlideContext(userMsg)
-        ? formatSlideAiExecutiveBrief(executiveState, userMsg)
-        : undefined;
-      const slideOptions = {
-        executiveBrief,
-        forceNewDeck: wantsNewDeck && Boolean(state.deck),
-        signal: controller.signal,
-      };
-      const result = await runSlideAgent(userMsg, state.chatHistory, deckForAgent, slideOptions);
-      if (abortedRef.current) return;
-      const applied = applyAgentResult(result);
-      if (result.message) {
-        addMessage({
-          role: 'assistant',
-          content: applied ? result.message : `${result.message} (Preview unchanged — try naming the slide number.)`,
-        });
-      } else if (!applied && state.deck) {
-        addMessage({
-          role: 'assistant',
-          content: ar
-            ? 'لم أتمكن من تطبيق التغييرات على المعاينة. حاول: "عدّل الشريحة 2 — …"'
-            : 'Could not apply changes to preview. Try: "Update slide 2 — …"',
-        });
-      }
-      checkSlideAiAvailable().then(setApiLive);
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-      const detail = err instanceof Error ? err.message : '';
-      addMessage({
-        role: 'assistant',
-        content: ar
-          ? `حدث خطأ${detail ? `: ${detail}` : ''}. أعد تشغيل npm run dev وحاول مرة أخرى.`
-          : `Something went wrong${detail ? `: ${detail}` : ''}. Restart npm run dev and try again.`,
-      });
-    } finally {
-      abortRef.current = null;
-      setLoading(false);
+    if (userRequestsNewDeck(userMsg)) {
+      usePerceptisDeckStore.getState().reset();
     }
+
+    const executiveBrief = userRequestsSlideContext(userMsg)
+      ? formatSlideAiExecutiveBrief(executiveState, userMsg)
+      : undefined;
+
+    const payload = buildPerceptisPromptPayload(userMsg, { executiveBrief });
+    const sourceKey = `${userMsg}::${executiveBrief ?? ''}`;
+
+    usePerceptisDeckStore.getState().startFromPrompt(payload, sourceKey, userMsg);
+
+    addMessage({
+      role: 'assistant',
+      content: ar
+        ? 'جاري إنشاء عرضك عبر Perceptis — ستظهر المعاينة والتقدم على اليمين.'
+        : 'Building your deck with Perceptis — progress and preview are on the right.',
+    });
+
+    checkSlideAiAvailable().then(setApiLive);
   }
 
   return (
@@ -228,8 +194,8 @@ export default function SlideAIChat() {
       {apiLive === false && (
         <div className="cc-slideai__api-banner" role="status">
           {ar
-            ? 'الخادم غير متصل — معاينة محلية من موضوعك حتى يعود التوليف بالذكاء الاصطناعي.'
-            : 'Server offline — local preview from your topic until AI synthesis is available.'}
+            ? 'الخادم غير متصل — تأكد من تشغيل npm run dev لإنشاء العروض عبر Perceptis.'
+            : 'Server offline — start npm run dev to generate decks via Perceptis.'}
         </div>
       )}
       <div className="cc-slideai__messages" role="log" aria-live="polite">
@@ -237,13 +203,13 @@ export default function SlideAIChat() {
           <div className="cc-slideai__empty">
             <p className="cc-slideai__empty-title">
               {ar
-                ? 'صف عرضك — Apparel Group · Opus 4.8'
-                : 'Describe your deck — Apparel Group · Powered by Claude Opus 4.8'}
+                ? 'صف عرضك — Perceptis · Apparel Group'
+                : 'Describe your deck — Perceptis · Apparel Group'}
             </p>
             <p className="cc-slideai__empty-sub">
               {ar
-                ? 'قل "استخدم سياق مركز القيادة" للحقائق الداخلية'
-                : 'Say "use Command Centre context" to ground slides in portfolio KB, calendar, and market data.'}
+                ? 'يُنشأ العرض مباشرة عبر Perceptis — قل "استخدم سياق مركز القيادة" للحقائق الداخلية'
+                : 'Your deck is built directly by Perceptis — say "use Command Centre context" for internal facts.'}
             </p>
 
             <section className="cc-slideai__prompt-section" aria-label={ar ? 'قوالب العروض' : 'Deck templates'}>
@@ -343,30 +309,19 @@ export default function SlideAIChat() {
         <div ref={bottomRef} />
       </div>
 
-      {deck && (
-        <div className="cc-slideai__boost-bar">
-          <button
-            type="button"
-            className="cc-slideai__boost-btn"
-            onClick={() => send(DESIGN_BOOST_PROMPT)}
-            disabled={isLoading}
-          >
-            ✨ {ar ? 'تحسين التصميم' : 'Boost Design'}
-          </button>
-        </div>
-      )}
-
-      {isLoading && (
+      {isGenerating && (
         <div className="cc-slideai__generation" aria-live="polite" aria-busy="true">
           <div className="cc-slideai__bubble cc-slideai__bubble--loading">
             <span className="cc-slideai__typing" aria-hidden />
-            <span className="cc-slideai__loading-text">{loadingSteps[loadingStep]}</span>
+            <span className="cc-slideai__loading-text">
+              {message || loadingSteps[Math.min(progressStep, loadingSteps.length - 1)]}
+            </span>
           </div>
           <button
             type="button"
             className="cc-slideai__stop"
             onClick={stopGeneration}
-            aria-label={ar ? 'إيقاف التوليد' : 'Stop generation'}
+            aria-label={ar ? 'إيقاف الإنشاء' : 'Stop generation'}
           >
             <CcIcon name="square" size={14} />
             {ar ? 'إيقاف' : 'Stop'}
@@ -379,8 +334,8 @@ export default function SlideAIChat() {
           className="cc-slideai__input"
           placeholder={
             ar
-              ? 'صف العرض أو اطلب تعديل أي شريحة…'
-              : 'Describe your presentation or ask to change anything…'
+              ? 'صف العرض التنفيذي الذي تريده…'
+              : 'Describe the executive deck you need…'
           }
           value={input}
           rows={2}
@@ -394,12 +349,12 @@ export default function SlideAIChat() {
         />
         <button
           type="button"
-          className={`btn-primary cc-slideai__send${isLoading ? ' cc-slideai__send--stop' : ''}`}
-          onClick={() => (isLoading ? stopGeneration() : send())}
-          disabled={!isLoading && !input.trim()}
-          aria-label={isLoading ? (ar ? 'إيقاف التوليد' : 'Stop generation') : ar ? 'إرسال' : 'Send'}
+          className={`btn-primary cc-slideai__send${isGenerating ? ' cc-slideai__send--stop' : ''}`}
+          onClick={() => (isGenerating ? stopGeneration() : send())}
+          disabled={!isGenerating && !input.trim()}
+          aria-label={isGenerating ? (ar ? 'إيقاف الإنشاء' : 'Stop generation') : ar ? 'إرسال' : 'Send'}
         >
-          <CcIcon name={isLoading ? 'square' : 'send'} size={18} />
+          <CcIcon name={isGenerating ? 'square' : 'send'} size={18} />
         </button>
       </div>
     </div>

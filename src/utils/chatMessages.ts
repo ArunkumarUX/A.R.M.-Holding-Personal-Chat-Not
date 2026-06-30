@@ -1,5 +1,5 @@
 import type { ExecutiveState } from '../data/executiveStore';
-import { resolveAnswerGrounding } from '../data/executiveStore';
+import { resolveChatSources } from '../data/executiveStore';
 import type { ChatMessage, GroundingLevel, OfflineNoticeKind, Source } from '../types';
 import { stripOfflineFallbackBanner } from './claudeErrors';
 import { stripAnswerSourceFooter } from './sourceHandles';
@@ -23,6 +23,7 @@ export type UiChatMsg =
 export function hydrateAssistantMessage(
   message: ChatMessage,
   state: ExecutiveState,
+  userQuery = '',
 ): { sources: Source[]; grounding?: GroundingLevel } {
   if (message.sources?.length) {
     return {
@@ -33,7 +34,7 @@ export function hydrateAssistantMessage(
   if (!message.content?.trim()) {
     return { sources: [], grounding: undefined };
   }
-  const resolved = resolveAnswerGrounding(message.content, state, []);
+  const resolved = resolveChatSources(userQuery, message.content, state, []);
   return {
     sources: resolved.sources,
     grounding: resolved.sources.length ? (message.grounding ?? resolved.grounding) : undefined,
@@ -44,11 +45,13 @@ export function conversationToUiMessages(
   messages: ChatMessage[],
   state: ExecutiveState,
 ): UiChatMsg[] {
+  let lastUserQuery = '';
   return messages.map((m, i) => {
     if (m.role === 'user') {
+      lastUserQuery = m.content;
       return { id: i + 1, role: 'user', text: m.content };
     }
-    const { sources, grounding } = hydrateAssistantMessage(m, state);
+    const { sources, grounding } = hydrateAssistantMessage(m, state, lastUserQuery);
     const legacy = stripOfflineFallbackBanner(m.content);
     return {
       id: i + 1,
@@ -89,9 +92,13 @@ export function formatChatRelativeTime(iso: string, ar: boolean): string {
 /** Count assistant messages that have (or can resolve) sources */
 export function conversationSourceCount(messages: ChatMessage[], state: ExecutiveState): number {
   let n = 0;
+  let lastUserQuery = '';
   for (const m of messages) {
-    if (m.role !== 'assistant') continue;
-    const { sources } = hydrateAssistantMessage(m, state);
+    if (m.role === 'user') {
+      lastUserQuery = m.content;
+      continue;
+    }
+    const { sources } = hydrateAssistantMessage(m, state, lastUserQuery);
     if (sources.length) n += sources.length;
   }
   return n;

@@ -22,6 +22,7 @@ export type FalconKbSource = {
   pageEstimate: number;
   summary: string;
   chunkCount: number;
+  externalUrl?: string;
 };
 
 const CHUNKS = chunksPayload.chunks as FalconKbChunk[];
@@ -148,4 +149,33 @@ export function formatFalconExcerptBlock(excerpts: FalconKbChunk[]): string {
     (ex) => `[${ex.handle}] ${ex.docTitle} (${ex.docDate})\n${ex.text.slice(0, 2000)}`,
   );
   return `\n═══════════════════════════════\nAUTHORITATIVE KB EXCERPTS (cite handles — do not invent)\n═══════════════════════════════\n\n${blocks.join('\n\n---\n\n')}\n`;
+}
+
+/** Map retrieved KB excerpts to panel-ready knowledge sources */
+export function sourcesFromFalconExcerpts(
+  excerpts: FalconKbChunk[],
+  enrich: (sources: import('../../types').Source[]) => import('../../types').Source[],
+): import('../../types').Source[] {
+  const seen = new Set<string>();
+  const raw: import('../../types').Source[] = [];
+  for (const ex of excerpts) {
+    if (seen.has(ex.sourceId)) continue;
+    seen.add(ex.sourceId);
+    const meta = FALCON_KB_SOURCES.find((s) => s.id === ex.sourceId);
+    if (!meta) continue;
+    raw.push({
+      id: `src-${meta.handle}`,
+      handle: meta.handle,
+      kind: 'internal',
+      sourceType: 'knowledge',
+      documentId: meta.docId,
+      title: meta.title,
+      documentName: 'Knowledge base',
+      date: meta.date,
+      confidence: 0.9,
+      excerpt: meta.summary,
+      externalUrl: meta.externalUrl,
+    });
+  }
+  return enrich(raw);
 }

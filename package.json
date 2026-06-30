@@ -26,9 +26,12 @@
   "dependencies": {
     "@netlify/blobs": "^10.7.9",
     "@vercel/blob": "^2.4.0",
+    "chart.js": "^4.5.1",
     "framer-motion": "^12.40.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^1.17.0",
     "pptxgenjs": "^4.0.1",
+    "pptxviewjs": "^1.1.9",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

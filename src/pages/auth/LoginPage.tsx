@@ -12,7 +12,7 @@ import {
   saveVerifiedSession,
 } from '../../auth/authStorage';
 import { PRODUCT_NAME } from '../../config/user';
-import { AuthGlobalNetwork } from '../../components/auth/AuthGlobalNetwork';
+import { AuthMilestoneTimeline } from '../../components/auth/AuthMilestoneTimeline';
 import '../../styles/auth-gate.css';
 
 type Channel = 'mobile' | 'email';
@@ -63,7 +63,7 @@ export function LoginPage() {
     <div className="auth-gate auth-gate--login">
       <div className="auth-gate__login-layout">
         <aside className="auth-gate__login-visual">
-          <AuthGlobalNetwork />
+          <AuthMilestoneTimeline />
         </aside>
 
         <div className="auth-gate__login-panel">

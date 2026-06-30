@@ -4,6 +4,9 @@
 
 import { ANSWER_FORMAT_RULES } from './answerFormatRules.mjs';
 import {
+  buildExecutiveCommandBlock,
+} from './agiExecutiveOsPrompt.mjs';
+import {
   CSO_GLOBAL_SYSTEM_PROMPT,
   CSO_ORCHESTRATOR_PROMPT,
   CSO_SOURCE_CONFIDENCE_RULES,
@@ -297,9 +300,11 @@ AUTHORITATIVE KB EXCERPTS are injected this turn (GCC expansion alignment [KB-00
   const primary = ctx?.agentDelegation?.[0]?.name ?? 'Chief of Staff AI';
   const agentIds = (ctx?.agentDelegation ?? []).map((a) => a.id).filter(Boolean);
   const specialistBlock = buildSpecialistPromptBlocks(agentIds);
-  // Briefings use their dedicated mandatory template; chat uses the query-inferred contract
+  // Briefings use their dedicated mandatory template; executive commands override chat contracts
   const briefingTemplate = isBriefing ? buildBriefingTemplateBlock(ctx?.briefingFormat) : null;
-  const contractBlock = briefingTemplate ?? buildOutputContractBlock(ctx?.userQuestion ?? '');
+  const executiveCommandBlock = buildExecutiveCommandBlock(ctx?.userQuestion ?? '');
+  const contractBlock =
+    briefingTemplate ?? executiveCommandBlock ?? buildOutputContractBlock(ctx?.userQuestion ?? '');
   const gstClock = ctx?.gstTimeLabel ?? `${formatGstClock()} GST`;
 
   const now = new Date();
