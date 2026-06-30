@@ -6,6 +6,7 @@ import { createAuthSessionStore } from './authSessionStore.mjs';
 import { SESSION_TTL_MS } from './memoryAuthStore.mjs';
 import { buildHealthDataTrust } from './dataProvenance.mjs';
 import { isValidEmailShape, isValidUaeMobileShape } from './authCredentials.mjs';
+import { getPerceptisConfig } from './perceptisClient.mjs';
 import {
   handleCreateDeckRequest,
   handleGetDeckRequest,
@@ -81,6 +82,24 @@ export async function handleApiRequest(request, opts = {}) {
 
   if (request.method === 'GET' && path === '/api/health') {
     const { apiKey, model } = getAnthropicConfig();
+    const { apiKey: perceptisKey, templateName: perceptisTemplate } = getPerceptisConfig();
+    const blobConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim() || process.env.BLOB_STORE_ID?.trim());
+    const setupHints = [];
+    if (!apiKey) {
+      setupHints.push(
+        'ANTHROPIC_API_KEY is missing on Vercel — chat and SlideAI will not work. Add it under Project → Settings → Environment Variables, then redeploy.',
+      );
+    }
+    if (!perceptisKey) {
+      setupHints.push(
+        'PERCEPTIS_API_KEY is missing on Vercel — executive deck generation will fail. Add it from Perceptis dashboard, then redeploy.',
+      );
+    }
+    if (!blobConfigured) {
+      setupHints.push(
+        'BLOB_READ_WRITE_TOKEN is missing — deck jobs and QR auth may fail across serverless instances. Link Vercel Blob storage and redeploy.',
+      );
+    }
     const payload = {
       ok: true,
       auth: true,
@@ -88,6 +107,13 @@ export async function handleApiRequest(request, opts = {}) {
       claudeStatus: apiKey ? 'configured' : 'missing',
       claudeKeyFingerprint: anthropicKeyFingerprint(apiKey),
       model,
+      perceptis: Boolean(perceptisKey),
+      perceptisStatus: perceptisKey ? 'configured' : 'missing',
+      perceptisTemplate: perceptisTemplate || 'apparel-group-executive',
+      blob: blobConfigured,
+      blobStatus: blobConfigured ? 'configured' : 'missing',
+      liveReady: Boolean(apiKey && perceptisKey && blobConfigured),
+      setupHints,
       dataTrust: buildHealthDataTrust(),
     };
     if (url.searchParams.get('verify') === '1') {

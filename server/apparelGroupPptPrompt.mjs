@@ -16,6 +16,22 @@ Portfolio: R&B Fashion, 6thStreet (omnichannel · 90-min delivery), Club Apparel
 Leadership: Neeraj Teckchandani (CEO), Sima Ganwani Ved (Founder & Chairwoman), Nilesh Ved (Chairman).
 Brand: Navy #003399, Lime #C5D92D, Gotham typography, tagline "Exceed Expectations Everyday".`;
 
+/**
+ * Visual style — minimal numbered-card look (reference: "EcoTransit" pitch-deck PDF)
+ * combined with the layout variety of the "Inaamajay" infographic pack, reskinned to
+ * Apparel Group's own navy/lime brand instead of either reference's original colours.
+ * Injected into every Perceptis prompt so the look survives even if template_name
+ * isn't configured on the Perceptis side.
+ */
+const APPAREL_VISUAL_STYLE = `VISUAL STYLE (apply to every slide, this is not optional):
+- Background: off-white/light neutral, never stark white. Generous whitespace and margins.
+- Headlines: bold, large, near-black or navy, left-aligned. Small rounded pill "eyebrow" label above the headline on context slides (e.g. "About Us", "Our Vision").
+- Sequential or list content (steps, options, features, risks, pillars): render as numbered rounded-corner cards labelled 01, 02, 03... Exactly ONE card per group is the lead/primary item — filled solid Navy #003399 with white text; every other card in that group is light neutral grey (~#F0F0F0) with dark text. Never make more than one card solid-navy in the same group.
+- Process flows, roadmaps, world maps, or multi-metric exhibits: use icon-badge diagrams, ring/donut segments, or map fills as the content calls for — but colour them with Navy #003399 as the primary and Lime #C5D92D as the one secondary accent only. Do not introduce purple, pink, cyan, teal, amber, or any other accent colour.
+- Photography: inset with rounded corners; full-bleed photography only on the cover and closing slides.
+- Icons: simple flat white icon on a solid Navy or Lime badge — never multi-colour, never outline-only.
+- Footer: "Apparel Group · Confidential" bottom-left, current year bottom-right.`;
+
 export function buildApparelGroupPptPrompt({
   topic = '[INSERT TOPIC]',
   coreQuestion = '[INSERT THE SINGLE MOST IMPORTANT QUESTION THIS PRESENTATION MUST ANSWER]',
@@ -337,6 +353,8 @@ BRAND (mandatory on every slide):
 - 16:9 widescreen · premium executive whitespace · boardroom-ready
 - Footer: Apparel Group · Confidential
 
+${APPAREL_VISUAL_STYLE}
+
 ${PERCEPTIS_LAYOUT_GUIDE}
 
 QUALITY BAR (every slide):
@@ -380,6 +398,8 @@ export function buildPerceptisPromptFromPayload(payload = {}) {
   if (userPrompt.length > 350) {
     return `${brandRules}. Exactly ${slideCount} slides.
 
+${APPAREL_VISUAL_STYLE}
+
 ${userPrompt}
 
 ${context.length ? `CONTEXT:\n${context.join('\n\n')}\n\n` : ''}Deliver fully editable .pptx.`;
@@ -393,6 +413,8 @@ TOPIC: ${topic}
 SLIDES: exactly ${slideCount} slides, 16:9, board-ready
 
 BRAND: ${brandRules} · footer "Apparel Group · Confidential"
+
+${APPAREL_VISUAL_STYLE}
 
 STRUCTURE: Cover → Executive recommendation → Key findings → Market insight → Strategic options → Recommended strategy → Financial impact → Roadmap → Decisions required
 
@@ -445,6 +467,7 @@ export function buildCompactPerceptisPrompt(payload = {}) {
     // template above isn't found or configured on the Perceptis side —
     // don't rely on template_name alone to carry the brand.
     `Brand (mandatory on every slide): ${primary} navy + ${accent} lime accent · ${headingFont} headings / ${bodyFont} body · footer "${footer}"`,
+    APPAREL_VISUAL_STYLE,
     `Topic: ${topic}`,
     `Audience: ${audience}`,
     `Objective: ${objective.slice(0, 220)}`,
