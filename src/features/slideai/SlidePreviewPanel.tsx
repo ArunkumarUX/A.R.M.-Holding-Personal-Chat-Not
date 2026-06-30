@@ -1,7 +1,8 @@
 import { useEffect, type CSSProperties } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { CcIcon } from '../../command-centre/CcIcon';
-import { SlideCanvas } from './SlideCanvas';
+import { slideDisplayTitle } from './deckNormalize';
+import { SlideCanvas, SlideThumb } from './SlideCanvas';
 import { useSlideStore } from './useSlideStore';
 
 const OPUS_STEPS_EN = [
@@ -179,7 +180,7 @@ export function SlidePreviewPanel({ ar }: { ar: boolean }) {
             <button
               type="button"
               className="icon-btn"
-              disabled={activeSlideIndex <= 0}
+              disabled={activeSlideIndex <= 0 || isLoading}
               onClick={() => setActiveSlide(activeSlideIndex - 1)}
               aria-label={ar ? 'الشريحة السابقة' : 'Previous slide'}
             >
@@ -191,7 +192,7 @@ export function SlidePreviewPanel({ ar }: { ar: boolean }) {
             <button
               type="button"
               className="icon-btn"
-              disabled={activeSlideIndex >= navTotal - 1}
+              disabled={activeSlideIndex >= navTotal - 1 || isLoading}
               onClick={() => setActiveSlide(activeSlideIndex + 1)}
               aria-label={ar ? 'الشريحة التالية' : 'Next slide'}
             >
@@ -200,6 +201,26 @@ export function SlidePreviewPanel({ ar }: { ar: boolean }) {
           </div>
         )}
       </div>
+
+      {hasDeck && (
+        <div className="cc-slideai__filmstrip" role="tablist" aria-label={ar ? 'الشرائح' : 'Slides'}>
+          {deck!.slides.map((s, i) => (
+            <div
+              key={`thumb-${contentKey}-${s.id}-${i}-${slideDisplayTitle(s, i, deck!.title).slice(0, 24)}`}
+              className="cc-slideai__filmstrip-item"
+            >
+              <span className="cc-slideai__filmstrip-num">{i + 1}</span>
+              <SlideThumb
+                slide={s}
+                deckTheme={deck!.theme}
+                isActive={i === activeSlideIndex}
+                isUpdating={isLoading && i === activeSlideIndex}
+                onClick={() => setActiveSlide(i)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
