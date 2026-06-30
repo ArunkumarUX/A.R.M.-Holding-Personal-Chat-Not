@@ -139,9 +139,24 @@ async function advanceDeckJob(job, { maxMs } = {}) {
   const budget = maxMs ?? (process.env.VERCEL ? 52_000 : APPAREL_GROUP_DECK_CONFIG.jobTimeoutMs);
   const deadline = now() + budget;
   const pollStarted = now();
+  const MAX_CONSECUTIVE_POLL_ERRORS = 6;
+  let consecutivePollErrors = 0;
 
   while (now() < deadline) {
-    const body = await getPerceptisJobStatus(job.perceptisJobId);
+    let body;
+    try {
+      body = await getPerceptisJobStatus(job.perceptisJobId);
+      consecutivePollErrors = 0;
+    } catch (err) {
+      // A single flaky status check used to kill the whole background poller
+      // and mark the job 'failed' even though Perceptis was still working —
+      // tolerate transient network errors and keep polling.
+      consecutivePollErrors += 1;
+      if (consecutivePollErrors >= MAX_CONSECUTIVE_POLL_ERRORS) throw err;
+      await sleep(perceptisPollIntervalMs(now() - pollStarted));
+      continue;
+    }
+
     const done = await applyPerceptisStatus(job, body);
     await saveDeckJob(job);
     if (done || job.status === 'failed') return job;
@@ -246,9 +261,18 @@ export async function createDeckJob(payload, { idempotencyKey, displayPrompt } =
 export async function getDeckJob(jobId) {
   const job = await loadDeckJob(jobId);
   if (!job) return null;
-  if (!job.downloadReady && job.status !== 'failed') {
-    await advanceDeckJob(job, { maxMs: process.env.VERCEL ? 52_000 : 8_000 });
+  if (process.env.VERCEL) {
+    // Serverless: no persistent process between requests, so this request has
+    // to do the advancing itself (bounded to stay under the function timeout).
+    if (!job.downloadReady && job.status !== 'failed') {
+      await advanceDeckJob(job, { maxMs: 52_000 });
+    }
+    return job;
   }
+  // Local/persistent server: runDeckJobBackground() is already polling Perceptis
+  // continuously for this job. Re-polling here on every single client status
+  // check duplicated that work and blocked each GET for up to 8s for nothing —
+  // just return the freshest state the background poller has already written.
   return job;
 }
 

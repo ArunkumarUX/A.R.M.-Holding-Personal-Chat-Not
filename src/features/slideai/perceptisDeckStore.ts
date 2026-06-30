@@ -152,6 +152,8 @@ async function loadPreviewBlob(
   }
 }
 
+const MAX_AUTO_RETRIES = 5;
+
 async function runDeckBuild(
   payload: PerceptisDeckPayload,
   sourceKey: string,
@@ -159,6 +161,7 @@ async function runDeckBuild(
   idempotencyKey: string,
   set: (fn: (s: PerceptisDeckStore) => Partial<PerceptisDeckStore>) => void,
   id: number,
+  attempt = 0,
 ) {
   abortController?.abort();
   abortController = new AbortController();
@@ -169,22 +172,24 @@ async function runDeckBuild(
     payload.prompt?.trim().slice(0, 80) ||
     'Apparel Group Presentation';
 
-  set(() => ({
-    phase: 'queued',
-    message: UX_STEPS[0],
-    prompt: displayPrompt,
-    title,
-    jobId: null,
-    idempotencyKey,
-    blob: null,
-    downloadReady: false,
-    error: null,
-    elapsedSec: 0,
-    progressStep: 0,
-    sourceKey,
-    slideCount: payload.slideCount ?? 12,
-  }));
-  startElapsedTimer(set);
+  if (attempt === 0) {
+    set(() => ({
+      phase: 'queued',
+      message: UX_STEPS[0],
+      prompt: displayPrompt,
+      title,
+      jobId: null,
+      idempotencyKey,
+      blob: null,
+      downloadReady: false,
+      error: null,
+      elapsedSec: 0,
+      progressStep: 0,
+      sourceKey,
+      slideCount: payload.slideCount ?? 12,
+    }));
+    startElapsedTimer(set);
+  }
 
   try {
     const created = await createDeckJob(payload, {
@@ -237,9 +242,23 @@ async function runDeckBuild(
     void loadPreviewBlob(ready.jobId, set, id);
   } catch (err) {
     if (signal.aborted || id !== runId) return;
-    clearElapsedTimer();
     const msg = err instanceof Error ? err.message : 'Unknown error';
     const isFailed = msg.includes('failed') || msg.includes('Failed');
+
+    // A timed-out request or network blip used to permanently stop polling here —
+    // the UI kept showing "still creating" with no further updates and no way to
+    // recover short of starting over. The idempotency key is stable, so retrying
+    // createDeckJob just reattaches to the same (possibly still-running) job
+    // instead of starting a duplicate — safe to auto-retry a few times.
+    if (!isFailed && attempt < MAX_AUTO_RETRIES) {
+      const delayMs = Math.min(2000 * 2 ** attempt, 15_000);
+      set(() => ({ message: 'Reconnecting…' }));
+      await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      if (signal.aborted || id !== runId) return;
+      return runDeckBuild(payload, sourceKey, displayPrompt, idempotencyKey, set, id, attempt + 1);
+    }
+
+    clearElapsedTimer();
     set((state) => ({
       phase: isFailed ? 'error' : 'stalled',
       message: isFailed ? 'Generation failed' : 'Still crafting your deck — hang tight',

@@ -36,9 +36,17 @@ export function SlideAIPage() {
     refreshHistory();
   }, [refreshHistory]);
 
-  const onReset = () => {
-    usePerceptisDeckStore.getState().reset();
+  const hasJob = phase !== 'idle' || Boolean(prompt);
+  const downloadReadyNow = downloadReady && Boolean(jobId);
+  const isGenerating = ['queued', 'analysing', 'generating', 'downloading', 'stalled'].includes(phase);
+
+  const onNewPpt = () => {
+    const store = usePerceptisDeckStore.getState();
+    if (isGenerating) store.cancel();
+    store.reset();
     resetChat();
+    setShowHistory(false);
+    showToast(ar ? 'ابدأ عرض PowerPoint جديد' : 'Start a new PowerPoint', 'success');
   };
 
   const onDownloadPptx = () => {
@@ -55,9 +63,6 @@ export function SlideAIPage() {
     }
   };
 
-  const hasJob = phase !== 'idle' || Boolean(prompt);
-  const downloadReadyNow = downloadReady && Boolean(jobId);
-  const isGenerating = ['queued', 'analysing', 'generating', 'downloading', 'stalled'].includes(phase);
   const downloadLabel = isGenerating
     ? ar
       ? 'جاري الإنشاء…'
@@ -79,6 +84,15 @@ export function SlideAIPage() {
           <div className="cc-slideai__panel-head-actions">
             <button
               type="button"
+              className="pill cc-slideai__new-ppt-btn"
+              onClick={onNewPpt}
+              aria-label={ar ? 'عرض PowerPoint جديد' : 'New PowerPoint'}
+            >
+              <CcIcon name="file-plus" size={14} />
+              {ar ? 'عرض جديد' : 'New PPT'}
+            </button>
+            <button
+              type="button"
               className={`pill ghost cc-slideai__history-toggle${showHistory ? ' cc-slideai__history-toggle--on' : ''}`}
               onClick={() => setShowHistory((v) => !v)}
               aria-pressed={showHistory}
@@ -86,11 +100,6 @@ export function SlideAIPage() {
               <CcIcon name="history" size={14} />
               {ar ? 'السجل' : 'History'}
             </button>
-            {hasJob && (
-              <button type="button" className="pill ghost" onClick={onReset}>
-                {ar ? 'عرض جديد' : 'New deck'}
-              </button>
-            )}
           </div>
         </header>
         <SlideAIChat />

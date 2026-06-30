@@ -358,7 +358,7 @@ export function buildPerceptisPromptFromPayload(payload = {}) {
   }
 
   const userPrompt = payload.prompt?.trim() || '';
-  const slideCount = payload.slideCount || inferSlideCount(userPrompt) || 10;
+  const slideCount = clampSlideCount(payload.slideCount || inferSlideCountFromText(userPrompt));
   const context = [];
   if (payload.notes?.trim()) context.push(payload.notes.trim().slice(0, 4000));
   if (payload.documentText?.trim()) context.push(payload.documentText.trim().slice(0, 4000));
@@ -405,12 +405,6 @@ RULES:
 ${context.length ? `CONTEXT:\n${context.join('\n\n')}\n\n` : ''}Deliver fully editable .pptx.`;
 }
 
-function inferSlideCount(text, fallback = 10) {
-  const match = String(text).match(/(\d+)\s*[- ]?\s*slides?/i);
-  if (!match) return fallback;
-  return Math.min(20, Math.max(4, Number.parseInt(match[1], 10) || fallback));
-}
-
 /**
  * Compact structured request — brand rules live in server config, not repeated here.
  * @see apparelGroupDeckConfig.mjs
@@ -442,9 +436,15 @@ export function buildCompactPerceptisPrompt(payload = {}) {
   }
   const sourceContent = sourceParts.join('\n\n').slice(0, 3000);
 
+  const { primary, accent, headingFont, bodyFont, footer } = APPAREL_GROUP_DECK_CONFIG.brand;
+
   return [
-    `Apparel Group executive deck · template: ${templateId}`,
-    `Slides: ${slideCount} · Format: ${APPAREL_GROUP_DECK_CONFIG.format}`,
+    templateId ? `Apparel Group executive deck · template: ${templateId}` : 'Apparel Group executive deck',
+    `Slides: exactly ${slideCount} · Format: ${APPAREL_GROUP_DECK_CONFIG.format}`,
+    // Spelled out explicitly so the brand still applies even if the named
+    // template above isn't found or configured on the Perceptis side —
+    // don't rely on template_name alone to carry the brand.
+    `Brand (mandatory on every slide): ${primary} navy + ${accent} lime accent · ${headingFont} headings / ${bodyFont} body · footer "${footer}"`,
     `Topic: ${topic}`,
     `Audience: ${audience}`,
     `Objective: ${objective.slice(0, 220)}`,

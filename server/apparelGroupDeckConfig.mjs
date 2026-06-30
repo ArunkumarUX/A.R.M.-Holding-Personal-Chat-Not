@@ -2,7 +2,12 @@
  * Apparel Group deck generation — permanent rules live here, not in every request.
  */
 export const APPAREL_GROUP_DECK_CONFIG = {
-  brandTemplateId: process.env.PERCEPTIS_TEMPLATE_NAME?.trim() || 'apparel-group-executive',
+  // No verified Apparel Group template exists in the Perceptis org yet — sending a
+  // guessed template_name risks a 409 (no/ambiguous match) or silently skipping the
+  // brand. Leave unset until PERCEPTIS_TEMPLATE_NAME is configured with a name that
+  // exactly matches a template in the Perceptis app's Templates page (case-sensitive).
+  // Branding is still enforced via the explicit Brand line in buildCompactPerceptisPrompt.
+  brandTemplateId: process.env.PERCEPTIS_TEMPLATE_NAME?.trim() || '',
   company: 'Apparel Group',
   audience: 'Group CEO and senior leadership',
   format: '16:9 pptx',
@@ -21,15 +26,22 @@ export const APPAREL_GROUP_DECK_CONFIG = {
     'Maximum 3 strategic options on first pass',
     'No appendix unless explicitly requested',
   ],
-  defaultSlideCount: 12,
-  maxSlideCount: 15,
+  defaultSlideCount: 8,
+  maxSlideCount: 12,
   jobTimeoutMs: 15 * 60 * 1000,
   stalledAfterMs: 3 * 60 * 1000,
 };
 
+/** Only these three lengths are offered — fewer slides means a faster Perceptis render. */
+export const ALLOWED_SLIDE_COUNTS = [6, 8, 12];
+
+/** Snap any requested slide count to the nearest of ALLOWED_SLIDE_COUNTS (ties favour the smaller/faster option). */
 export function clampSlideCount(count, fallback = APPAREL_GROUP_DECK_CONFIG.defaultSlideCount) {
-  const n = Number(count) || fallback;
-  return Math.min(APPAREL_GROUP_DECK_CONFIG.maxSlideCount, Math.max(4, n));
+  const n = Number(count);
+  if (!Number.isFinite(n) || n <= 0) return fallback;
+  return ALLOWED_SLIDE_COUNTS.reduce((closest, candidate) =>
+    Math.abs(candidate - n) < Math.abs(closest - n) ? candidate : closest,
+  );
 }
 
 export function inferSlideCountFromText(text, fallback = APPAREL_GROUP_DECK_CONFIG.defaultSlideCount) {

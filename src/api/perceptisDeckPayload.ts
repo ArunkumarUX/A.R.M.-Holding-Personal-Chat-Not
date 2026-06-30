@@ -14,11 +14,22 @@ export type PerceptisDeckPayload = PresentationInput & {
   userId?: string;
 };
 
-/** Infer slide count from natural-language brief (e.g. "10-slide deck"). */
-export function inferSlideCount(text: string, fallback = 12): number {
+/** Only these three lengths are offered — fewer slides means a faster Perceptis render. */
+export const ALLOWED_SLIDE_COUNTS = [6, 8, 12] as const;
+
+/** Snap a count to the nearest allowed value (ties favour the smaller/faster option). */
+export function clampSlideCount(count: number, fallback = 8): number {
+  if (!Number.isFinite(count) || count <= 0) return fallback;
+  return ALLOWED_SLIDE_COUNTS.reduce((closest, candidate) =>
+    Math.abs(candidate - count) < Math.abs(closest - count) ? candidate : closest,
+  );
+}
+
+/** Infer slide count from natural-language brief (e.g. "10-slide deck"), snapped to 6/8/12. */
+export function inferSlideCount(text: string, fallback = 8): number {
   const match = text.match(/(\d+)\s*[- ]?\s*slides?/i);
   if (!match) return fallback;
-  return Math.min(15, Math.max(4, Number.parseInt(match[1], 10) || fallback));
+  return clampSlideCount(Number.parseInt(match[1], 10), fallback);
 }
 
 /** Build Perceptis payload — prompt-first (no intermediate deck generation). */
@@ -34,10 +45,14 @@ export function buildPerceptisPromptPayload(
   const trimmed = prompt.trim();
   return {
     prompt: trimmed,
-    slideCount: options.slideCount ?? inferSlideCount(trimmed),
+    slideCount: options.slideCount != null ? clampSlideCount(options.slideCount) : inferSlideCount(trimmed),
     tone: options.tone ?? 'executive',
     audience: 'Group CEO',
-    templateName: 'apparel-group-executive',
+    // No confirmed Perceptis template exists for Apparel Group yet — omit
+    // templateName so the server falls back to PERCEPTIS_TEMPLATE_NAME (if set)
+    // or Perceptis's own org default, instead of guessing a name that may not
+    // match anything. Brand colors/fonts/footer are spelled out explicitly in
+    // the prompt text server-side regardless.
     notes: [options.notes, options.executiveBrief].filter(Boolean).join('\n\n').slice(0, 3000) || undefined,
   };
 }

@@ -34,7 +34,7 @@ export const SCQA_FORMULA = {
   ],
 };
 
-export const MCKINSEY_BOARD_TEMPLATE = `Create a 10-slide McKinsey board deck for Neeraj, CEO Apparel Group.
+export const MCKINSEY_BOARD_TEMPLATE = `Create an 8-slide McKinsey board deck for Neeraj, CEO Apparel Group.
 
 Topic: [YOUR TOPIC]
 Situation (S): [Context — audience, portfolio (R&B · 6thStreet · Club Apparel · Nysaa · Jebel Ali)]
@@ -84,7 +84,7 @@ export const PORTFOLIO_QUICK_STARTS = [
     labelAr: 'عرض توسع Club Apparel',
     descriptionEn: 'McKinsey board pack — 91% store performance case for 3 new co-living sites',
     descriptionAr: 'حزمة مجلس McKinsey — حالة الإشغال 91% لـ 3 مواقع كوليفينغ',
-    prompt: `Create a 10-slide McKinsey board deck for Neeraj, CEO Apparel Group.
+    prompt: `Create an 8-slide McKinsey board deck for Neeraj, CEO Apparel Group.
 
 Topic: Club Apparel Co-living Expansion — 3 New Dubai Sites
 Situation (S): Club Apparel operates 340 loyalty programme units at 91% store performance across Dubai; Apparel Group portfolio strategy prioritises scalable residential formats.
@@ -103,7 +103,7 @@ Rules: action titles only, two-col + insightPanel on data slides, soWhat + sourc
     labelAr: 'عرض إطلاق 6thStreet',
     descriptionEn: 'Omnichannel residential launch — Images RetailME Awards positioning',
     descriptionAr: 'إطلاق سكني بتصميم رائد — موضع Images RetailME Awards',
-    prompt: `Create a 10-slide McKinsey board deck for Neeraj, CEO Apparel Group.
+    prompt: `Create an 8-slide McKinsey board deck for Neeraj, CEO Apparel Group.
 
 Topic: 6thStreet Design-Led Residential Launch — Dubai Hills Mall & Images RetailME Awards
 Situation (S): 6thStreet is Apparel Group's omnichannel residential brand; pipeline includes Dubai Hills Mall and cultural partnership "Images RetailME Awards" (open call closes 25 Jul 2026).
@@ -122,7 +122,7 @@ Rules: action titles, insightPanel on every exhibit slide, sourceNote citing CBR
     labelAr: 'عرض مخطط جبل علي',
     descriptionEn: '5 km² BIG + WSP racecourse masterplan — ground-break 2026',
     descriptionAr: 'مخطط سباق جبل علي 5 كم² BIG + WSP — انطلاق 2026',
-    prompt: `Create a 10-slide McKinsey board deck for Neeraj, CEO Apparel Group.
+    prompt: `Create an 8-slide McKinsey board deck for Neeraj, CEO Apparel Group.
 
 Topic: KSA expansion Masterplan — 5 km² BIG + WSP Development
 Situation (S): Apparel Group holds the KSA expansion land parcel; BIG and WSP have delivered a 5 km² masterplan with ground-break targeted 2026, aligned with Dubai GCC retail growth and tourism growth.

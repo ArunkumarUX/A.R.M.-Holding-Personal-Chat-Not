@@ -73,6 +73,7 @@ function PerceptisProgressPanel({
   progressStep,
   slideCount,
   stalled,
+  onRetry,
 }: {
   ar: boolean;
   message: string;
@@ -80,6 +81,7 @@ function PerceptisProgressPanel({
   progressStep: number;
   slideCount: number;
   stalled?: boolean;
+  onRetry?: () => void;
 }) {
   const steps = ar ? PROGRESS_STEPS_AR : UX_PROGRESS_STEPS;
   const tips = ar ? ENGAGING_TIPS_AR : ENGAGING_TIPS_EN;
@@ -105,79 +107,87 @@ function PerceptisProgressPanel({
         <div className="cc-slideai__perceptis-progress-icon-wrap">
           <span className="cc-slideai__perceptis-progress-ring" aria-hidden />
           <div className="cc-slideai__perceptis-progress-icon">
-            <CcIcon name="sparkles" size={32} />
+            <CcIcon name="sparkles" size={26} />
           </div>
         </div>
       </div>
 
-      <span className="cc-slideai__perceptis-progress-live">
-        <span className="cc-slideai__perceptis-progress-live-dot" aria-hidden />
-        {stalled
-          ? ar
-            ? 'لا يزال قيد الإنشاء'
-            : 'Still creating'
-          : ar
-            ? 'جاري الإنشاء'
-            : 'Creating now'}
-      </span>
-
-      <h3 className="cc-slideai__perceptis-progress-title">
-        {steps[activeStep]}
-      </h3>
-
-      <p className="cc-slideai__perceptis-progress-msg cc-slideai__perceptis-progress-msg--tip" key={tipIndex}>
-        {tips[tipIndex]}
-      </p>
-
-      {slideCount > 0 && (
-        <p className="cc-slideai__perceptis-progress-slides">
-          {ar
-            ? `بناء ${builtSlides} من ${slideCount} شريحة`
-            : `Building slide ${builtSlides} of ${slideCount}`}
-        </p>
-      )}
-
-      <div
-        className="cc-slideai__perceptis-progress-bar cc-slideai__perceptis-progress-bar--indeterminate"
-        role="progressbar"
-        aria-valuetext={message}
-        aria-busy="true"
-      >
-        <span className="cc-slideai__perceptis-progress-fill" />
-        <span className="cc-slideai__perceptis-progress-shimmer" aria-hidden />
-      </div>
-
-      <ul className="cc-slideai__perceptis-progress-steps">
-        {steps.map((label, i) => (
-          <li
-            key={label}
-            className={[
-              i < activeStep ? 'cc-slideai__perceptis-progress-step--done' : '',
-              i === activeStep ? 'cc-slideai__perceptis-progress-step--active' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            <span className="cc-slideai__perceptis-progress-dot" aria-hidden>
-              {i < activeStep ? <CcIcon name="check" size={10} /> : null}
-            </span>
-            {label}
-          </li>
-        ))}
-      </ul>
-
-      <p className="cc-slideai__perceptis-progress-elapsed">
-        <span className="cc-slideai__perceptis-progress-clock">{formatElapsed(elapsedSec, ar)}</span>
-        <span className="muted-3">
+      <div className="cc-slideai__perceptis-progress-body">
+        <span className="cc-slideai__perceptis-progress-live">
+          <span className="cc-slideai__perceptis-progress-live-dot" aria-hidden />
           {stalled
             ? ar
-              ? ' · العروض المعقدة قد تستغرق بضع دقائق إضافية'
-              : ' · complex decks can take a few extra minutes'
+              ? 'لا يزال قيد الإنشاء'
+              : 'Still creating'
             : ar
-              ? ' · عادةً 1–5 دقائق · يمكنك متابعة المحادثة'
-              : ' · typically 1–5 min · you can keep chatting'}
+              ? 'جاري الإنشاء'
+              : 'Creating now'}
         </span>
-      </p>
+
+        <h3 className="cc-slideai__perceptis-progress-title">
+          {steps[activeStep]}
+        </h3>
+
+        <p className="cc-slideai__perceptis-progress-msg cc-slideai__perceptis-progress-msg--tip" key={tipIndex}>
+          {tips[tipIndex]}
+        </p>
+
+        {slideCount > 0 && (
+          <p className="cc-slideai__perceptis-progress-slides">
+            {ar
+              ? `بناء ${builtSlides} من ${slideCount} شريحة`
+              : `Building slide ${builtSlides} of ${slideCount}`}
+          </p>
+        )}
+
+        <div
+          className="cc-slideai__perceptis-progress-bar cc-slideai__perceptis-progress-bar--indeterminate"
+          role="progressbar"
+          aria-valuetext={message}
+          aria-busy="true"
+        >
+          <span className="cc-slideai__perceptis-progress-fill" />
+          <span className="cc-slideai__perceptis-progress-shimmer" aria-hidden />
+        </div>
+
+        <ul className="cc-slideai__perceptis-progress-steps">
+          {steps.map((label, i) => (
+            <li
+              key={label}
+              className={[
+                i < activeStep ? 'cc-slideai__perceptis-progress-step--done' : '',
+                i === activeStep ? 'cc-slideai__perceptis-progress-step--active' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <span className="cc-slideai__perceptis-progress-dot" aria-hidden>
+                {i < activeStep ? <CcIcon name="check" size={10} /> : null}
+              </span>
+              {label}
+            </li>
+          ))}
+        </ul>
+
+        <p className="cc-slideai__perceptis-progress-elapsed">
+          <span className="cc-slideai__perceptis-progress-clock">{formatElapsed(elapsedSec, ar)}</span>
+          <span className="cc-slideai__perceptis-progress-hint">
+            {stalled
+              ? ar
+                ? 'العروض المعقدة قد تستغرق بضع دقائق إضافية'
+                : 'Complex decks can take a few extra minutes'
+              : ar
+                ? 'عادةً 1–5 دقائق · يمكنك متابعة المحادثة'
+                : 'Typically 1–5 min · you can keep chatting'}
+          </span>
+        </p>
+
+        {stalled && onRetry ? (
+          <button type="button" className="btn-ghost btn-sm cc-slideai__perceptis-progress-retry" onClick={onRetry}>
+            {ar ? 'إعادة الاتصال الآن' : 'Reconnect now'}
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -296,6 +306,7 @@ export function SlidePreviewPanel({ ar }: { ar: boolean }) {
               progressStep={progressStep}
               slideCount={slideCount}
               stalled={phase === 'stalled'}
+              onRetry={phase === 'stalled' ? retry : undefined}
             />
           ) : wasStopped ? (
             <div className="cc-slideai__perceptis-placeholder">
