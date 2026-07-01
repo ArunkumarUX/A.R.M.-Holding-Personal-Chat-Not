@@ -6970,7 +6970,181 @@ h1,h2,h3,h4,h5 {
 @media (max-width: 960px) {
   .cc-slideai {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(280px, 42vh) 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    border-radius: 0;
+    border-inline: none;
+  }
+  .cc-slideai__mobile-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    padding-top: max(10px, env(safe-area-inset-top, 0px));
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-0);
+    grid-row: 1;
+  }
+  .cc-slideai__mobile-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .cc-slideai__mobile-tab--on {
+    color: var(--ink);
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+    background: color-mix(in oklab, var(--accent) 10%, var(--surface));
+  }
+  .cc-slideai__mobile-tab-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 99px;
+    background: var(--accent);
+    color: rgba(0, 45, 128, 1);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cc-slideai__panel--chat,
+  .cc-slideai__panel--preview {
+    display: none;
+    grid-row: 2;
+    min-height: 0;
+  }
+  .cc-slideai--show-chat .cc-slideai__panel--chat,
+  .cc-slideai--show-preview .cc-slideai__panel--preview {
+    display: flex;
+  }
+  .cc-slideai__panel--chat {
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+  }
+  [dir="rtl"] .cc-slideai__panel--chat {
+    border-left: none;
+  }
+  .cc-slideai__panel-head {
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .cc-slideai__panel-head-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .cc-slideai__preview-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .cc-slideai__export {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .cc-slideai__theater {
+    padding: 12px 10px 8px;
+    gap: 10px;
+  }
+  .cc-slideai__canvas-wrap {
+    width: 100%;
+    max-width: 100%;
+  }
+  .cc-slideai__canvas-cols--exhibit {
+    grid-template-columns: 1fr;
+  }
+  .cc-slideai__canvas-insight-panel {
+    margin: 8px 0 0;
+    min-height: 72px;
+  }
+  .cc-slideai__canvas-cols {
+    grid-template-columns: 1fr;
+  }
+  .cc-slideai__canvas--title::after {
+    display: none;
+  }
+  .cc-slideai__canvas-chrome-type {
+    display: none;
+  }
+  .cc-slideai__filmstrip {
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cc-slideai__filmstrip-item {
+    width: 96px;
+    scroll-snap-align: start;
+  }
+  .cc-slideai__stage-nav .icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .cc-slideai__composer {
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .cc-slideai__send {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .cc-slideai__slidecount-row {
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .cc-slideai__history-sheet {
+    width: min(100vw, 360px);
+    max-width: 100%;
+  }
+}
+
+.cc-slideai__mobile-tabs {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .cc-slideai__brand-sub {
+    display: none;
+  }
+  .cc-slideai__new-ppt-btn,
+  .cc-slideai__history-toggle {
+    font-size: 11px;
+    padding: 0 10px;
+    min-height: 36px;
+  }
+  .cc-slideai__preview-title-text {
+    font-size: 13px;
+    -webkit-line-clamp: 1;
+  }
+  .cc-slideai__canvas-main {
+    padding: 5% 4% 3%;
+  }
+  .cc-slideai__canvas-headline {
+    font-size: clamp(0.9rem, 4.2vw, 1.25rem);
+    margin-bottom: 2%;
+  }
+  .cc-slideai__canvas-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .cc-slideai__filmstrip-item {
+    width: 84px;
+  }
+  .cc-slideai__template-btn-desc {
+    display: none;
+  }
+  .cc-slideai__empty {
+    padding: 20px 14px;
   }
 }
 .cc-slideai__panel {

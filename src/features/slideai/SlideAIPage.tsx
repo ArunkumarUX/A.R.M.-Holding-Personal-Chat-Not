@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { CcIcon } from '../../command-centre/CcIcon';
 import { useApp } from '../../context/AppContext';
@@ -30,6 +30,16 @@ export function SlideAIPage() {
 
   const hasDeck = Boolean(deck?.slides?.length);
   const previewTitle = deck?.title;
+  const [mobileTab, setMobileTab] = useState<'chat' | 'preview'>('chat');
+  const hadDeckRef = useRef(false);
+
+  useEffect(() => {
+    if (hasDeck && !hadDeckRef.current) setMobileTab('preview');
+    hadDeckRef.current = hasDeck;
+  }, [hasDeck]);
+
+  const slideAiLayoutClass =
+    mobileTab === 'preview' ? 'cc-slideai--show-preview' : 'cc-slideai--show-chat';
 
   const onNewPpt = () => {
     resetChat();
@@ -63,7 +73,39 @@ export function SlideAIPage() {
       : 'Download .pptx';
 
   return (
-    <div className="cc-slideai" style={bccPortfolioCssVars() as CSSProperties}>
+    <div
+      className={`cc-slideai ${slideAiLayoutClass}`}
+      style={bccPortfolioCssVars() as CSSProperties}
+    >
+      <div
+        className="cc-slideai__mobile-tabs"
+        role="tablist"
+        aria-label={ar ? 'لوحة SlideAI' : 'SlideAI panels'}
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mobileTab === 'chat'}
+          className={`cc-slideai__mobile-tab${mobileTab === 'chat' ? ' cc-slideai__mobile-tab--on' : ''}`}
+          onClick={() => setMobileTab('chat')}
+        >
+          <CcIcon name="message-square" size={16} />
+          {ar ? 'المحادثة' : 'Chat'}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={mobileTab === 'preview'}
+          className={`cc-slideai__mobile-tab${mobileTab === 'preview' ? ' cc-slideai__mobile-tab--on' : ''}`}
+          onClick={() => setMobileTab('preview')}
+        >
+          <CcIcon name="presentation" size={16} />
+          {ar ? 'المعاينة' : 'Preview'}
+          {hasDeck ? (
+            <span className="cc-slideai__mobile-tab-badge">{deck!.slides.length}</span>
+          ) : null}
+        </button>
+      </div>
       <aside className="cc-slideai__panel cc-slideai__panel--chat">
         <header className="cc-slideai__panel-head">
           <div>
