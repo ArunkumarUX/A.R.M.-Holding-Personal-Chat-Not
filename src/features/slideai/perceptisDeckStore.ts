@@ -53,7 +53,6 @@ let abortController: AbortController | null = null;
 let lastPayload: PerceptisDeckPayload | null = null;
 let lastSourceKey: string | null = null;
 let lastDisplayPrompt = '';
-let lastIdempotencyKey: string | null = null;
 let elapsedTimer: ReturnType<typeof setInterval> | null = null;
 let runId = 0;
 
@@ -288,7 +287,6 @@ export const usePerceptisDeckStore = create<PerceptisDeckStore>((set, get) => ({
     lastSourceKey = sourceKey;
     lastDisplayPrompt = displayPrompt;
     const idempotencyKey = buildIdempotencyKey(sourceKey);
-    lastIdempotencyKey = idempotencyKey;
 
     if (get().sourceKey === sourceKey && get().phase === 'ready' && get().blob) {
       return;
@@ -305,7 +303,6 @@ export const usePerceptisDeckStore = create<PerceptisDeckStore>((set, get) => ({
     const id = runId;
     // Fresh idempotency key so a prior failed attempt cannot block retry.
     const idempotencyKey = buildIdempotencyKey(`${lastSourceKey}:retry:${Date.now()}`);
-    lastIdempotencyKey = idempotencyKey;
     set(() => ({ error: null, blob: null, downloadReady: false, phase: 'queued' }));
     void runDeckBuild(lastPayload, lastSourceKey, lastDisplayPrompt, idempotencyKey, set, id);
   },
@@ -331,7 +328,6 @@ export const usePerceptisDeckStore = create<PerceptisDeckStore>((set, get) => ({
     lastPayload = null;
     lastSourceKey = null;
     lastDisplayPrompt = '';
-    lastIdempotencyKey = null;
     set({
       phase: 'idle',
       message: '',
