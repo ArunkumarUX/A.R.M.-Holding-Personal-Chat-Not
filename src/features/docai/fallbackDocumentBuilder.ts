@@ -92,10 +92,10 @@ export function buildFallbackDocument(
     audience,
     style,
     status: 'draft',
-    summary: `This ${typeLabel.toLowerCase()} supports a ${purposeLabel.toLowerCase()} for the ${audienceLabel.toLowerCase()}. It follows ${styleLabel} and is ready for Word export. ${
+    summary: `This ${typeLabel.toLowerCase()} is framed around “${purposeLabel}” for the ${audienceLabel.toLowerCase()}. It follows ${styleLabel} and is ready for Word export. ${
       hasContext
         ? 'Command Centre context was attached — verify figures before circulation.'
-        : 'Connect the AI service (or say “use Command Centre context”) for fully grounded facts.'
+        : 'Generate again with the AI service connected for a fully drafted CEO-ready paper.'
     }`,
     estimatedPages: 6,
     sources: [

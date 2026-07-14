@@ -448,12 +448,44 @@ ${deptLine || '(none injected — answer from general knowledge if asked)'}`;
 }
 
 /**
- * Stream Claude SSE events via writeEvent({ type, text?, message?, model? }).
+ * Stream chat SSE events via writeEvent({ type, text?, message?, model? }).
+ * Uses AWS Bedrock Agent when configured (CHAT_PROVIDER=auto|bedrock).
  */
 export async function streamChat(payload, writeEvent) {
+  const { resolveChatProvider, streamBedrockAgentChat, getBedrockAgentConfig } =
+    await import('./bedrockAgent.mjs');
+  let provider = resolveChatProvider();
+  if (provider === 'bedrock') {
+    try {
+      return await streamBedrockAgentChat(payload, writeEvent);
+    } catch (err) {
+      const msg = err?.message || String(err);
+      // Soft-fail to Anthropic when AWS keys are missing/invalid.
+      if (/AWS credentials missing|CredentialsProviderError|ExpiredToken/i.test(msg)) {
+        console.warn('[chat] Bedrock unavailable, falling back to Anthropic:', msg);
+        provider = 'anthropic';
+      } else {
+        throw err;
+      }
+    }
+  }
+  if (provider === 'none') {
+    const bedrock = getBedrockAgentConfig();
+    if (bedrock.agentIdsSet && !bedrock.hasEnvCredentials) {
+      throw new Error(
+        'Bedrock agent is set, but AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY are missing in .env.local. Add IAM keys for account 376129856168 (bedrock:InvokeAgent), or set CHAT_PROVIDER=anthropic.',
+      );
+    }
+    throw new Error(
+      'No chat provider available — configure Bedrock (BEDROCK_AGENT_ARN + BEDROCK_AGENT_ALIAS_ID + AWS keys) or ANTHROPIC_API_KEY.',
+    );
+  }
+
   const { apiKey, model } = getAnthropicConfig();
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not configured on the server.');
+    throw new Error(
+      'No AWS credentials for Bedrock and ANTHROPIC_API_KEY is not set. Add AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY (preferred for your agent) or ANTHROPIC_API_KEY in .env.local.',
+    );
   }
   const keyProblem = describeAnthropicKeyProblem(apiKey);
   if (keyProblem) {

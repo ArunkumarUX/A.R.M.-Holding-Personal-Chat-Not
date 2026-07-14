@@ -67,7 +67,7 @@ FALLBACK (only if you truly cannot generate the deck):
 //   Pass 2 — locate the outermost { … } block
 //   Pass 3 — close unclosed brackets/braces left by a truncated response
 //
-function sanitizeJsonText(raw) {
+export function sanitizeJsonText(raw) {
   let text = raw.trim();
 
   // ── Pass 1: strip code fences ──────────────────────────────────────────────
@@ -167,20 +167,26 @@ export async function handleSlideAiRequest(body) {
   // Append JSON enforcement to system prompt
   const systemWithEnforcement = String(system) + JSON_ENFORCEMENT;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: maxTokens,
-      system: systemWithEnforcement,
-      messages,
-    }),
-  });
+  let res;
+  try {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: maxTokens,
+        system: systemWithEnforcement,
+        messages,
+      }),
+    });
+  } catch (err) {
+    const msg = err?.message || String(err);
+    return { ok: false, status: 502, error: `Anthropic unreachable: ${msg}` };
+  }
 
   if (!res.ok) {
     const errText = await res.text();

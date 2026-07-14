@@ -83,12 +83,18 @@ export async function handleApiRequest(request, opts = {}) {
 
   if (request.method === 'GET' && path === '/api/health') {
     const { apiKey, model } = getAnthropicConfig();
+    const { resolveChatProvider, getBedrockAgentConfig } = await import('./bedrockAgent.mjs');
+    const bedrock = getBedrockAgentConfig();
+    const provider = resolveChatProvider();
+    const chatReady = provider === 'bedrock' ? bedrock.configured : Boolean(apiKey);
     const { apiKey: perceptisKey, templateName: perceptisTemplate } = getPerceptisConfig();
     const blobConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim() || process.env.BLOB_STORE_ID?.trim());
     const setupHints = [];
-    if (!apiKey) {
+    if (!chatReady) {
       setupHints.push(
-        'ANTHROPIC_API_KEY is missing on Vercel — chat and SlideAI will not work. Add it under Project → Settings → Environment Variables, then redeploy.',
+        provider === 'bedrock'
+          ? 'Bedrock agent is selected but not fully configured — set BEDROCK_AGENT_ARN + BEDROCK_AGENT_ALIAS_ID and AWS credentials.'
+          : 'ANTHROPIC_API_KEY is missing — chat and SlideAI will not work. Add it (or configure Bedrock) under Environment Variables, then redeploy.',
       );
     }
     if (!perceptisKey) {
@@ -104,16 +110,20 @@ export async function handleApiRequest(request, opts = {}) {
     const payload = {
       ok: true,
       auth: true,
-      claude: Boolean(apiKey),
-      claudeStatus: apiKey ? 'configured' : 'missing',
+      claude: chatReady,
+      provider,
+      claudeStatus: chatReady ? 'configured' : 'missing',
       claudeKeyFingerprint: anthropicKeyFingerprint(apiKey),
-      model,
+      model: provider === 'bedrock' ? `bedrock-agent:${bedrock.agentId}` : model,
+      bedrock: bedrock.configured
+        ? { configured: true, region: bedrock.region, agentId: bedrock.agentId, aliasId: bedrock.agentAliasId }
+        : { configured: false },
       perceptis: Boolean(perceptisKey),
       perceptisStatus: perceptisKey ? 'configured' : 'missing',
       perceptisTemplate: perceptisTemplate || 'dmcc-executive',
       blob: blobConfigured,
       blobStatus: blobConfigured ? 'configured' : 'missing',
-      liveReady: Boolean(apiKey && perceptisKey && blobConfigured),
+      liveReady: Boolean(chatReady && perceptisKey && blobConfigured),
       setupHints,
       dataTrust: buildHealthDataTrust(),
     };

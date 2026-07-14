@@ -130,9 +130,26 @@ function sendJson(res, status, body) {
 
 async function handleChat(req, res) {
   reloadLocalEnv();
-  const { apiKey } = getAnthropicConfig();
-  if (!apiKey) {
-    sendJson(res, 503, { error: 'ANTHROPIC_API_KEY not set. Add it to .env.local' });
+  const { resolveChatProvider, getBedrockAgentConfig } = await import('./bedrockAgent.mjs');
+  const provider = resolveChatProvider();
+  if (provider === 'none') {
+    sendJson(res, 503, {
+      error:
+        'No chat provider — set BEDROCK_AGENT_ARN + BEDROCK_AGENT_ALIAS_ID (and AWS credentials) or ANTHROPIC_API_KEY in .env.local',
+    });
+    return;
+  }
+  if (provider === 'anthropic') {
+    const { apiKey } = getAnthropicConfig();
+    if (!apiKey) {
+      sendJson(res, 503, { error: 'ANTHROPIC_API_KEY not set. Add it to .env.local' });
+      return;
+    }
+  }
+  if (provider === 'bedrock' && !getBedrockAgentConfig().configured) {
+    sendJson(res, 503, {
+      error: 'Bedrock agent not configured — set BEDROCK_AGENT_ARN and BEDROCK_AGENT_ALIAS_ID',
+    });
     return;
   }
 
@@ -182,11 +199,23 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url.pathname === '/api/health') {
     reloadLocalEnv();
     const { apiKey, model } = getAnthropicConfig();
+    const { resolveChatProvider, getBedrockAgentConfig } = await import('./bedrockAgent.mjs');
+    const bedrock = getBedrockAgentConfig();
+    const provider = resolveChatProvider();
     const { buildHealthDataTrust } = await import('./dataProvenance.mjs');
     sendJson(res, 200, {
       ok: true,
-      claude: Boolean(apiKey),
-      model,
+      claude: Boolean(apiKey) || (provider === 'bedrock' && bedrock.configured),
+      provider,
+      model: provider === 'bedrock' ? `bedrock-agent:${bedrock.agentId}` : model,
+      bedrock: {
+        configured: bedrock.configured,
+        agentIdsSet: bedrock.agentIdsSet,
+        hasEnvCredentials: bedrock.hasEnvCredentials,
+        region: bedrock.region,
+        agentId: bedrock.agentId || null,
+        aliasId: bedrock.agentAliasId || null,
+      },
       dataTrust: buildHealthDataTrust(),
     });
     return;

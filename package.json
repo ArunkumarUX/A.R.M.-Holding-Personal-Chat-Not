@@ -26,6 +26,7 @@
     "difc:ppt": "bash scripts/generate-difc-ppt.sh"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.1086.0",
     "@netlify/blobs": "^10.7.9",
     "@vercel/blob": "^2.4.0",
     "chart.js": "^4.5.1",

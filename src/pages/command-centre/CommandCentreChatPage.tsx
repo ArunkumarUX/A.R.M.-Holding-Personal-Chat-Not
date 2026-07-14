@@ -99,6 +99,7 @@ export function CommandCentreChatPage() {
   const idRef = useRef(0);
   const seedHandledRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const bedrockSessionRef = useRef<string | undefined>(undefined);
   msgsRef.current = msgs;
 
   useEffect(() => {
@@ -216,7 +217,11 @@ export function CommandCentreChatPage() {
             language: ar ? 'ar' : 'en',
             history,
             context: turn.context,
+            sessionId: bedrockSessionRef.current,
             signal: ac.signal,
+            onSession: (sid) => {
+              bedrockSessionRef.current = sid;
+            },
             onToken: (chunk) => {
               streamed += chunk;
               setMsgs((m) =>
@@ -344,6 +349,7 @@ export function CommandCentreChatPage() {
   const stopGeneration = useCallback(() => {
     abortRef.current?.abort();
     abortRef.current = null;
+    bedrockSessionRef.current = undefined;
     setMsgs((m) =>
       m.map((x) =>
         x.role === 'ai' && x.thinking

@@ -46,8 +46,8 @@ function shortError(reason: string): string {
   if (reason.includes('ECONNREFUSED') || reason.includes('proxy error')) {
     return 'API server not running — run npm run dev (both UI + API)';
   }
-  if (reason.includes('ANTHROPIC_API_KEY')) {
-    return 'ANTHROPIC_API_KEY missing in .env.local';
+  if (reason.includes('ANTHROPIC_API_KEY') || /AWS credentials|Bedrock/i.test(reason)) {
+    return reason.slice(0, 180);
   }
   try {
     const parsed = JSON.parse(reason) as { error?: { message?: string } };
@@ -239,15 +239,18 @@ export async function runDocAgent(
       res.status === 422
         ? data.error || 'Document JSON could not be parsed — try a shorter brief.'
         : shortError(data.error || `HTTP ${res.status}`);
-    if (!docForTurn || forceNew) {
-      return demoResponse(userMessage, null, reason, agentOptions);
-    }
+    // Do not silently substitute a thin stub document — surface the API error.
     return { action: 'message', document: null, updatedSections: null, message: reason };
   }
 
   const raw = data.text || '';
   if (!raw.trim()) {
-    return demoResponse(userMessage, currentDoc, 'Empty AI response.', agentOptions);
+    return {
+      action: 'message',
+      document: null,
+      updatedSections: null,
+      message: 'Empty AI response — try Generate Document again.',
+    };
   }
 
   try {

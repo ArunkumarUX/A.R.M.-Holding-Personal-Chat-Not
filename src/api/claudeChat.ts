@@ -78,14 +78,18 @@ export async function streamClaudeChat({
   language,
   history,
   context,
+  sessionId,
   onToken,
+  onSession,
   signal,
 }: {
   message: string;
   language: 'en' | 'ar';
   history: ChatHistoryItem[];
   context: ChatStreamContext;
+  sessionId?: string;
   onToken: (text: string) => void;
+  onSession?: (sessionId: string) => void;
   signal?: AbortSignal;
 }): Promise<void> {
   const timeoutSignal = AbortSignal.timeout(120_000);
@@ -94,7 +98,7 @@ export async function streamClaudeChat({
       ? AbortSignal.any([signal, timeoutSignal])
       : timeoutSignal;
 
-  const body = JSON.stringify({ message, language, history, context });
+  const body = JSON.stringify({ message, language, history, context, sessionId });
   const fetchOpts = {
     method: 'POST' as const,
     headers: { 'Content-Type': 'application/json' },
@@ -110,6 +114,7 @@ export async function streamClaudeChat({
       await consumeChatStream(
         await fetch(chatApiUrl(devPort), fetchOpts),
         onToken,
+        onSession,
       );
       return;
     } catch (err) {
@@ -137,6 +142,7 @@ export async function streamClaudeChat({
 async function consumeChatStream(
   res: Response,
   onToken: (text: string) => void,
+  onSession?: (sessionId: string) => void,
 ): Promise<void> {
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
@@ -165,6 +171,7 @@ async function consumeChatStream(
         if (!line.startsWith('data: ')) continue;
         try {
           const evt = JSON.parse(line.slice(6));
+          if (evt.type === 'session' && evt.sessionId && onSession) onSession(evt.sessionId);
           if (evt.type === 'token' && evt.text) onToken(evt.text);
           if (evt.type === 'error') throw new Error(evt.message || 'Stream error');
         } catch (e) {
